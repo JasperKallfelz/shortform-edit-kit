@@ -421,13 +421,13 @@ und 1,9 Mio. Aufrufen** bei einem Reel von 11 Sekunden. Als Muster, ohne Konten:
 
 | Muster | Bauart (knapp) |
 |---|---|
-| ein Bild, eine Zeile, lange Beschreibung | ein einzelnes Bild, eine Zeile Text im Bild, dazu eine lange Beschreibung |
-| Uhrzeiten über Clips | Uhrzeiten als Text über kurzen Clips |
-| Liste in schnellen Schnitten | eine Liste, deren Punkte in schnellen Schnitten nacheinander kommen |
-| „Tag 1“-Serien | der erste Teil einer Serie, die mit „Tag 1“ beginnt |
-| Alter und Geständnis | eine Altersangabe und ein persönliches Eingeständnis im Text |
+| ein Bild, eine Zeile, lange Beschreibung | eine einzige Einstellung (stehend oder eine ruhige Kamerafahrt), 5–10 s, ein bis drei Zeilen Text im Bild; die Zeile bricht teils mit „…“ ab, die Geschichte steht in der Beschreibung (650–1.400 Zeichen) |
+| Uhrzeiten über Clips | Titelzeile, dann fünf bis sieben Uhrzeiten mit je einer kleinen Zeile über ruhigen Clips (rund 16 s); als Variante eine feste Einstellung im Zeitraffer, über der eine Uhr durchläuft |
+| Liste in schnellen Schnitten | etwa jede Sekunde ein anderer Clip mit einem Etikett oben im Bild; oder zwei Personen im Bild, über denen nacheinander Etiketten erscheinen (der Witz liegt im Unterschied) |
+| „Tag 1“-Serien | der erste Teil einer Serie („Tag 1 von …“), meist gesprochen mit Wort-für-Wort-Untertiteln und kurzen Zwischenbildern vom Bildschirm |
+| Alter und Geständnis | eine stehende Einstellung am Schreibtisch, darüber Alter plus ein Eingeständnis oder eine Frage in Anführungszeichen mit der Antwort darunter; 7–10 s, kein Sprecher |
 
-Die Spalte „Bauart“ fasst die Muster knapp zusammen; wie sie im Einzelnen aussehen, zeigt erst ein Blick auf die Videos selbst.
+Die Bauart ist an je zehn Standbildern pro Video und an den Beschreibungstexten abgelesen, nicht an Angaben der Konten.
 
 Gemeinsam war fast allen: **6 bis 16 Sekunden und kein Sprecher**. Das Kit baut auf Voiceover und Wortzeiten; diese Formate kommen
 ohne Sprecher aus. Ob ein Voiceover bei ihnen hilft oder schadet, zeigt die Auswertung nicht.
