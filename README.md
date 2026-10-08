@@ -133,6 +133,7 @@ Voraussetzungen: Node 20+, Python 3.9+, ffmpeg. Je nach Schritt zusätzlich:
 
 - Tonstudio: `numpy` und [whisper.cpp](https://github.com/ggerganov/whisper.cpp) mit mindestens einem Modell (Details in [`tonstudio/README.md`](tonstudio/README.md))
 - `prepare_sfx.py`: `numpy`, `soundfile`, `librosa`
+- `ton_check.py`, `beat_align.py`: `numpy`, `soundfile`, `librosa`
 - Kontaktbogen: `Pillow`; `whatsapp_clips.py`: macOS mit WhatsApp Desktop
 - `post_render.sh`: `zsh`, `ssh`, `rsync` (läuft auch auf einem einzigen Rechner, wenn dort die Fernanmeldung an ist)
 - Posten: Composio-CLI (angemeldet) und `curl`, siehe [`edit-tools/POSTEN.md`](edit-tools/POSTEN.md)

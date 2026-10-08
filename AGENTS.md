@@ -15,9 +15,9 @@ gibt es ein Werkzeug, und jeder Schritt hat ein Merkmal, an dem man sieht, dass 
 |---|---|
 | `beispiel/` | das Remotion-Projekt (Composition `Demo`): `skript.json`, `src/timing.ts`, `src/Demo.tsx` (Szenen, Props, `SFX_CUES`), `src/lib/` (Wort-DSL, Sound-Spur), `public/` (Sounds, Clips, Voiceover) |
 | `tonstudio/` | Voiceover: `recorder/` (Aufnahme-Seite), `vo/` (aufbereiten, ausrichten, `timing.ts` schreiben), `mikro/` (Eingabegerät umschalten) |
-| `edit-tools/` | `whatsapp_clips.py`, `kontaktbogen.py`, `patch_lines.py`, `post_render.sh`, `post_social.py`, dazu `POSTEN.md` und `tests/` |
+| `edit-tools/` | `whatsapp_clips.py`, `kontaktbogen.py`, `patch_lines.py`, `ton_check.py`, `beat_align.py`, `post_render.sh`, `post_social.py`, dazu `POSTEN.md` und `tests/` |
 | `sfx-kit/`, `sfx-kandidaten/`, `hoerseite.py` | 51 fertige Sounds mit Katalog und Werkzeugen; 233 rohe Kandidaten mit Lizenz je Datei; die Hörseite zum Aussortieren |
-| `skills/`, `docs/` | zwei Skills (Hermes-Format); die Recherche mit Quellen (`recherche-2026-10.md`) und der Rundgang (`rundgang.mp4`) |
+| `skills/`, `docs/` | zwei Skills (Hermes-Format); die Recherche mit Quellen (`recherche-2026-10.md`), Erfahrungen zu Ton und Text-Sync (`ton-und-text-sync.md`) und der Rundgang (`rundgang.mp4`) |
 
 ## Die fünf Schritte
 
@@ -66,8 +66,14 @@ sind verkleinert (meist 1024 × 576): im Bericht sagen, Original beim Absender a
 npx remotion render Demo sfx.wav --codec=wav --props='{"voVolume":0,"music":""}'
 ```
 
+```bash
+python3 edit-tools/ton_check.py beispiel/sfx.wav --musik <song.wav> --musik-start <s> --musik-vol 0.15
+```
+
 Fertig, wenn die Nur-Effekte-Spur (in `beispiel/`; `voVolume: 0`, nicht `voiceover: ""`, sonst bleibt die Stimme drin) gerendert, je
-Abschnitt gegen die Musik gemessen und Lücken über 0,5 s ohne Effekt aufgelistet sind.
+Abschnitt gegen die Musik gemessen und Lücken über 0,5 s ohne Effekt aufgelistet sind (`ton_check.py` druckt beides; ohne Musik
+entfällt der Vergleich). Wort-Texte stehen zum Wortbeginn voll da (`TEXT_LEAD_MS`); nachgemessen wird an gerenderten Frames,
+siehe [`docs/ton-und-text-sync.md`](docs/ton-und-text-sync.md). Mit Musik: `beat_align.py` legt einen Schlag auf das wichtigste Wort.
 
 ### 4. Fertig machen ([`edit-tools/post_render.sh`](edit-tools/post_render.sh))
 
@@ -107,7 +113,8 @@ Zeitüberschreitung oder unklarem Ausgang nicht wiederholen, erst im Konto nachs
 - **Abbruch nicht überspielen.** Optionen wie `--erlaube-abweichung` erst nach Rückfrage; geschätzte Zeiten im Bericht nennen.
 - **Kein `--help` bei Skripten ohne Hilfe.** `prepare_sfx.py`, `sync_remotion.py`, `hoerseite.py`, `patch_lines.py` und `post_render.sh`
   führen sofort aus (`prepare_sfx.py` schreibt alle Sounds neu, `hoerseite.py` startet den Server) oder lesen das erste Argument als
-  Pfad. Den Kopf der Datei lesen statt aufrufen. Hilfe gibt es bei `whatsapp_clips.py`, `kontaktbogen.py`, `post_social.py`, `vo.py`.
+  Pfad. Den Kopf der Datei lesen statt aufrufen. Hilfe gibt es bei `whatsapp_clips.py`, `kontaktbogen.py`, `post_social.py`, `vo.py`,
+  `ton_check.py`, `beat_align.py`.
 - **Nichts Kontospezifisches ausgeben:** Konto-IDs, Upload-Adressen und Beschreibungen nicht in Berichte, Commits oder Dokumente kopieren.
 
 ## Mehrere Agenten an einem Projekt

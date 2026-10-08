@@ -27,6 +27,8 @@ Die Skripte stehen ohne Pfad, sie liegen in `edit-tools/` (Hörseite und Sound-K
 | Sounds zum Aussortieren zeigen | `../hoerseite.py` → http://localhost:3700, Urteile in `../auswahl.json` |
 | Behaltene Sounds aufbereiten | `../sfx-kit/tools/prepare_sfx.py` |
 | Kit ins Remotion-Projekt bringen (WAVs + Katalog) | `../sfx-kit/tools/sync_remotion.py <projekt> [md5]` |
+| Nur-Effekte-Spur und Mix nachmessen (Pegel je Abschnitt, Lücken, Effekte gegen Musik, Lautheit) | `ton_check.py <sfx.wav> [--musik <song> --musik-start <s> --musik-vol 0.15] [--mix <mix.wav>]` |
+| Musik-Einstieg finden, bei dem ein Schlag auf ein Wort fällt | `beat_align.py <song.wav> <src/timing.ts> <wort> [--auch wort,wort]` |
 | Fertiger Export für TikTok/Reels | `EDIT_HOST=<ssh-name> post_render.sh <projekt> <Komposition> <Name> [Frames]` |
 | Verbundene Konten lesen (nur lesend) | `post_social.py accounts` |
 | Beitrag als Entwurf anlegen (TikTok) bzw. prüfen (Instagram); mit `--publish` veröffentlichen | `post_social.py tiktok <video> --caption-file <datei> [--publish]`, `post_social.py instagram <video> --caption-file <datei> [--publish]` |
@@ -35,7 +37,9 @@ Die Skripte stehen ohne Pfad, sie liegen in `edit-tools/` (Hörseite und Sound-K
 
 Vorsicht beim Ausprobieren: `prepare_sfx.py`, `sync_remotion.py`, `hoerseite.py`, `patch_lines.py` und `post_render.sh` kennen kein
 `--help`. Sie führen sofort aus (`prepare_sfx.py` schreibt alle Sounds neu, `hoerseite.py` startet den Server) oder lesen das erste
-Argument als Pfad. Hilfe gibt es bei `whatsapp_clips.py`, `kontaktbogen.py`, `post_social.py` und `vo.py`.
+Argument als Pfad. Hilfe gibt es bei `whatsapp_clips.py`, `kontaktbogen.py`, `post_social.py`, `vo.py`, `ton_check.py` und `beat_align.py`.
+
+Warum die Regeln zu Lautstärke, Text-Vorlauf und Musik so sind und wie man sie nachmisst: [`../docs/ton-und-text-sync.md`](../docs/ton-und-text-sync.md).
 
 ## Ablauf 1: Skript und Voiceover
 

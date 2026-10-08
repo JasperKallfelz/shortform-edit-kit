@@ -42,7 +42,7 @@ passend, dass er nicht eingefügt klingt. Whooshes nur ganz minimal.
 5. **Pegel setzen** (Regeln unten).
 6. **Nachmessen.** Nur die Effekte rendern (`npx remotion render <Komposition> sfx.wav --codec=wav --props='{"voVolume":0,"music":""}'`; `voVolume: 0` statt
    `voiceover: ""`, denn bei vorhandenem Voiceover fällt die Komposition auf `VO.file` zurück), Pegel je Abschnitt und gegen die Musik
-   vergleichen. Vom Gesamtmix Lautheit und Spitze messen.
+   vergleichen. Vom Gesamtmix Lautheit und Spitze messen. Beides druckt `../edit-tools/ton_check.py`.
 7. **Im Studio zeigen, Korrekturen einarbeiten, wieder messen.**
 
 ## Pegel-Regeln
@@ -53,6 +53,8 @@ passend, dass er nicht eingefügt klingt. Whooshes nur ganz minimal.
   der Cues geben nur das Verhältnis untereinander an.
 - **Whooshes** dürfen etwas lauter sein.
 - **Sehr kurze Sounds** (Auslöser, Klicks) wirken schnell zu laut, vor allem als Übergangseffekt. Dort bewusst leiser.
+- **Dichte Folgen ausdünnen.** Poppen viele Elemente innerhalb weniger Frames auf, höchstens alle 4 Frames eines klicken
+  lassen (nach Frame sortiert, nicht nach Nummer), sonst rattert es.
 - **Wo der Sound zum Bild gehört** (ein Foto erscheint → Auslöser) darf er etwas lauter sein.
 - Ziel für den fertigen Mix: −14 LUFS, Spitze −1 dBTP.
 
@@ -65,4 +67,5 @@ Tauscht man einen Sound gegen einen anderen, den `vol`-Wert über `loud` umrechn
   aus der Wortzeit berechnen (Stelle im Song minus Wortzeit), dann bleibt er bei neuen Takes auf dem Wort.
 - Schnitte, die am Voiceover hängen, treffen den Beat nur zufällig. Ehrlich sagen, welche sitzen und welche nicht.
 - Kurz vor dem Höhepunkt die Musik wegnehmen, auf dem Wort schlagartig zurück.
+- Den Einstieg sucht `../edit-tools/beat_align.py`. Hintergründe und Messwege: `../docs/ton-und-text-sync.md`.
 - Musik gehört nicht in dieses Repo. Zu Rechten beim Posten siehe `../docs/recherche-2026-10.md`.
