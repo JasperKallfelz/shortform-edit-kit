@@ -136,7 +136,7 @@ Schritt 9: Hörseite starten, wenn der Mensch Sounds aussortieren will.
 python3 hoerseite.py
 ```
 
-Fertig, wenn sie unter `http://localhost:3700` antwortet und Kit und Kandidaten zusammen 284 Sounds liefern (51 aufbereitete und 233 Kandidaten):
+Fertig, wenn sie unter `http://localhost:3700` antwortet und Kit und Kandidaten zusammen 286 Sounds liefern (53 aufbereitete und 233 Kandidaten):
 
 ```bash
 curl -s http://localhost:3700/api/sounds | python3 -c "import json,sys; print(len(json.load(sys.stdin)['sounds']))"
@@ -155,7 +155,7 @@ python3 sfx-kit/tools/prepare_sfx.py
 python3 sfx-kit/tools/sync_remotion.py beispiel
 ```
 
-Fertig, wenn `sync_remotion.py` „51 Sounds im Projekt“ meldet. Mit dem zweiten Argument (md5 von `src/lib/sfx.tsx`) bricht es ab, ohne zu schreiben,
+Fertig, wenn `sync_remotion.py` „53 Sounds im Projekt“ meldet. Mit dem zweiten Argument (md5 von `src/lib/sfx.tsx`) bricht es ab, ohne zu schreiben,
 falls ein anderer Agent die Datei inzwischen geändert hat.
 
 Schritt 11: Posten vorbereiten, nur wenn der Mensch posten will. Das Konto verbindet er selbst (siehe [`edit-tools/POSTEN.md`](../edit-tools/POSTEN.md)).

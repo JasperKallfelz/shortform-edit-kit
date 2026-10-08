@@ -2,7 +2,7 @@
 
 Du sagst einem KI-Agenten (Claude Code, Codex, Hermes), was für ein Kurzvideo du willst, und sprichst dein Skript ein. Der Agent baut daraus das Video mit [Remotion](https://www.remotion.dev): Text im Sprechtakt, deine Clips, Sound-Effekte aus echten Aufnahmen, den Export mit geprüfter Lautheit und, nach deiner Freigabe, den Post.
 
-*English in one line: a voiceover studio, tools, 233 CC0 sound-effect candidates (51 prepared), agent skills, a posting script and a Remotion demo for short vertical videos. Docs are in German.*
+*English in one line: a voiceover studio, tools, 233 CC0 sound-effect candidates (53 prepared), agent skills, a posting script and a Remotion demo for short vertical videos. Docs are in German.*
 
 [![Der Ablauf in 30 Sekunden](docs/ablauf.gif)](docs/ablauf.mp4)
 
@@ -55,15 +55,15 @@ Alle Stellschrauben mit Fundstelle im Code: [`docs/einrichtung.md`](docs/einrich
 |---|---|
 | `AGENTS.md` | Einstieg für einen KI-Agenten, der mit dem Kit ein Video baut oder ändert: Ordnerkarte, fünf Schritte als Checkliste, Hausregeln |
 | `tonstudio/` | Voiceover: im Browser aufnehmen (Teleprompter), aufbereiten, Wortzeiten messen und die Zeit-Tabelle `src/timing.ts` erzeugen. Läuft ganz lokal |
-| `beispiel/` | Remotion-Demo ohne eigenes Material: Text, der zum Sprechtakt aufpoppt, Clip-Karte mit Zoom, gezeichneter Pfeil, laufende Zahl, Sound-Spur, dazu `skript.json` für das Tonstudio. `demo.mp4` zeigt das Ergebnis |
-| `sfx-kit/` | 51 aufbereitete Sound-Effekte (echte Aufnahmen), Katalog mit Länge, Einsatzpunkt und Lautheit, Skripte zum Aufbereiten und zum Einspielen in ein Remotion-Projekt |
+| `beispiel/` | Remotion-Demo ohne eigenes Material: Text, der zum Sprechtakt aufpoppt, Clip-Karte mit Zoom (auch mit Ambient-Light-Schein), gezeichneter Pfeil, laufende Zahl, Sound-Spur, dazu `skript.json` für das Tonstudio. `demo.mp4` zeigt das Ergebnis |
+| `sfx-kit/` | 53 aufbereitete Sound-Effekte (echte Aufnahmen), Katalog mit Länge, Einsatzpunkt und Lautheit, Skripte zum Aufbereiten und zum Einspielen in ein Remotion-Projekt |
 | `sfx-kandidaten/` | 233 rohe Kandidaten mit Quelle und Lizenz je Datei (`manifest.tsv`) |
 | `hoerseite.py`, `index.html` | Hörseite im Browser: alle Sounds durchhören, behalten oder aussortieren, auch nur mit der Tastatur |
 | `edit-tools/` | Skripte: Videos aus WhatsApp holen, Kontaktbogen, Dateien sicher ändern, fertiger Export mit Lautheitsprüfung, Posten auf TikTok und Instagram (`post_social.py`). Das README dort beschreibt die Abläufe, `POSTEN.md` das Posten |
 | `skills/` | Zwei Skills für Agenten (Hermes-Format, als Anleitung auch für Claude Code brauchbar) |
 | `ablauf-film/` | Remotion-Projekt, das den Film oben baut (`docs/ablauf.mp4` und die stumme Vorschau `docs/ablauf.gif`): gezeichnete Animation, Ton nur aus dem Sound-Kit |
 | `rundgang/` | Remotion-Projekt, das `docs/rundgang.mp4` baut (echte Aufnahmen der Werkzeuge, nachgebautes Terminal) |
-| `docs/` | Handbuch (`handbuch.md`), Einrichtung und Konfiguration (`einrichtung.md`), was die Forschung zu Zuschauerbindung, Beschreibung, Hashtags und Musikrechten sagt, mit Quellen; dazu die Filme |
+| `docs/` | Handbuch (`handbuch.md`), Einrichtung und Konfiguration (`einrichtung.md`), was die Forschung zu Zuschauerbindung, Beschreibung, Hashtags und Musikrechten sagt, mit Quellen; die Erfahrungen aus dem Bauen: Skript vor Schnitt, Stimme, Raumklänge, Bildbausteine, Formate kleiner Konten ([`kurzvideo-erfahrungen-2026-10.md`](docs/kurzvideo-erfahrungen-2026-10.md)); dazu die Filme |
 
 </details>
 

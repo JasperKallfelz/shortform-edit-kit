@@ -76,6 +76,7 @@ Ein Standbild heißt „dieses Video“ – die Datei zu finden ist Aufgabe des 
 4. **Einbauen.** Datei nach `public/` des Projekts und einen Slot in den Props anlegen (Label, Datei, Startsekunde). So lässt
    sich der Ausschnitt im Studio verschieben, ohne Code anzufassen. Bausteine aus `beispiel/src/Demo.tsx`:
    - `Inset` – abgerundeter 16:9-Clip auf weißer Karte; mit `zoom` wächst er langsam auf die Person zu.
+   - `AmbientInset` (`beispiel/src/lib/ambient.tsx`) – dasselbe mit Ambient-Light-Schein: dahinter liegt der Clip noch einmal, weichgezeichnet und aufgehellt, und scheint auf das Weiß. Nur auf hellem Grund, Parameter und Erfahrungen in `beispiel/README.md`.
    - `Squiggle` – handgezeichneter Kringel-Pfeil als SVG, der sich zeichnet (`pathLength` 1, `strokeDashoffset` läuft von 1 auf 0).
    - Wort-DSL (`Words`) – jedes Wort mit Schrift, Größe, Position in Prozent und Einsatz aus der Wortzeit.
 5. **Ansehen, bevor „fertig“.** `npx remotion still <Komposition> bild.png --frame=N` und das Bild wirklich anschauen. Wo Text
@@ -112,7 +113,8 @@ Whoosh nur ganz minimal. Effekte nie lauter als die Musik. Das Sound-Kit mit Kat
 Was wofür funktioniert: Tastenanschlag je Textzeile, Bleistift auf Schreibschrift-Wörtern und gezeichneten Linien, Auslöser
 wenn ein Foto oder Clip erscheint, Filmtransport nach einem Foto, Auslöser-Serie auf einer Fotowand, Klapptafel-Klappe für
 Kacheln und laufende Zahlen, Seite blättert auf einen Schnitt, rückwärts gespieltes Becken in ein Musik-Loch vor dem
-Höhepunkt, echte Trommel auf dem Höhepunkt.
+Höhepunkt, echte Trommel auf dem Höhepunkt. Einschränkung nach späteren Hörrunden: Auslöser als Übergang auf Schnitten und schnelle
+Klappen-Folgen sind durchgefallen, siehe [`../docs/kurzvideo-erfahrungen-2026-10.md`](../docs/kurzvideo-erfahrungen-2026-10.md#5-geräusche-was-nach-gehör-durchfiel-und-was-blieb).
 
 ## Ablauf 4: Fertig machen für den Post
 

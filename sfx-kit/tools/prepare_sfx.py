@@ -87,6 +87,9 @@ SRC = {
     "cardPlace1": ("card_place_table_01.wav", "peak"),
     "clink1": ("sparkle_glass_clink_02.wav", "onset"),
     "swishSmall": ("whoosh_swish_small_01.wav", "peak"),
+    # Tippen und Münze (thematische Einzelgeräusche)
+    "typeBurst1": ("type_burst_macbook_01.wav", "onset"),
+    "coinCup1": ("sparkle_coin_cup_01.wav", "onset"),
 }
 # Gruppen für den Katalog im Remotion-Projekt (tools/sync_remotion.py): Überschrift → Namen
 GROUPS = [
@@ -95,7 +98,7 @@ GROUPS = [
     ("Klapptafel wie am Flughafen (flapLo/flapHi = flap etwas tiefer/höher, gegen hörbare Wiederholung)", ["flap", "flapLo", "flapHi", "flapBurst3", "flapBurst5", "flapBurst8", "flapEnd1", "flapEnd2", "flapRun"]),
     ("Papier", ["page1", "page2", "page3", "tear"]),
     ("Whooshes (sparsam einsetzen)", ["swish", "whooshShort"]),
-    ("Riser (rückwärts gespieltes Becken), Trommel, Karten, Tasten, Bleistift, Glas, kleiner Swish", ["riser1", "tom1", "riffle1", "key1", "key2", "key3", "pencil1", "pencil2", "cardPlace1", "clink1", "swishSmall"]),
+    ("Riser (rückwärts gespieltes Becken), Trommel, Karten, Tasten, Bleistift, Glas, kleiner Swish, Tippen, Münze", ["riser1", "tom1", "riffle1", "key1", "key2", "key3", "pencil1", "pencil2", "cardPlace1", "clink1", "swishSmall", "typeBurst1", "coinCup1"]),
 ]
 # Aus einer langen Aufnahme mit mehreren Tönen: name-Präfix → (Rohdatei, Anzahl Einzeltöne)
 CUTS = {"pen": ("click_pen_longtake_01.wav", 3)}
