@@ -113,7 +113,8 @@ Whoosh nur ganz minimal. Effekte nie lauter als die Musik. Das Sound-Kit mit Kat
 Was wofür funktioniert: Tastenanschlag je Textzeile, Bleistift auf Schreibschrift-Wörtern und gezeichneten Linien, Auslöser
 wenn ein Foto oder Clip erscheint, Filmtransport nach einem Foto, Auslöser-Serie auf einer Fotowand, Klapptafel-Klappe für
 Kacheln und laufende Zahlen, Seite blättert auf einen Schnitt, rückwärts gespieltes Becken in ein Musik-Loch vor dem
-Höhepunkt, echte Trommel auf dem Höhepunkt.
+Höhepunkt, echte Trommel auf dem Höhepunkt. Einschränkung nach späteren Hörrunden: Auslöser als Übergang auf Schnitten und schnelle
+Klappen-Folgen sind durchgefallen, siehe [`../docs/kurzvideo-erfahrungen-2026-10.md`](../docs/kurzvideo-erfahrungen-2026-10.md#5-geräusche-was-nach-gehör-durchfiel-und-was-blieb).
 
 ## Ablauf 4: Fertig machen für den Post
 

@@ -6,7 +6,7 @@ Aufbereitete Sound-Effekte und der Ablauf, mit dem sie in ein Video kommen.
 
 | Pfad | Inhalt |
 |---|---|
-| `sounds/` | 51 fertige WAVs (48 kHz, 24 Bit, mono, Spitze −1 dBFS, Anschlag bei 0 ms), nur echte Aufnahmen |
+| `sounds/` | 53 fertige WAVs (48 kHz, 24 Bit, mono, Spitze −1 dBFS, Anschlag bei 0 ms), nur echte Aufnahmen |
 | `catalogue.json` | je Sound `len` (Länge in ms), `lead` (ms bis zur Stelle, die auf dem Bild sitzen soll) und `loud` (lautestes 50-ms-Stück in dB) |
 | `quellen.tsv` | Herkunft und Lizenz je Sound |
 | `tools/prepare_sfx.py` | macht aus Rohdateien in `../sfx-kandidaten/` die fertigen Sounds (neue Sounds dort in `SRC` und `GROUPS` ergänzen) |
@@ -20,6 +20,7 @@ Die Sounds:
 - Papier: `page1–3` (Seite blättern), `tear` (Papier reißt)
 - Whooshes, sparsam: `swish`, `whooshShort`, `swishSmall`
 - Weitere: `riser1` (rückwärts gespieltes Becken), `tom1` (tiefe Trommel), `riffle1` (Karten-Riffeln), `key1–3` (Tasten), `pencil1/2` (Bleistiftstrich), `cardPlace1` (Karte hinlegen), `clink1` (Glas)
+- Thematische Einzelgeräusche: `typeBurst1` (Tippen auf einer Laptop-Tastatur, 2,1 s; gedacht für ein Wort wie „engineer“, auf die Länge des Abschnitts begrenzt) und `coinCup1` (Münze fällt in eine Tasse; gedacht für eine Geldsumme). Einsatz mit `Extra` in [`../docs/kurzvideo-erfahrungen-2026-10.md`](../docs/kurzvideo-erfahrungen-2026-10.md#thematische-einzelgeräusche)
 
 ## Hausregel
 
@@ -55,6 +56,9 @@ passend, dass er nicht eingefügt klingt. Whooshes nur ganz minimal.
 - **Sehr kurze Sounds** (Auslöser, Klicks) wirken schnell zu laut, vor allem als Übergangseffekt. Dort bewusst leiser.
 - **Dichte Folgen ausdünnen.** Poppen viele Elemente innerhalb weniger Frames auf, höchstens alle 4 Frames eines klicken
   lassen (nach Frame sortiert, nicht nach Nummer), sonst rattert es.
+- **Keine schnellen mechanischen Wiederholungen.** Nach Gehör durchgefallen sind Auslöser als Übergang (`shutterInsta1/2`) und schnelle
+  Klappen-Folgen (`flapBurst3/8`); sie klingen wie ein mehrfacher Auslöser. Ein einzelnes Blättern (`riffle1`) trug.
+  Details: [`../docs/kurzvideo-erfahrungen-2026-10.md`](../docs/kurzvideo-erfahrungen-2026-10.md#5-geräusche-was-nach-gehör-durchfiel-und-was-blieb).
 - **Wo der Sound zum Bild gehört** (ein Foto erscheint → Auslöser) darf er etwas lauter sein.
 - Ziel für den fertigen Mix: −14 LUFS, Spitze −1 dBTP.
 

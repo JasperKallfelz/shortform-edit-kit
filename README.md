@@ -4,7 +4,7 @@ Werkzeuge, Sound-Effekte und Abläufe für kurze Hochkant-Videos (TikTok, Reels)
 und KI-Agenten (Claude Code, Hermes). Der Ordner ist so aufgebaut, dass ein Agent damit ein Video von „hier ist das Skript“
 bis „veröffentlicht und nachgelesen“ begleiten kann, und dass man die Handgriffe nicht jedes Mal neu erfindet.
 
-*English in one line: a voiceover studio, tools, 233 CC0 sound-effect candidates (51 of them prepared), agent skills, a posting
+*English in one line: a voiceover studio, tools, 233 CC0 sound-effect candidates (53 of them prepared), agent skills, a posting
 script and a Remotion demo for building short vertical videos with natural-sounding sound design. Docs are in German.*
 
 [![Rundgang durch das Kit](docs/rundgang.jpg)](docs/rundgang.mp4)
@@ -20,12 +20,12 @@ Der Rundgang zeigt, wo im Kit was liegt und wie aus einem Skript ein fertiges Vi
 | `AGENTS.md` | Einstieg für einen KI-Agenten, der mit dem Kit ein Video baut oder ändert: Ordnerkarte, fünf Schritte als Checkliste, Hausregeln |
 | `tonstudio/` | Voiceover: im Browser aufnehmen (Teleprompter), aufbereiten, Wortzeiten messen und die Zeit-Tabelle `src/timing.ts` erzeugen. Läuft ganz lokal |
 | `beispiel/` | Remotion-Demo ohne eigenes Material: Text, der zum Sprechtakt aufpoppt, Clip-Karte mit Zoom (auch mit Ambient-Light-Schein), gezeichneter Pfeil, laufende Zahl, Sound-Spur, dazu `skript.json` für das Tonstudio. `demo.mp4` zeigt das Ergebnis |
-| `sfx-kit/` | 51 aufbereitete Sound-Effekte (echte Aufnahmen), Katalog mit Länge, Einsatzpunkt und Lautheit, Skripte zum Aufbereiten und zum Einspielen in ein Remotion-Projekt |
+| `sfx-kit/` | 53 aufbereitete Sound-Effekte (echte Aufnahmen), Katalog mit Länge, Einsatzpunkt und Lautheit, Skripte zum Aufbereiten und zum Einspielen in ein Remotion-Projekt |
 | `sfx-kandidaten/` | 233 rohe Kandidaten mit Quelle und Lizenz je Datei (`manifest.tsv`) |
 | `hoerseite.py`, `index.html` | Hörseite im Browser: alle Sounds durchhören, behalten oder aussortieren, auch nur mit der Tastatur |
 | `edit-tools/` | Skripte: Videos aus WhatsApp holen, Kontaktbogen, Dateien sicher ändern, fertiger Export mit Lautheitsprüfung, Posten auf TikTok und Instagram (`post_social.py`). Das README dort beschreibt die Abläufe, `POSTEN.md` das Posten |
 | `skills/` | Zwei Skills für Agenten (Hermes-Format, als Anleitung auch für Claude Code brauchbar) |
-| `docs/` | Was die Forschung zu Zuschauerbindung, Beschreibung, Hashtags und Musikrechten sagt, mit Quellen; dazu der Rundgang (`rundgang.mp4`) |
+| `docs/` | Was die Forschung zu Zuschauerbindung, Beschreibung, Hashtags und Musikrechten sagt, mit Quellen; dazu der Rundgang (`rundgang.mp4`) und die Erfahrungen aus dem Bauen: Skript vor Schnitt, Stimme, Raumklänge, Bildbausteine, Formate kleiner Konten ([`kurzvideo-erfahrungen-2026-10.md`](docs/kurzvideo-erfahrungen-2026-10.md)) |
 
 ## Der Ablauf in fünf Schritten
 

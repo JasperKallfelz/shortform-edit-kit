@@ -20,7 +20,7 @@ Alle Zeiten stehen an einer Stelle: `src/timing.ts` (Wortzeiten in ms, so wie ei
 | `src/AmbientKarte.tsx` | Probe für den Schein: Composition `AmbientKarte` (3 s), nur die Karte auf Weiß, ohne Text und Ton |
 | `src/lib/fonts.ts` | Schriften über `@remotion/google-fonts` |
 | `src/lib/sfx.tsx` | Katalog `SOUNDS` und die Spur `SfxTrack`, die eine Cue-Liste abspielt |
-| `public/sfx/` | 51 aufbereitete Sounds (48 kHz, normalisiert) |
+| `public/sfx/` | 53 aufbereitete Sounds (48 kHz, normalisiert) |
 
 ## Starten
 

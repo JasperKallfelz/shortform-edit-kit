@@ -229,6 +229,16 @@
   "lead": 74,
   "loud": -11.9
  },
+ "typeBurst1": {
+  "len": 2143,
+  "lead": 0,
+  "loud": -21.0
+ },
+ "coinCup1": {
+  "len": 671,
+  "lead": 0,
+  "loud": -13.5
+ },
  "pen1": {
   "len": 353,
   "lead": 0,
