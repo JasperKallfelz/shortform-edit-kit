@@ -40,8 +40,9 @@ passend, dass er nicht eingefügt klingt. Whooshes nur ganz minimal.
 4. **Benennen.** Jede Cue bekommt einen Namen und erscheint in der Studio-Zeitleiste als „SFX · Name“. Korrigiert wird nach
    Gehör, mit dem Namen oder der Kategorie.
 5. **Pegel setzen** (Regeln unten).
-6. **Nachmessen.** Nur die Effekte rendern (`npx remotion render <Komposition> sfx.wav --codec=wav --props='{"voiceover":"","music":""}'`),
-   Pegel je Abschnitt und gegen die Musik vergleichen. Vom Gesamtmix Lautheit und Spitze messen.
+6. **Nachmessen.** Nur die Effekte rendern (`npx remotion render <Komposition> sfx.wav --codec=wav --props='{"voVolume":0,"music":""}'`; `voVolume: 0` statt
+   `voiceover: ""`, denn bei vorhandenem Voiceover fällt die Komposition auf `VO.file` zurück), Pegel je Abschnitt und gegen die Musik
+   vergleichen. Vom Gesamtmix Lautheit und Spitze messen.
 7. **Im Studio zeigen, Korrekturen einarbeiten, wieder messen.**
 
 ## Pegel-Regeln

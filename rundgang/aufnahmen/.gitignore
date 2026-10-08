@@ -1,0 +1,10 @@
+# Rohaufnahmen und alles, was daraus entsteht: groß und jederzeit neu erzeugbar
+node_modules/
+.browsers/
+frames/
+*.mp4
+*.webm
+*.wav
+*.aiff
+roh/
+logs/

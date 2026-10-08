@@ -21,6 +21,7 @@ Braucht: numpy, soundfile, librosa.
 """
 import json
 import os
+import sys
 
 import librosa
 import numpy as np
@@ -192,4 +193,6 @@ def main():
 
 
 if __name__ == "__main__":
+    if len(sys.argv) > 1:  # keine Argumente vorgesehen; --help soll nichts neu schreiben
+        sys.exit(__doc__)
     main()

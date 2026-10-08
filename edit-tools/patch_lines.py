@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
-"""Ersetzt exakt gefundene Textstellen in einer Datei auf dem Main Mac – nur wenn die Datei noch den erwarteten md5 hat.
+"""Ersetzt exakt gefundene Textstellen in einer Datei – nur wenn die Datei noch den erwarteten md5 hat.
 Aufruf: patch_lines.py <datei> <erwarteter md5> <json mit [[alt, neu], ...]>"""
 import hashlib, json, sys
+if len(sys.argv) != 4 or sys.argv[1] in ("-h", "--help"):
+    sys.exit(__doc__)
 path, want, swaps = sys.argv[1], sys.argv[2], json.load(open(sys.argv[3], encoding="utf-8"))
 raw = open(path, "rb").read()
 got = hashlib.md5(raw).hexdigest()

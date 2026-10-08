@@ -1,8 +1,11 @@
 // Zeitpunkte des (gedachten) Voiceovers – die einzige Stelle, an der Zeiten stehen.
-// In einem echten Projekt wird diese Datei aus der Sprachaufnahme erzeugt (Wort-Ausrichtung per Whisper o. Ä.) und nicht von Hand gepflegt;
-// ein neuer Take ergibt eine neue Datei, und Bild und Ton wandern von selbst mit. Hier stehen Beispielwerte, damit die Demo auch ohne Aufnahme getaktet läuft.
+// In einem echten Projekt wird diese Datei aus der Sprachaufnahme erzeugt und nicht von Hand gepflegt: `npm run vo -- recordings/<take>.wav`
+// (Tonstudio, siehe ../tonstudio/README.md). Ein neuer Take ergibt eine neue Datei, und Bild und Ton wandern von selbst mit.
+// Hier stehen Beispielwerte, damit die Demo auch ohne Aufnahme getaktet läuft. Die Schlüssel stehen in skript.json.
 // Jede Zahl = Beginn des Wortes in Millisekunden ab Start der Audiodatei.
 export const VO = {
+  /** Audiodatei unter public/ ("" = kein Voiceover; das Tonstudio trägt hier die aufbereitete Aufnahme ein) */
+  file: "",
   /** Länge des Videos in ms */
   endMs: 9000,
   w: {

@@ -28,6 +28,8 @@ def groups():
 
 
 def main():
+    if len(sys.argv) < 2 or sys.argv[1] in ("-h", "--help"):
+        sys.exit(__doc__)
     project = os.path.expanduser(sys.argv[1])
     want = sys.argv[2] if len(sys.argv) > 2 else None
     path = os.path.join(project, "src", "lib", "sfx.tsx")

@@ -26,7 +26,8 @@ export const DEMO_FRAMES = f(CUTS[3]);
 const slotSchema = z.object({ label: z.string(), clip: z.string(), startSec: z.number().min(0) });
 
 export const demoSchema = z.object({
-  /** Audiodatei unter public/ (leer = keine). Die Schnitte gehören zu den Wortzeiten in src/timing.ts – eine andere Aufnahme braucht eine neue timing.ts. */
+  /** Audiodatei unter public/. Leer = die Datei aus src/timing.ts (VO.file, vom Tonstudio erzeugt); ist auch die leer, gibt es kein Voiceover.
+   *  Die Schnitte gehören zu den Wortzeiten in src/timing.ts – eine andere Aufnahme braucht eine neue timing.ts (npm run vo). */
   voiceover: z.string(),
   voVolume: z.number().min(0).max(1),
   /** Musik unter public/ (leer = keine). */
@@ -273,6 +274,7 @@ const musicGain = (frame: number) => interpolate(frame, [DEMO_FRAMES - 18, DEMO_
 
 export const Demo: React.FC<DemoProps> = ({ slots, voiceover, voVolume, music, musicVolume, sfxVolume, counterTo }) => {
   const S = (i: number) => slots[i] ?? NONE;
+  const voFile = voiceover || VO.file;
   const scene = (i: number, name: string, node: React.ReactNode) => (
     <Sequence key={i} from={start(i)} durationInFrames={len(i)} name={name}>
       {node}
@@ -280,7 +282,7 @@ export const Demo: React.FC<DemoProps> = ({ slots, voiceover, voVolume, music, m
   );
   return (
     <AbsoluteFill style={{ background: "#000" }}>
-      {voiceover ? <Audio src={staticFile(voiceover)} volume={voVolume} /> : null}
+      {voFile ? <Audio src={staticFile(voFile)} volume={voVolume} /> : null}
       {music ? <Audio src={staticFile(music)} volume={(fr) => musicVolume * musicGain(fr)} /> : null}
       <SfxTrack cues={SFX_CUES} volume={sfxVolume} />
       {scene(0, "1 · Hook", <S1 slot={S(0)} />)}

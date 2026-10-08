@@ -12,6 +12,7 @@ import json
 import os
 import re
 import struct
+import sys
 import threading
 import time
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
@@ -238,6 +239,8 @@ class Handler(SimpleHTTPRequestHandler):
 
 
 if __name__ == "__main__":
+    if len(sys.argv) > 1:  # keine Argumente vorgesehen; --help soll keinen Server starten
+        sys.exit(__doc__)
     with LOCK:
         load_state()
     print(f"Hörseite: http://localhost:{PORT}  (Ordner {ROOT})", flush=True)

@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Voiceover aufnehmen</title>
+<style>
+  :root { color-scheme: dark; --bg:#0e1014; --panel:#171a21; --line:#272b35; --fg:#eceef2; --muted:#8b919d; --acc:#ff4d4d; --ok:#4fd39a; --warn:#ffb454; --stress:#6ea8ff; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:16px/1.4 -apple-system, system-ui, sans-serif; }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 18px 20px 60px; display: grid; gap: 16px; }
+  header { display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between; }
+  h1 { font-size: 20px; margin:0; }
+  select, input, button { font: inherit; color: var(--fg); background: var(--panel); border:1px solid var(--line); border-radius:10px; padding:9px 12px; }
+  button { cursor:pointer; } button:disabled { opacity:.45; cursor:default; }
+  .chip { font-size:13px; padding:5px 10px; border-radius:999px; background:var(--panel); border:1px solid var(--line); color:var(--muted); }
+  .chip.ok { color:var(--ok); border-color:var(--ok); } .chip.bad { color:var(--warn); border-color:var(--warn); }
+  .grid { display:grid; grid-template-columns: 340px 1fr; gap:16px; align-items:start; }
+  @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
+  .card { background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:16px; display:grid; grid-template-columns:minmax(0,1fr); gap:14px; }
+  .meter { position:relative; height:34px; background:#0b0d11; border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+  .zone { position:absolute; top:0; bottom:0; background: rgba(79,211,154,.18); border-inline:1px solid rgba(79,211,154,.55); }
+  .bar { position:absolute; top:0; bottom:0; left:0; background: linear-gradient(90deg, #2f9d6f, #4fd39a 70%, #ffb454 88%, #ff4d4d); width:0%; }
+  .hold { position:absolute; top:0; bottom:0; width:3px; background:#fff; left:0; }
+  .scale { display:flex; justify-content:space-between; font-size:11px; color:var(--muted); font-variant-numeric: tabular-nums; margin-top:-6px; }
+  .num { font-size:30px; font-weight:700; font-variant-numeric: tabular-nums; }
+  .rec { height:84px; font-size:22px; font-weight:700; background:var(--acc); border:none; color:#fff; border-radius:16px; }
+  .rec.stop { background:#2a2f3a; border:2px solid var(--acc); }
+  .count { font-size:72px; font-weight:800; text-align:center; font-variant-numeric: tabular-nums; min-height:84px; line-height:84px; }
+  .count:empty { display:none; }
+  .tele { height: 62vh; overflow:auto; padding: 8px 4px; scroll-behavior:smooth; }
+  .line { display:grid; grid-template-columns: 76px 1fr; gap:10px; padding:8px 8px; border-radius:12px; cursor:pointer; align-items:baseline; }
+  .line .t { color:var(--muted); font-size:13px; text-align:right; }
+  .line .txt { font-size: var(--size, 34px); line-height:1.3; }
+  .line.past { opacity:.3; } .line.now { background:#1d212b; box-shadow:0 0 0 2px var(--stress); }
+  .s { font-weight:700; color:var(--stress); text-decoration:underline; text-decoration-thickness:3px; text-underline-offset:6px; }
+  .m { font-size:.6em; color:var(--muted); padding-inline:.15em; } .up { color:#4fd39a; } .down { color:#ff9a62; }
+  .clean .m, .clean .up, .clean .down { display:none; }
+  .tools { display:flex; gap:8px; flex-wrap:wrap; }
+  .take { display:grid; gap:8px; border:1px solid var(--line); border-radius:12px; padding:10px; }
+  .take audio { width:100%; }
+  .row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  .v { font-weight:700; } .v.ok { color:var(--ok); } .v.bad { color:var(--warn); }
+  .hint { color:var(--muted); font-size:14px; }
+  code { display:block; padding:8px 10px; background:#0b0d11; border:1px solid var(--line); border-radius:8px; font-size:13px; user-select:all; word-break:break-all; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Voiceover aufnehmen</h1>
+    <div class="row">
+      <select id="dev" aria-label="Mikrofon"></select>
+      <span class="chip" id="state">Mikrofon aus</span>
+    </div>
+  </header>
+
+  <div class="grid">
+    <div class="card">
+      <div>
+        <div class="hint">Pegel (Ziel: Spitzen im grünen Bereich)</div>
+        <div class="num" id="db">–</div>
+        <div class="meter" id="meter"><div class="zone" id="zone"></div><div class="bar" id="bar"></div><div class="hold" id="hold"></div></div>
+        <div class="scale"><span>−60</span><span>−48</span><span>−36</span><span>−24</span><span>−12</span><span>0 dBFS</span></div>
+      </div>
+      <button id="mon">Pegel testen (sprich einen Satz)</button>
+      <div class="count" id="count"></div>
+      <button class="rec" id="rec">● Aufnahme starten</button>
+      <div class="hint" id="tip">Der Browser fragt dich beim ersten Mal nach dem Mikrofon. Erlaube es.</div>
+      <div id="takes" style="display:grid;gap:10px"></div>
+    </div>
+
+    <div class="card">
+      <div class="row" style="justify-content:space-between">
+        <strong>Skript</strong>
+        <div class="tools">
+          <button id="sm">A−</button><button id="bg">A+</button><button id="mk">Marken</button>
+        </div>
+      </div>
+      <div class="tele" id="tele"></div>
+      <div class="hint">Tippe eine Zeile an, um deinen Platz zu markieren. Das Skript kommt aus der Datei skript.json des Projekts. Betonte Wörter sind blau, | ist ein kurzer Atemzug, ↗ Stimme oben, ↘ Stimme fällt.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+var $ = function (id) { return document.getElementById(id); };
+function esc(x) { return x.replace(/&/g, "&amp;").replace(/</g, "&lt;"); }
+
+// ---- Teleprompter: Zeilen aus skript.json (Phrasen mit "anzeige", sonst "text")
+// Zeichen in "anzeige": *betont*, | kurzer Atemzug, || längere Pause, ^ Stimme geht hoch, ~ Stimme fällt (~~ stärker)
+function render(s) {
+  var o = "", i = 0;
+  while (i < s.length) {
+    var c = s[i];
+    if (c === "*") { var j = s.indexOf("*", i + 1); if (j < 0) j = s.length; o += '<span class="s">' + esc(s.slice(i + 1, j)) + "</span>"; i = j + 1; }
+    else if (c === "^") { o += ' <span class="up">↗</span>'; i++; }
+    else if (c === "~") { var n = s[i + 1] === "~"; o += ' <span class="down">' + (n ? "↘↘" : "↘") + "</span>"; i += n ? 2 : 1; }
+    else if (c === "|") { var d = s[i + 1] === "|"; o += ' <span class="m">' + (d ? "||" : "|") + "</span>"; i += d ? 2 : 1; }
+    else { var k = i; while (k < s.length && "*^~|".indexOf(s[k]) < 0) k++; o += esc(s.slice(i, k)); i = k; }
+  }
+  return o;
+}
+var tele = $("tele"), lines = [];
+function setNow(n) {
+  lines.forEach(function (e, i) { e.classList.toggle("now", i === n); e.classList.toggle("past", i < n); });
+  if (lines[n]) lines[n].scrollIntoView({ block: "center" });
+}
+function zeigeSkript(sk) {
+  (sk.zeilen || []).forEach(function (z) {
+    var el = document.createElement("div"); el.className = "line";
+    var txt = (z.phrasen || []).map(function (p) { return p.anzeige || p.text; }).join(" ");
+    el.innerHTML = '<span class="t">' + esc(z.hinweis || "") + '</span><span class="txt">' + render(txt) + "</span>";
+    el.onclick = function () { setNow(lines.indexOf(el)); };
+    tele.appendChild(el); lines.push(el);
+  });
+}
+fetch("/skript").then(function (r) { return r.ok ? r.json() : r.json().then(function (j) { throw new Error(j.error || "kein Skript"); }); })
+  .then(zeigeSkript)
+  .catch(function (e) { tele.innerHTML = '<div class="hint" style="padding:12px">' + esc(String(e.message || e)) + "</div>"; });
+var size = 34;
+function setSize(d) { size = Math.max(22, Math.min(60, size + d)); tele.querySelectorAll(".txt").forEach(function (x) { x.style.fontSize = size + "px"; }); }
+$("bg").onclick = function () { setSize(4); };
+$("sm").onclick = function () { setSize(-4); };
+$("mk").onclick = function () { tele.classList.toggle("clean"); };
+
+// ---- Audio: der AudioWorklet reicht die Rohdaten des Mikrofons in 128er-Blöcken an die Seite; es wird nichts verarbeitet oder codiert
+var ctx = null, stream = null, node = null, src = null, recording = false, chunks = [], peakHold = -120, holdT = 0, levelDb = -120, monitoring = false, takes = 0;
+function dbOf(v) { return v <= 1e-6 ? -120 : 20 * Math.log10(v); }
+function setState(t, cls) { var s = $("state"); s.textContent = t; s.className = "chip " + (cls || ""); }
+var minDb = -60; function pos(db) { return Math.max(0, Math.min(100, (db - minDb) / (0 - minDb) * 100)); }
+$("zone").style.left = pos(-12) + "%"; $("zone").style.width = (pos(-6) - pos(-12)) + "%";
+
+// zuletzt benutztes Mikrofon merken (nur im Browser dieses Rechners)
+function gemerkt() { try { return localStorage.getItem("tonstudio.mikro") || ""; } catch (e) { return ""; } }
+function merke(label) { try { localStorage.setItem("tonstudio.mikro", label); } catch (e) {} }
+
+async function listDevices() {
+  var d = await navigator.mediaDevices.enumerateDevices(); var sel = $("dev"); var cur = sel.value; sel.innerHTML = "";
+  d.filter(function (x) { return x.kind === "audioinput"; }).forEach(function (x) { var o = document.createElement("option"); o.value = x.deviceId; o.textContent = x.label || "Mikrofon"; sel.appendChild(o); });
+  var alt = [].find.call(sel.options, function (o) { return o.textContent === gemerkt(); });
+  if (cur) sel.value = cur; else if (alt) sel.value = alt.value;
+}
+async function openMic() {
+  closeMic();
+  var id = $("dev").value;
+  // ohne Echo-Unterdrückung, Rauschfilter und automatische Pegelregelung: roh aufnehmen, die Aufbereitung kommt danach
+  var c = { audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false, channelCount: 1 } };
+  if (id) c.audio.deviceId = { exact: id };
+  try { stream = await navigator.mediaDevices.getUserMedia(c); }
+  catch (e) { setState("Freigabe fehlt", "bad"); $("tip").textContent = "Mikrofon nicht erlaubt oder nicht gefunden. Klicke in der Adressleiste auf das Schloss, erlaube das Mikrofon und lade die Seite neu. (" + e.name + ")"; throw e; }
+  await listDevices();
+  var tr = stream.getAudioTracks()[0]; setState(tr.label || "Mikrofon bereit", "ok");
+  var gewaehlt = tr.getSettings().deviceId;
+  var alt = [].find.call($("dev").options, function (o) { return o.textContent === gemerkt(); });
+  if (!id && alt && alt.value !== gewaehlt) { $("dev").value = alt.value; return openMic(); } // beim ersten Öffnen das zuletzt gewählte Mikrofon nehmen
+  if (gewaehlt) $("dev").value = gewaehlt;
+  ctx = new AudioContext({ sampleRate: 48000 });
+  var code = "class R extends AudioWorkletProcessor{process(i){var c=i[0][0];if(c)this.port.postMessage(c.slice());return true;}}registerProcessor('r',R);";
+  await ctx.audioWorklet.addModule(URL.createObjectURL(new Blob([code], { type: "application/javascript" })));
+  src = ctx.createMediaStreamSource(stream); node = new AudioWorkletNode(ctx, "r");
+  node.port.onmessage = function (ev) {
+    var b = ev.data, p = 0; for (var i = 0; i < b.length; i++) { var a = Math.abs(b[i]); if (a > p) p = a; }
+    levelDb = dbOf(p); if (levelDb > peakHold || Date.now() - holdT > 1500) { peakHold = levelDb; holdT = Date.now(); }
+    if (recording) chunks.push(b);
+  };
+  src.connect(node);
+}
+function closeMic() { try { if (node) node.disconnect(); if (src) src.disconnect(); if (stream) stream.getTracks().forEach(function (t) { t.stop(); }); if (ctx) ctx.close(); } catch (e) {} node = src = stream = ctx = null; }
+function loop() {
+  var d = Math.max(minDb, levelDb); $("bar").style.width = pos(d) + "%"; $("hold").style.left = "calc(" + pos(Math.max(minDb, peakHold)) + "% - 1px)";
+  $("db").textContent = peakHold <= -119 ? "–" : (peakHold.toFixed(1) + " dBFS"); requestAnimationFrame(loop);
+} loop();
+$("dev").onchange = function () { var o = $("dev").selectedOptions[0]; if (o) merke(o.textContent); if (stream) openMic(); };
+
+$("mon").onclick = async function () {
+  if (monitoring) { closeMic(); monitoring = false; $("mon").textContent = "Pegel testen (sprich einen Satz)"; setState("Mikrofon aus"); levelDb = -120; peakHold = -120; return; }
+  await openMic(); monitoring = true; $("mon").textContent = "Pegel-Test beenden";
+  $("tip").textContent = "Sprich in normaler Lautstärke. Die Spitzen sollen im grünen Bereich (−12 bis −6) liegen. Sonst am Mikrofon oder Audio-Interface den Gain anpassen.";
+};
+
+$("rec").onclick = async function () {
+  if (recording) { stopRec(); return; }
+  if (!stream) await openMic();
+  var n = 3; $("rec").disabled = true;
+  for (; n > 0; n--) { $("count").textContent = n; await new Promise(function (r) { setTimeout(r, 1000); }); }
+  $("count").textContent = ""; chunks = []; peakHold = -120; recording = true; $("rec").disabled = false;
+  $("rec").textContent = "■ Stopp"; $("rec").classList.add("stop"); setState("● Aufnahme", "bad");
+  $("tip").textContent = "Lies jetzt das Skript. Nach dem letzten Wort einen Moment ausklingen lassen, dann Stopp.";
+  setNow(0);
+};
+function stopRec() {
+  recording = false; $("rec").textContent = "● Aufnahme starten"; $("rec").classList.remove("stop"); setState(monitoring || stream ? "Mikrofon bereit" : "Mikrofon aus", "ok");
+  var total = chunks.reduce(function (a, c) { return a + c.length; }, 0); var all = new Float32Array(total), o = 0; chunks.forEach(function (c) { all.set(c, o); o += c.length; }); chunks = [];
+  addTake(all, ctx ? ctx.sampleRate : 48000);
+}
+// 24-Bit-WAV (Mono) aus Gleitkommawerten
+function wav24(f32, sr) {
+  var n = f32.length, buf = new ArrayBuffer(44 + n * 3), v = new DataView(buf);
+  function w(o, s) { for (var i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); }
+  w(0, "RIFF"); v.setUint32(4, 36 + n * 3, true); w(8, "WAVE"); w(12, "fmt "); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true); v.setUint32(24, sr, true); v.setUint32(28, sr * 3, true); v.setUint16(32, 3, true); v.setUint16(34, 24, true); w(36, "data"); v.setUint32(40, n * 3, true);
+  var p = 44; for (var i = 0; i < n; i++) { var s = Math.max(-1, Math.min(1, f32[i])); var x = Math.round(s < 0 ? s * 8388608 : s * 8388607); v.setUint8(p++, x & 255); v.setUint8(p++, (x >> 8) & 255); v.setUint8(p++, (x >> 16) & 255); }
+  return new Blob([buf], { type: "audio/wav" });
+}
+function addTake(f32, sr) {
+  var peak = 0, sum = 0, cnt = 0; for (var i = 0; i < f32.length; i++) { var a = Math.abs(f32[i]); if (a > peak) peak = a; if (a > 0.003) { sum += a * a; cnt++; } }
+  var pk = dbOf(peak), rms = cnt ? dbOf(Math.sqrt(sum / cnt)) : -120, dur = f32.length / sr;
+  var verdict = "Pegel passt", cls = "ok";
+  if (pk <= -100) { verdict = "KEIN SIGNAL: Mikro-Freigabe, Stummschaltung oder Gain 0"; cls = "bad"; }
+  else if (pk > -3) { verdict = "Zu laut (übersteuert): Gain runter"; cls = "bad"; }
+  else if (pk < -24) { verdict = "Zu leise: Gain hoch"; cls = "bad"; }
+  var blob = wav24(f32, sr), id = ++takes, url = URL.createObjectURL(blob);
+  var el = document.createElement("div"); el.className = "take";
+  el.innerHTML = '<div class="row"><strong>Take ' + id + '</strong><span class="hint">' + dur.toFixed(1) + ' s · Spitze ' + pk.toFixed(1) + ' dBFS · Sprache ' + rms.toFixed(0) + ' dB</span></div><div class="v ' + cls + '">' + verdict + '</div><audio controls src="' + url + '"></audio>';
+  $("takes").prepend(el);
+  // Jeder Take wird sofort gesichert (nie überschrieben), auch wenn er nicht gut war – so geht nichts verloren
+  var d = new Date(), z = function (x) { return String(x).padStart(2, "0"); };
+  var stamp = d.getFullYear() + z(d.getMonth() + 1) + z(d.getDate()) + "-" + z(d.getHours()) + z(d.getMinutes()) + z(d.getSeconds());
+  var status = document.createElement("div"); status.className = "hint"; status.textContent = "Sichere …"; el.appendChild(status);
+  fetch("/save?name=take-" + stamp + "-" + id, { method: "POST", body: blob }).then(function (r) { return r.json(); }).then(function (j) {
+    if (!j.ok) { status.textContent = "Sicherung fehlgeschlagen: " + (j.error || "unbekannt"); return; }
+    status.textContent = "Gesichert: " + j.datei + " · nächster Schritt im Projektordner:";
+    var c = document.createElement("code"); c.textContent = j.befehl; el.appendChild(c);
+  }).catch(function (e) { status.textContent = "Sicherung fehlgeschlagen (läuft der Server noch?): " + e; });
+}
+</script>
+</body>
+</html>

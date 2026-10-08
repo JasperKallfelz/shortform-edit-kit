@@ -1,0 +1,9 @@
+{
+  "name": "rundgang-aufnahmen",
+  "private": true,
+  "type": "module",
+  "description": "Browser-Aufnahmen für den Rundgang (Playwright, headless Chromium)",
+  "dependencies": {
+    "playwright": "1.64.0"
+  }
+}

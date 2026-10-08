@@ -71,7 +71,7 @@ export type SoundName = keyof typeof SOUNDS;
 /** at = Frame im Video, auf dem der Sound sitzt; vol = Lautstärke 0–1; name erscheint in der Studio-Zeitleiste. */
 export type Cue = { at: number; s: SoundName; vol: number; name: string };
 
-/** Millisekunden → Frames (30 fps), wie f() in Story.tsx. */
+/** Millisekunden → Frames (30 fps), wie f() im Videoprojekt. */
 const fr = (ms: number) => Math.round(ms * 0.03);
 
 /** Spielt jede Cue als eigene, benannte Sequenz ab. volume = Regler für alle zusammen. */

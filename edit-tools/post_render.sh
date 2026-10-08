@@ -11,6 +11,7 @@
 # Bild: H.264 High, CRF 14, preset slow, Zwischenbilder als PNG, bt709, yuv420p. Ton: AAC 320 kbit/s.
 # Lautheit: rein linear so abgesenkt, dass höchstens -14 LUFS und höchstens -1,2 dBTP herauskommen (kein Limiter, lauter gemacht wird nicht).
 set -euo pipefail
+if [[ $# -lt 3 || "$1" == "-h" || "$1" == "--help" ]]; then sed -n '2,12p' "$0" | sed 's/^# \{0,1\}//'; exit 1; fi
 PROJ=$1; COMP=$2; NAME=$3; COVERS=${4:-}
 HOST=${EDIT_HOST:?Bitte EDIT_HOST setzen: SSH-Name des Rechners, auf dem das Remotion-Projekt liegt}
 DAY=$(date +%F)

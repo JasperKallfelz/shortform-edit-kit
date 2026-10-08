@@ -6,3 +6,12 @@ __pycache__/
 # persönliche Urteile von der Hörseite
 auswahl.json
 auswahl.json.tmp
+# Posten: Konto-Konfiguration, Protokoll echter Aktionen, gemerkte temporäre Upload-URLs (edit-tools/POSTEN.md)
+post.config.json
+post-log.jsonl
+*.upload.json
+# Tonstudio: Aufnahmen und das daraus erzeugte Voiceover (tonstudio/README.md)
+recordings/
+beispiel/public/vo.wav
+# Sicherungskopien vor Änderungen (Endung .bak, siehe AGENTS.md)
+*.bak

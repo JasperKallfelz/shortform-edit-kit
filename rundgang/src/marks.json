@@ -1,0 +1,46 @@
+{
+ "tonstudio": {
+  "name": "tonstudio",
+  "seconds": 25.67,
+  "frames": 720,
+  "marks": {
+   "aufnahme-laeuft": 9.78,
+   "stopp": 20.03,
+   "gesichert": 20.66
+  }
+ },
+ "props": {
+  "name": "props",
+  "seconds": 18.13,
+  "frames": 187,
+  "marks": {
+   "slots-sichtbar": 4.96,
+   "clip-eingetragen": 7.13,
+   "vor-klick": 8.43,
+   "geklickt": 10.76,
+   "meldung-da": 10.77,
+   "meldung-weg": 13.11,
+   "vorschau": 13.61,
+   "spielt": 13.63
+  }
+ },
+ "zeitleiste": {
+  "name": "zeitleiste",
+  "seconds": 18.7,
+  "frames": 243,
+  "marks": {
+   "zeitleiste-gross": 6.51,
+   "sfx-gewaehlt": 9.93,
+   "spielt": 11.52
+  }
+ },
+ "hoerseite": {
+  "name": "hoerseite",
+  "seconds": 18.38,
+  "frames": 182,
+  "marks": {
+   "erster-sound": 3.9,
+   "sortiert": 15.55
+  }
+ }
+}

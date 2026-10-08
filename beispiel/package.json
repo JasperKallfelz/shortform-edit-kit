@@ -2,7 +2,7 @@
   "name": "shortform-edit-kit-beispiel",
   "version": "1.0.0",
   "description": "Kleines Remotion-Beispiel: Wort-Timing, Sound-Cues, Inset-Clips und ein gezeichneter Pfeil",
-  "license": "MIT",
+  "license": "UNLICENSED",
   "private": true,
   "dependencies": {
     "@remotion/cli": "4.0.532",
@@ -25,6 +25,8 @@
     "dev": "remotion studio",
     "build": "remotion bundle",
     "render": "remotion render Demo out/demo.mp4",
-    "lint": "eslint src && tsc"
+    "lint": "eslint src && tsc",
+    "tonstudio": "node ../tonstudio/recorder/server.mjs",
+    "vo": "python3 ../tonstudio/vo/vo.py"
   }
 }

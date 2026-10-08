@@ -1,0 +1,4 @@
+__pycache__/
+*.pyc
+# gebautes Programm (siehe mikro/setinput.swift)
+mikro/setinput

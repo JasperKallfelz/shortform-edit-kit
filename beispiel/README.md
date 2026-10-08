@@ -12,7 +12,8 @@ Alle Zeiten stehen an einer Stelle: `src/timing.ts` (Wortzeiten in ms, so wie ei
 
 | Datei | Inhalt |
 | --- | --- |
-| `src/timing.ts` | Wortzeiten und Videolänge |
+| `src/timing.ts` | Wortzeiten, Videolänge und Name des Voiceovers (`VO.file`, im Auslieferungszustand leer) |
+| `skript.json` | gesprochene Sätze und die Schlüssel, unter denen sie in `timing.ts` stehen (für das Tonstudio) |
 | `src/Demo.tsx` | Szenen, `Inset`, Zahl, Kringel-Pfeil, Props-Schema und `SFX_CUES` |
 | `src/lib/words.tsx` | Wort-DSL: Schrift, Größe, Position und Einsatz-Frame je Wort |
 | `src/lib/fonts.ts` | Schriften über `@remotion/google-fonts` |
@@ -33,9 +34,29 @@ Das öffnet das Remotion Studio. Dort die Composition `Demo` wählen. Jeder Soun
 Dateien in den Ordner `public/` legen, dann im Studio rechts im Props-Feld auswählen:
 
 - **Clip:** `slots` → Eintrag 1 ist das Inset im Hook, Eintrag 2 das im Schluss. Bei `clip` den Dateinamen eintragen (z. B. `mein-clip.mp4`), mit `startSec` die Startstelle im Clip wählen. Leer bleibt der graue Platzhalter.
-- **Voiceover:** bei `voiceover` den Dateinamen eintragen. Die Schnitte gehören zu den Wortzeiten in `src/timing.ts`; für eine andere Aufnahme die Zeiten dort anpassen.
+- **Voiceover:** am besten mit dem Tonstudio (siehe unten): Es nimmt auf, bereitet auf und schreibt Datei und Wortzeiten nach `src/timing.ts`; die Demo spielt `VO.file` dann von selbst. Von Hand: bei `voiceover` einen Dateinamen eintragen und die Zeiten in `src/timing.ts` anpassen.
 - **Musik:** bei `music` den Dateinamen eintragen, `musicVolume` regelt die Lautstärke. Leer = keine Musik.
 - `sfxVolume` regelt alle Effekte zusammen (Standard 1.3), `counterTo` den Wert, den die Zahl beim Schnitt erreicht.
+
+## Eigenes Voiceover aufnehmen (Tonstudio)
+
+Die Wortzeiten in `src/timing.ts` sind Beispielwerte. Mit dem [Tonstudio](../tonstudio/README.md) entstehen sie aus einer echten Aufnahme:
+Aufnahme-Seite mit Teleprompter (Skript aus `skript.json`), Aufbereitung, Wort-Ausrichtung mit Whisper (lokal) und eine neue `timing.ts`.
+Voraussetzungen (whisper.cpp, Modelle, `numpy`) stehen dort.
+
+```
+npm run tonstudio
+```
+
+Das startet die Aufnahme-Seite unter http://localhost:3600 und sichert jeden Take in `recordings/` (nicht eingecheckt). Dann einen Take wählen:
+
+```
+npm run vo -- recordings/take-….wav
+```
+
+Das schreibt `public/vo.wav` (nicht eingecheckt) und überschreibt `src/timing.ts`; die Länge der Demo folgt der Aufnahme. Zurück zum Beispielzustand:
+`git checkout src/timing.ts` und `public/vo.wav` löschen (die handgeschriebene Fassung liegt außerdem in `recordings/timing-handgeschrieben.ts`).
+Für einen Render nur mit Effekten (Pegel der Sounds prüfen) `--props '{"voVolume":0,"music":""}'` übergeben.
 
 ## Rendern
 
