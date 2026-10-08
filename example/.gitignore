@@ -1,0 +1,6 @@
+node_modules
+out
+.DS_Store
+# Voice Studio: recordings and the voiceover generated from them do not belong in the repo
+recordings/
+public/vo.wav

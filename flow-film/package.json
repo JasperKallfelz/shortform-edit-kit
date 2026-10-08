@@ -1,0 +1,29 @@
+{
+  "name": "flow-film",
+  "version": "1.0.0",
+  "description": "The flow in 30 seconds: from a sentence to your agent to the published post, as an animation with real sounds from the kit (Remotion)",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "@remotion/cli": "4.0.532",
+    "@remotion/google-fonts": "4.0.532",
+    "@remotion/studio": "4.0.532",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "remotion": "4.0.532",
+    "zod": "4.5.4"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.7",
+    "@types/web": "0.0.166",
+    "typescript": "5.9.3"
+  },
+  "scripts": {
+    "dev": "remotion studio",
+    "prepare-media": "node scripts/prepare.mjs",
+    "typecheck": "tsc --noEmit",
+    "render": "remotion render Flow out/flow.mp4 --image-format=png --codec=h264 --crf=20 --pixel-format=yuv420p --audio-codec=aac --audio-bitrate=192k",
+    "audio": "remotion render Flow out/audio.wav --codec=wav",
+    "preview": "node scripts/preview.mjs"
+  }
+}

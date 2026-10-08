@@ -1,75 +1,76 @@
-# Sound-Kit für Video-Edits
+# Sound kit for video edits
 
-Aufbereitete Sound-Effekte und der Ablauf, mit dem sie in ein Video kommen.
+Prepared sound effects and the workflow that gets them into a video.
 
-## Was hier liegt
+## What is in here
 
-| Pfad | Inhalt |
+| Path | Content |
 |---|---|
-| `sounds/` | 53 fertige WAVs (48 kHz, 24 Bit, mono, Spitze −1 dBFS, Anschlag bei 0 ms), nur echte Aufnahmen |
-| `catalogue.json` | je Sound `len` (Länge in ms), `lead` (ms bis zur Stelle, die auf dem Bild sitzen soll) und `loud` (lautestes 50-ms-Stück in dB) |
-| `quellen.tsv` | Herkunft und Lizenz je Sound |
-| `tools/prepare_sfx.py` | macht aus Rohdateien in `../sfx-kandidaten/` die fertigen Sounds (neue Sounds dort in `SRC` und `GROUPS` ergänzen) |
-| `tools/sync_remotion.py` | kopiert die WAVs nach `<projekt>/public/sfx` und schreibt den Katalog `SOUNDS` in `<projekt>/src/lib/sfx.tsx` neu |
-| `remotion/sfx.tsx` | Katalog + `SfxTrack` für Remotion, zum Kopieren nach `src/lib/sfx.tsx` |
+| `sounds/` | 53 finished WAVs (48 kHz, 24-bit, mono, peak -1 dBFS, attack at 0 ms), real recordings only |
+| `catalogue.json` | per sound `len` (length in ms), `lead` (ms to the point that should sit on the picture) and `loud` (loudest 50 ms stretch in dB) |
+| `sources.tsv` | origin and licence per sound |
+| `tools/prepare_sfx.py` | turns the raw files in `../sfx-candidates/` into the finished sounds (add new sounds there in `SRC` and `GROUPS`) |
+| `tools/sync_remotion.py` | copies the WAVs to `<project>/public/sfx` and rewrites the `SOUNDS` catalogue in `<project>/src/lib/sfx.tsx` |
+| `remotion/sfx.tsx` | catalogue + `SfxTrack` for Remotion, to copy to `src/lib/sfx.tsx` |
 
-Die Sounds:
-- Kamera: `shutter2`, `shutter3`, `shutterSlr2/3`, `shutterInsta1/2`, `shutterOld`, `shutterDslr`, `shutterBurst2–4` (Serien), `winder1/2` (Filmtransport)
-- Maus, Trackpad, Schalter: `mouse1–4`, `trackpad1/2`, `switch`, `switch2`, `switch3`, `pen1–3` (Kugelschreiber)
-- Klapptafel wie am Flughafen: `flap` (eine Klappe; `flapLo`/`flapHi` etwas tiefer/höher gegen hörbare Wiederholung), `flapBurst3/5/8` (kurze Salven), `flapEnd1/2` (Auslaufen), `flapRun` (längerer Lauf)
-- Papier: `page1–3` (Seite blättern), `tear` (Papier reißt)
-- Whooshes, sparsam: `swish`, `whooshShort`, `swishSmall`
-- Weitere: `riser1` (rückwärts gespieltes Becken), `tom1` (tiefe Trommel), `riffle1` (Karten-Riffeln), `key1–3` (Tasten), `pencil1/2` (Bleistiftstrich), `cardPlace1` (Karte hinlegen), `clink1` (Glas)
-- Thematische Einzelgeräusche: `typeBurst1` (Tippen auf einer Laptop-Tastatur, 2,1 s; gedacht für ein Wort wie „engineer“, auf die Länge des Abschnitts begrenzt) und `coinCup1` (Münze fällt in eine Tasse; gedacht für eine Geldsumme). Einsatz mit `Extra` in [`../docs/kurzvideo-erfahrungen-2026-10.md`](../docs/kurzvideo-erfahrungen-2026-10.md#thematische-einzelgeräusche)
+The sounds:
+- Camera: `shutter2`, `shutter3`, `shutterSlr2/3`, `shutterInsta1/2`, `shutterOld`, `shutterDslr`, `shutterBurst2–4` (bursts), `winder1/2` (film winder)
+- Mouse, trackpad, switches: `mouse1–4`, `trackpad1/2`, `switch`, `switch2`, `switch3`, `pen1–3` (pen click)
+- Split-flap board like at an airport: `flap` (one flap; `flapLo`/`flapHi` are slightly lower/higher to avoid an audible repeat), `flapBurst3/5/8` (short bursts), `flapEnd1/2` (run-out), `flapRun` (longer run)
+- Paper: `page1–3` (page turn), `tear` (paper tearing)
+- Whooshes, used sparingly: `swish`, `whooshShort`, `swishSmall`
+- Others: `riser1` (reversed cymbal), `tom1` (low drum), `riffle1` (card riffle), `key1–3` (keys), `pencil1/2` (pencil stroke), `cardPlace1` (laying a card down), `clink1` (glass)
+- Themed single sounds: `typeBurst1` (typing on a laptop keyboard, 2.1 s; meant for a word like "engineer", cut to the length of the section) and `coinCup1` (a coin falls into a cup; meant for a sum of money). Use them with `Extra`, see [`../docs/shortform-learnings-2026-10.md`](../docs/shortform-learnings-2026-10.md#themed-single-sounds)
 
-## Hausregel
+## House rule
 
-**Nur echte, aufgenommene Geräusche. Nichts Synthetisches.** Synthetische UI-Sounds (Ticks, Pops, Blips) klingen in einem
-ruhigen, typografischen Video „wie ein Raumschiff“. Jede Bewegung im Bild bekommt einen kleinen Sound, aber so leise und
-passend, dass er nicht eingefügt klingt. Whooshes nur ganz minimal.
+**Only real, recorded sounds. Nothing synthetic.** Synthetic UI sounds (ticks, pops, blips) sound "like a spaceship" in a
+calm, typographic video. Every movement on screen gets a small sound, but so quiet and so fitting that it does not sound
+added. Whooshes only in the smallest dose.
 
-## Der Ablauf
+## The workflow
 
-1. **Bildereignisse sammeln.** Im Code nachlesen, auf welchem Frame etwas passiert (Schnitt, Pfeil, Foto erscheint, Kachel
-   poppt, Zahl läuft). Jede Cue hängt an derselben Wortzeit oder Animations-Konstante wie das Bild, keine festen Zahlen.
-   Kommt ein neuer Voiceover-Take, wandern die Sounds von selbst mit.
-2. **Sounds aufbereiten** (`tools/prepare_sfx.py`): Stille vorn weg, damit der Anschlag bei 0 ms sitzt; Spitze auf −1 dBFS;
-   bei Whooshes `lead` messen. Tonhöhen-Varianten als eigene Dateien backen, nicht per Abspieltempo im Video (Vorschau und
-   Render klingen sonst verschieden).
-3. **Platzieren.** Klicks und Auslöser mit dem Anschlag auf das Ereignis. Whooshes mit der lautesten Stelle auf die
-   schnellste Stelle der Bewegung (bei einem Pfeil die Flugmitte), nicht auf Anfang oder Ende.
-4. **Benennen.** Jede Cue bekommt einen Namen und erscheint in der Studio-Zeitleiste als „SFX · Name“. Korrigiert wird nach
-   Gehör, mit dem Namen oder der Kategorie.
-5. **Pegel setzen** (Regeln unten).
-6. **Nachmessen.** Nur die Effekte rendern (`npx remotion render <Komposition> sfx.wav --codec=wav --props='{"voVolume":0,"music":""}'`; `voVolume: 0` statt
-   `voiceover: ""`, denn bei vorhandenem Voiceover fällt die Komposition auf `VO.file` zurück), Pegel je Abschnitt und gegen die Musik
-   vergleichen. Vom Gesamtmix Lautheit und Spitze messen. Beides druckt `../edit-tools/ton_check.py`.
-7. **Im Studio zeigen, Korrekturen einarbeiten, wieder messen.**
+1. **Collect the picture events.** Look in the code for the frame where something happens (cut, arrow, photo appears, tile
+   pops, number counts). Every cue hangs on the same word timing or animation constant as the picture, no fixed numbers.
+   When a new voiceover take comes in, the sounds move along by themselves.
+2. **Prepare the sounds** (`tools/prepare_sfx.py`): cut the silence at the start so the attack sits at 0 ms; set the peak to
+   -1 dBFS; measure `lead` for whooshes. Bake pitch variants as files of their own, do not set them with the playback rate
+   in the video (preview and render would sound different).
+3. **Place.** Clicks and shutters with the attack on the event. Whooshes with the loudest point on the fastest point of the
+   movement (for an arrow, the middle of the flight), not on the start or the end.
+4. **Name.** Every cue gets a name and appears in the Studio timeline as "SFX · name". Corrections are made by ear, using the
+   name or the category.
+5. **Set the levels** (rules below).
+6. **Measure.** Render only the effects (`npx remotion render <composition> sfx.wav --codec=wav --props='{"voVolume":0,"music":""}'`; use `voVolume: 0` instead of
+   `voiceover: ""`, because when a voiceover exists the composition falls back to `VO.file`), then compare the level per section and against the music.
+   Measure loudness and peak of the full mix. `../edit-tools/sound_check.py` prints both.
+7. **Show it in the Studio, work in the corrections, measure again.**
 
-## Pegel-Regeln
+## Level rules
 
-- **Musik** liegt etwa 12–13 dB unter der Stimme.
-- **Effekte etwa so laut wie die Musik, nicht darüber.** Gemessen wird gegen die Musik, nicht gegen die Stimme (0,4-s-Pegel
-  der Nur-Effekte-Spur gegen die Musik). Im Beispielprojekt regelt das `sfxVolume` (1.3 bei Musik auf 0.15); die `vol`-Werte
-  der Cues geben nur das Verhältnis untereinander an.
-- **Whooshes** dürfen etwas lauter sein.
-- **Sehr kurze Sounds** (Auslöser, Klicks) wirken schnell zu laut, vor allem als Übergangseffekt. Dort bewusst leiser.
-- **Dichte Folgen ausdünnen.** Poppen viele Elemente innerhalb weniger Frames auf, höchstens alle 4 Frames eines klicken
-  lassen (nach Frame sortiert, nicht nach Nummer), sonst rattert es.
-- **Keine schnellen mechanischen Wiederholungen.** Nach Gehör durchgefallen sind Auslöser als Übergang (`shutterInsta1/2`) und schnelle
-  Klappen-Folgen (`flapBurst3/8`); sie klingen wie ein mehrfacher Auslöser. Ein einzelnes Blättern (`riffle1`) trug.
-  Details: [`../docs/kurzvideo-erfahrungen-2026-10.md`](../docs/kurzvideo-erfahrungen-2026-10.md#5-geräusche-was-nach-gehör-durchfiel-und-was-blieb).
-- **Wo der Sound zum Bild gehört** (ein Foto erscheint → Auslöser) darf er etwas lauter sein.
-- Ziel für den fertigen Mix: −14 LUFS, Spitze −1 dBTP.
+- **Music** sits about 12–13 dB below the voice.
+- **Effects about as loud as the music, not above.** Measure against the music, not against the voice (0.4 s level of the
+  effects-only track against the music). In the example project, `sfxVolume` handles this (1.3 with music at 0.15); the `vol` values
+  of the cues only set the ratio between them.
+- **Whooshes** may be a little louder.
+- **Very short sounds** (shutters, clicks) quickly seem too loud, especially as a transition effect. Keep them deliberately quieter there.
+- **Thin out dense runs.** If many elements pop up within a few frames, let one click at most every 4 frames
+  (sorted by frame, not by number), otherwise it rattles.
+- **No fast mechanical repeats.** By ear, these failed: shutters as a transition (`shutterInsta1/2`) and fast flap runs
+  (`flapBurst3/8`); they sound like a multiple shutter. A single riffle (`riffle1`) held up.
+  Details: [`../docs/shortform-learnings-2026-10.md`](../docs/shortform-learnings-2026-10.md#5-sounds-what-failed-by-ear-and-what-stayed).
+- **Where the sound belongs to the picture** (a photo appears, so a shutter) it may be a little louder.
+- Target for the final mix: -14 LUFS, peak -1 dBTP.
 
-Tauscht man einen Sound gegen einen anderen, den `vol`-Wert über `loud` umrechnen
-(`vol_neu = vol_alt * 10^((loud_alt - loud_neu) / 20)`), sonst wirkt der neue lauter oder leiser als der alte.
+When you swap one sound for another, convert the `vol` value through `loud`
+(`vol_new = vol_old * 10^((loud_old - loud_new) / 20)`), otherwise the new one seems louder or quieter than the old one.
 
-## Musik
+## Music
 
-- Den Einstieg so wählen, dass ein Schlag des Songs auf das wichtigste Wort fällt. Beats mit librosa bestimmen, den Einstieg
-  aus der Wortzeit berechnen (Stelle im Song minus Wortzeit), dann bleibt er bei neuen Takes auf dem Wort.
-- Schnitte, die am Voiceover hängen, treffen den Beat nur zufällig. Ehrlich sagen, welche sitzen und welche nicht.
-- Kurz vor dem Höhepunkt die Musik wegnehmen, auf dem Wort schlagartig zurück.
-- Den Einstieg sucht `../edit-tools/beat_align.py`. Hintergründe und Messwege: `../docs/ton-und-text-sync.md`.
-- Musik gehört nicht in dieses Repo. Zu Rechten beim Posten siehe `../docs/recherche-2026-10.md`.
+- Choose the point where the music starts so that one beat of the song lands on the most important word. Find the beats with
+  librosa and calculate the start from the word timing (position in the song minus word timing); then it stays on the word
+  when a new take comes in.
+- Cuts that hang on the voiceover hit the beat only by chance. Say honestly which ones land and which do not.
+- Take the music away shortly before the climax, and bring it back abruptly on the word.
+- `../edit-tools/beat_align.py` finds the start point. Background and ways to measure: `../docs/sound-and-text-sync.md`.
+- Music does not belong in this repo. For rights when posting, see `../docs/research-2026-10.md`.

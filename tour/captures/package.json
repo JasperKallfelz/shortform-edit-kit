@@ -1,0 +1,9 @@
+{
+  "name": "tour-captures",
+  "private": true,
+  "type": "module",
+  "description": "Browser captures for the tour (Playwright, headless Chromium)",
+  "dependencies": {
+    "playwright": "1.64.0"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "name": "tour",
+  "version": "1.0.0",
+  "description": "Tour of the shortform-edit-kit: screen captures of the tools on a calm background (Remotion)",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "@remotion/cli": "4.0.532",
+    "@remotion/google-fonts": "4.0.532",
+    "@remotion/studio": "4.0.532",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "remotion": "4.0.532",
+    "zod": "4.5.4"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.7",
+    "@types/web": "0.0.166",
+    "typescript": "5.9.3"
+  },
+  "scripts": {
+    "dev": "remotion studio",
+    "prepare-media": "node scripts/prepare.mjs",
+    "typecheck": "tsc --noEmit",
+    "render": "remotion render Tour out/tour.mp4 --image-format=png --codec=h264 --crf=23 --pixel-format=yuv420p --audio-codec=aac --audio-bitrate=192k",
+    "still": "remotion still Tour out/still.png --frame=900"
+  }
+}

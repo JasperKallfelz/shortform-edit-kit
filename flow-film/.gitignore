@@ -1,0 +1,5 @@
+# generated or large: can be rebuilt at any time (see README.md)
+node_modules/
+out/
+public/
+.DS_Store

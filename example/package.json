@@ -1,0 +1,32 @@
+{
+  "name": "shortform-edit-kit-example",
+  "version": "1.0.0",
+  "description": "Small Remotion example: word timing, sound cues, inset clips and a drawn arrow",
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "@remotion/cli": "4.0.532",
+    "@remotion/google-fonts": "4.0.532",
+    "@remotion/studio": "4.0.532",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "remotion": "4.0.532",
+    "zod": "4.5.4"
+  },
+  "devDependencies": {
+    "@remotion/eslint-config-flat": "4.0.532",
+    "@types/react": "19.2.7",
+    "@types/web": "0.0.166",
+    "eslint": "9.39.5",
+    "prettier": "3.8.1",
+    "typescript": "5.9.3"
+  },
+  "scripts": {
+    "dev": "remotion studio",
+    "build": "remotion bundle",
+    "render": "remotion render Demo out/demo.mp4",
+    "lint": "eslint src && tsc",
+    "voice-studio": "node ../voice-studio/recorder/server.mjs",
+    "vo": "python3 ../voice-studio/vo/vo.py"
+  }
+}

@@ -1,0 +1,46 @@
+{
+ "voice-studio": {
+  "name": "voice-studio",
+  "seconds": 25.67,
+  "frames": 720,
+  "marks": {
+   "recording-started": 9.78,
+   "stop": 20.03,
+   "saved": 20.66
+  }
+ },
+ "props": {
+  "name": "props",
+  "seconds": 18.13,
+  "frames": 187,
+  "marks": {
+   "slots-visible": 4.96,
+   "clip-entered": 7.13,
+   "before-click": 8.43,
+   "clicked": 10.76,
+   "message-shown": 10.77,
+   "message-gone": 13.11,
+   "preview": 13.61,
+   "playing": 13.63
+  }
+ },
+ "timeline": {
+  "name": "timeline",
+  "seconds": 18.7,
+  "frames": 243,
+  "marks": {
+   "timeline-enlarged": 6.51,
+   "sfx-selected": 9.93,
+   "playing": 11.52
+  }
+ },
+ "listen": {
+  "name": "listen",
+  "seconds": 18.38,
+  "frames": 182,
+  "marks": {
+   "first-sound": 3.9,
+   "sorted": 15.55
+  }
+ }
+}

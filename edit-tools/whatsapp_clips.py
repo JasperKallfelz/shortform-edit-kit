@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
-"""Videos (und Bilder) aus WhatsApp Desktop (macOS) holen – liest die Datenbank nur.
+"""Fetch videos (and images) from WhatsApp Desktop (macOS) – reads the database only.
 
   whatsapp_clips.py chats [--days 14]
-      Chats mit empfangenen Videos/Bildern der letzten Tage (Name, Anzahl, letzter Eingang).
-  whatsapp_clips.py export "<Teil des Chat-Namens>" [--date JJJJ-MM-TT | --days N] [--bilder] [--alle] [--out ORDNER] [--fotos [ALBUM]]
-      Kopiert die Dateien in Sendereihenfolge nach ~/Movies/WhatsApp-<Name>-<Datum>/ (Name-Datum-NN.mp4).
-      --fotos importiert sie zusätzlich in die Fotomediathek, in ein eigenes Album.
-      --bilder nimmt auch Bilder, --alle auch selbst gesendete Dateien.
+      Chats with received videos/images of the last days (name, count, last arrival).
+  whatsapp_clips.py export "<part of the chat name>" [--date YYYY-MM-DD | --days N] [--images] [--all] [--out FOLDER] [--photos [ALBUM]]
+      Copies the files in sender order to ~/Movies/WhatsApp-<name>-<date>/ (name-date-NN.mp4).
+      --photos also imports them into the Photos library, into an album of their own.
+      --images also takes images, --all also files you sent yourself.
 
-WhatsApp verkleinert Videos (meist 1024 × 576). Für einen fertigen Export das Original beim Absender anfragen.
-Nur Standardbibliothek, läuft mit dem System-Python.
+WhatsApp shrinks videos (usually 1024 × 576). For a final export, ask the sender for the original.
+Standard library only, runs with the system Python.
 """
 import argparse
 import datetime as dt
@@ -22,7 +22,7 @@ import sys
 import time
 
 BASE = os.path.expanduser("~/Library/Group Containers/group.net.whatsapp.WhatsApp.shared")
-APPLE_EPOCH = 978307200  # WhatsApp speichert Sekunden seit 2001-01-01
+APPLE_EPOCH = 978307200  # WhatsApp stores seconds since 2001-01-01
 
 
 def db():
@@ -36,21 +36,21 @@ def chats(days):
            FROM ZWAMESSAGE m JOIN ZWACHATSESSION s ON s.Z_PK=m.ZCHATSESSION
            WHERE m.ZMESSAGETYPE IN (1,2) AND m.ZISFROMME=0 AND m.ZMESSAGEDATE>? GROUP BY s.Z_PK ORDER BY 2 DESC, 3 DESC""", (since,)).fetchall()
     for name, vids, pics, last in rows:
-        print(f"{vids:4d} Videos {pics:4d} Bilder  zuletzt {dt.datetime.fromtimestamp(last + APPLE_EPOCH):%d.%m. %H:%M}  {name}")
+        print(f"{vids:4d} videos {pics:4d} images  last {dt.datetime.fromtimestamp(last + APPLE_EPOCH):%Y-%m-%d %H:%M}  {name}")
 
 
 def export(a):
     con = db()
     found = con.execute("SELECT Z_PK, ZPARTNERNAME FROM ZWACHATSESSION WHERE ZPARTNERNAME LIKE ? ORDER BY ZLASTMESSAGEDATE DESC", (f"%{a.chat}%",)).fetchall()
     if len(found) != 1:
-        sys.exit("Chat nicht eindeutig: " + (", ".join(n for _, n in found) or "kein Treffer") + " – Namen genauer angeben (siehe: whatsapp_clips.py chats).")
+        sys.exit("Chat not unique: " + (", ".join(n for _, n in found) or "no match") + " – give a more exact name (see: whatsapp_clips.py chats).")
     pk, name = found[0]
-    types = (1, 2) if a.bilder else (2,)
+    types = (1, 2) if a.images else (2,)
     q = f"""SELECT mi.ZMEDIALOCALPATH, date(m.ZMESSAGEDATE+{APPLE_EPOCH},'unixepoch','localtime')
             FROM ZWAMESSAGE m JOIN ZWAMEDIAITEM mi ON mi.ZMESSAGE=m.Z_PK
             WHERE m.ZCHATSESSION=? AND m.ZMESSAGETYPE IN ({','.join(map(str, types))})"""
     args = [pk]
-    if not a.alle:
+    if not a.all:
         q += " AND m.ZISFROMME=0"
     if a.date:
         q += f" AND date(m.ZMESSAGEDATE+{APPLE_EPOCH},'unixepoch','localtime')=?"
@@ -60,7 +60,7 @@ def export(a):
         args.append(time.time() - a.days * 86400 - APPLE_EPOCH)
     rows = con.execute(q + " ORDER BY m.ZMESSAGEDATE, m.Z_PK", args).fetchall()
     if not rows:
-        sys.exit(f"Keine passenden Dateien im Chat „{name}“.")
+        sys.exit(f"No matching files in the chat '{name}'.")
     slug = re.sub(r"[^A-Za-z0-9]+", "-", name).strip("-")
     stamp = a.date or dt.date.today().isoformat()
     out = os.path.expanduser(a.out or f"~/Movies/WhatsApp-{slug}-{stamp}")
@@ -69,18 +69,18 @@ def export(a):
     for n, (rel, _) in enumerate(rows, 1):
         src = os.path.join(BASE, "Message", rel) if rel else ""
         if not rel or not os.path.isfile(src):
-            missing += 1  # in WhatsApp noch nicht geladen: dort einmal antippen
+            missing += 1  # not downloaded in WhatsApp yet: tap it once there
             continue
         dst = os.path.join(out, f"{slug}-{stamp}-{n:02d}{os.path.splitext(src)[1].lower()}")
         if not os.path.exists(dst):
             shutil.copy2(src, dst)
         done.append(dst)
     mb = sum(os.path.getsize(p) for p in done) / 1e6
-    print(f"{len(done)} Dateien ({mb:.0f} MB) aus „{name}“ in {out}" + (f"; {missing} noch nicht in WhatsApp geladen" if missing else ""))
-    if a.fotos is not None and done:
-        album = a.fotos or f"WhatsApp {name} {stamp}"
+    print(f"{len(done)} files ({mb:.0f} MB) from '{name}' in {out}" + (f"; {missing} not downloaded in WhatsApp yet" if missing else ""))
+    if a.photos is not None and done:
+        album = a.photos or f"WhatsApp {name} {stamp}"
         subprocess.run(["open", "-ga", "Photos"], check=True)
-        for _ in range(15):  # Fotos braucht ein paar Sekunden, bis es Befehle annimmt
+        for _ in range(15):  # Photos needs a few seconds before it accepts commands
             if subprocess.run(["osascript", "-e", 'tell application "Photos" to count of albums'], capture_output=True).returncode == 0:
                 break
             time.sleep(2)
@@ -98,7 +98,7 @@ def export(a):
         set theAlbum to make new album named albumName
       end if
       set imported to import theFiles into theAlbum with skip check duplicates
-      return "importiert: " & (count of imported) & ", im Album „" & albumName & "“: " & (count of media items of theAlbum)
+      return "imported: " & (count of imported) & ", in album '" & albumName & "': " & (count of media items of theAlbum)
     end timeout
   end tell
 end run'''
@@ -115,9 +115,9 @@ if __name__ == "__main__":
     e.add_argument("chat")
     e.add_argument("--date")
     e.add_argument("--days", type=int, default=1)
-    e.add_argument("--bilder", action="store_true")
-    e.add_argument("--alle", action="store_true")
+    e.add_argument("--images", action="store_true")
+    e.add_argument("--all", action="store_true")
     e.add_argument("--out")
-    e.add_argument("--fotos", nargs="?", const="")
+    e.add_argument("--photos", nargs="?", const="")
     a = p.parse_args()
     chats(a.days) if a.cmd == "chats" else export(a)

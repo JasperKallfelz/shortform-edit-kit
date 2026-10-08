@@ -1,0 +1,31 @@
+{
+  "name": "shortform-edit-kit-effects",
+  "version": "1.0.0",
+  "description": "Every visual effect of the short-video kit as a copy-paste Remotion component, each with an animated demo",
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "@remotion/cli": "4.0.532",
+    "@remotion/google-fonts": "4.0.532",
+    "@remotion/studio": "4.0.532",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "remotion": "4.0.532",
+    "zod": "4.5.4"
+  },
+  "devDependencies": {
+    "@remotion/bundler": "4.0.532",
+    "@remotion/eslint-config-flat": "4.0.532",
+    "@remotion/renderer": "4.0.532",
+    "@types/react": "19.2.7",
+    "@types/web": "0.0.166",
+    "eslint": "9.39.5",
+    "prettier": "3.8.1",
+    "typescript": "5.9.3"
+  },
+  "scripts": {
+    "dev": "remotion studio",
+    "typecheck": "tsc --noEmit",
+    "gifs": "node scripts/gifs.mjs"
+  }
+}

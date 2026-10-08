@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Bringt das Kit in ein Remotion-Projekt: kopiert sounds/*.wav nach <projekt>/public/sfx und schreibt den Katalog
-(SOUNDS in <projekt>/src/lib/sfx.tsx) aus catalogue.json neu. Dateien in public/sfx, die nicht mehr im Kit sind,
-wandern nach <projekt>/unused/sfx-verworfen.
+"""Brings the kit into a Remotion project: copies sounds/*.wav to <project>/public/sfx and rewrites the catalogue
+(SOUNDS in <project>/src/lib/sfx.tsx) from catalogue.json. Files in public/sfx that are no longer in the kit
+move to <project>/unused/sfx-discarded.
 
-Aufruf: python3 sync_remotion.py <projekt> [erwarteter md5 von src/lib/sfx.tsx]
-Mit md5 bricht das Skript ab, ohne zu schreiben, wenn jemand anderes die Datei inzwischen geändert hat.
-Läuft mit dem System-Python (nur Standardbibliothek; die Gruppen liest es aus prepare_sfx.py, ohne es zu importieren).
+Usage: python3 sync_remotion.py <project> [expected md5 of src/lib/sfx.tsx]
+With the md5, the script aborts without writing if someone else has changed the file in the meantime.
+Runs with the system Python (standard library only; it reads the groups from prepare_sfx.py without importing it).
 """
 import ast
 import hashlib
@@ -24,7 +24,7 @@ def groups():
     for node in tree.body:
         if isinstance(node, ast.Assign) and getattr(node.targets[0], "id", "") == "GROUPS":
             return ast.literal_eval(node.value)
-    sys.exit("GROUPS nicht in prepare_sfx.py gefunden")
+    sys.exit("GROUPS not found in prepare_sfx.py")
 
 
 def main():
@@ -36,23 +36,23 @@ def main():
     raw = open(path, "rb").read()
     got = hashlib.md5(raw).hexdigest()
     if want and got != want:
-        sys.exit(f"ABBRUCH: {path} hat sich geändert ({got} statt {want}) – nichts geschrieben.")
+        sys.exit(f"ABORT: {path} has changed ({got} instead of {want}) - nothing written.")
     cat = json.load(open(os.path.join(KIT, "catalogue.json")))
     listed = [n for _, names in groups() for n in names]
     if sorted(listed) != sorted(cat):
-        sys.exit(f"ABBRUCH: GROUPS und catalogue.json passen nicht zusammen: {sorted(set(listed) ^ set(cat))}")
+        sys.exit(f"ABORT: GROUPS and catalogue.json do not match: {sorted(set(listed) ^ set(cat))}")
     lines = []
     for title, names in groups():
         lines.append(f"  // {title}")
         lines += [f'  {n}: {{ file: "sfx/{n}.wav", len: {cat[n]["len"]}, lead: {cat[n]["lead"]}, loud: {cat[n]["loud"]} }},' for n in names]
     t = raw.decode("utf-8")
     if t.count(START) != 1:
-        sys.exit("ABBRUCH: SOUNDS-Block nicht eindeutig gefunden.")
+        sys.exit("ABORT: SOUNDS block not found exactly once.")
     a = t.index(START)
     b = t.index(END, a) + len(END)
     t = t[:a] + START + "\n" + "\n".join(lines) + "\n" + END + t[b:]
     sfx_dir = os.path.join(project, "public", "sfx")
-    gone = os.path.join(project, "unused", "sfx-verworfen")
+    gone = os.path.join(project, "unused", "sfx-discarded")
     os.makedirs(sfx_dir, exist_ok=True)
     for fn in sorted(os.listdir(sfx_dir)):
         if fn.endswith(".wav") and fn[:-4] not in cat:
@@ -61,7 +61,7 @@ def main():
     for n in cat:
         shutil.copyfile(os.path.join(KIT, "sounds", f"{n}.wav"), os.path.join(sfx_dir, f"{n}.wav"))
     open(path, "w", encoding="utf-8").write(t)
-    print(f"{len(cat)} Sounds im Projekt, neuer md5 von sfx.tsx: {hashlib.md5(t.encode('utf-8')).hexdigest()}")
+    print(f"{len(cat)} sounds in the project, new md5 of sfx.tsx: {hashlib.md5(t.encode('utf-8')).hexdigest()}")
 
 
 if __name__ == "__main__":

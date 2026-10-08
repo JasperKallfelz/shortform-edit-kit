@@ -1,23 +1,23 @@
 #!/usr/bin/env python3
-"""Bereitet rohe Sound-Effekte für den Schnitt auf und schreibt sie nach ../sounds plus ../catalogue.json.
+"""Prepares raw sound effects for editing and writes them to ../sounds plus ../catalogue.json.
 
-Pro Sound:
+For each sound:
   1. Mono, 48 kHz.
-  2. Stille am Anfang abschneiden (alles vor dem ersten Sample über -40 dB unter der Spitze, 2 ms Vorlauf bleiben),
-     damit der Anschlag bei 0 ms sitzt und der Sound frame-genau platziert werden kann.
-  3. Ausklang abschneiden, sobald er 55 dB unter der Spitze liegt; 1 ms Einblende, 15 ms Ausblende (kein Knacksen).
-  4. Spitze auf -1 dBFS normalisieren – die Lautstärke im Video kommt allein aus dem vol-Wert der Cue.
-  5. lead messen: 0 bei Klicks/Auslösern (der Anschlag sitzt auf dem Bild), bei Whooshes die Zeit bis zur lautesten Stelle.
-  6. loud messen: lautestes 50-ms-Stück (RMS, dB). Damit lässt sich ein Sound gegen einen anderen tauschen, ohne dass er
-     lauter oder leiser wirkt: vol_neu = vol_alt * 10^((loud_alt - loud_neu) / 20).
+  2. Cut the silence at the start (everything before the first sample louder than -40 dB relative to the peak; 2 ms of
+     lead-in stay), so the attack sits at 0 ms and the sound can be placed frame-accurately.
+  3. Cut the tail as soon as it is 55 dB below the peak; 1 ms fade-in, 15 ms fade-out (no clicks).
+  4. Normalise the peak to -1 dBFS. The volume in the video comes only from the cue's vol value.
+  5. Measure lead: 0 for clicks and shutters (the attack sits on the picture), for whooshes the time to the loudest point.
+  6. Measure loud: the loudest 50 ms stretch (RMS, dB). It lets you swap one sound for another without it seeming
+     louder or quieter: vol_new = vol_old * 10^((loud_old - loud_new) / 20).
 
-Tonhöhen-Varianten werden als eigene Dateien gebacken (pitch()), nicht per playbackRate im Video: Remotion hält beim
-Rendern die Tonhöhe fest, die Vorschau nicht unbedingt – gebackene Dateien klingen in Studio und Render gleich.
+Pitch variants are baked as files of their own (pitch()), not set with playbackRate in the video: Remotion keeps the
+pitch fixed when it renders, but the preview does not necessarily. Baked files sound the same in Studio and in the render.
 
-Hausregel: nur echte, aufgenommene Geräusche. Alles Synthetische ist raus (siehe VERWORFEN).
+House rule: only real, recorded sounds. Everything synthetic is out (see DISCARDED).
 
-Aufruf: python3 prepare_sfx.py            (liest SRC unten; Pfade anpassen und neue Zeilen ergänzen)
-Braucht: numpy, soundfile, librosa.
+Usage: python3 prepare_sfx.py            (reads SRC below; adjust paths and add new lines)
+Needs: numpy, soundfile, librosa.
 """
 import json
 import os
@@ -29,13 +29,13 @@ import soundfile as sf
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "..", "sounds")
-C = os.path.join(HERE, "..", "..", "sfx-kandidaten")
+C = os.path.join(HERE, "..", "..", "sfx-candidates")
 SR = 48000
 PEAK = 10 ** (-1 / 20)
 
-# name: (Rohdatei in sfx-kandidaten, "onset" | "peak")
+# name: (raw file in sfx-candidates, "onset" | "peak")
 SRC = {
-    # Kamera
+    # Camera
     "shutter2": ("shutter_slr_trigger_01.wav", "onset"),
     "shutter3": ("shutter_old_film_01.wav", "onset"),
     "shutterSlr2": ("shutter_slr_trigger_02.wav", "onset"),
@@ -49,7 +49,7 @@ SRC = {
     "shutterBurst4": ("shutter_slr_burst_04.wav", "onset"),
     "winder1": ("film_advance_instamatic_winder_01.wav", "onset"),
     "winder2": ("film_advance_instamatic_winder_02.wav", "onset"),
-    # Maus, Trackpad, Schalter
+    # Mouse, trackpad, switches
     "mouse1": ("click_mouse_01.wav", "onset"),
     "mouse2": ("click_mouse_apple_magic_01.wav", "onset"),
     "mouse3": ("click_mouse_raspberry_01.wav", "onset"),
@@ -59,7 +59,7 @@ SRC = {
     "switch": ("click_switch_mic_01.wav", "onset"),
     "switch2": ("click_ui_switch_01.wav", "onset"),
     "switch3": ("click_switch_05.wav", "onset"),
-    # Klapptafel (Flughafen-Anzeige)
+    # Split-flap board (airport display)
     "flap": ("flap_single_board_02.wav", "onset"),
     "flapBurst3": ("flap_burst3_board_01.wav", "onset"),
     "flapBurst5": ("flap_burst5_board_01.wav", "onset"),
@@ -67,15 +67,15 @@ SRC = {
     "flapEnd1": ("flap_end_board_01.wav", "onset"),
     "flapEnd2": ("flap_end_board_02.wav", "onset"),
     "flapRun": ("flap_run_timetable_01.wav", "onset"),
-    # Papier
+    # Paper
     "page1": ("paper_page_turn_01.wav", "peak"),
     "page2": ("paper_page_turn_05.wav", "peak"),
     "page3": ("paper_page_turn_06.wav", "peak"),
     "tear": ("paper_tear_04.wav", "peak"),
-    # Whoosh (sparsam einsetzen)
+    # Whoosh (use sparingly)
     "swish": ("whoosh_knife_swish_kenney_01.wav", "peak"),
     "whooshShort": ("whoosh_short_01.wav", "peak"),
-    # Riser, Trommel, Karten, Tasten, Bleistift, Glas (alles echte Aufnahmen)
+    # Riser, tom drum, cards, keys, pencil, glass (all real recordings)
     "riser1": ("riser_reverse_cymbal_short_02.wav", "peak"),
     "tom1": ("impact_bass_tom_01.wav", "onset"),
     "riffle1": ("flutter_card_riffle_01.wav", "onset"),
@@ -87,27 +87,27 @@ SRC = {
     "cardPlace1": ("card_place_table_01.wav", "peak"),
     "clink1": ("sparkle_glass_clink_02.wav", "onset"),
     "swishSmall": ("whoosh_swish_small_01.wav", "peak"),
-    # Tippen und Münze (thematische Einzelgeräusche)
+    # Typing and coin (themed single sounds)
     "typeBurst1": ("type_burst_macbook_01.wav", "onset"),
     "coinCup1": ("sparkle_coin_cup_01.wav", "onset"),
 }
-# Gruppen für den Katalog im Remotion-Projekt (tools/sync_remotion.py): Überschrift → Namen
+# Groups for the catalogue in the Remotion project (tools/sync_remotion.py): heading → names
 GROUPS = [
-    ("Kamera-Auslöser und Filmtransport", ["shutter2", "shutter3", "shutterSlr2", "shutterSlr3", "shutterInsta1", "shutterInsta2", "shutterOld", "shutterDslr", "shutterBurst2", "shutterBurst3", "shutterBurst4", "winder1", "winder2"]),
-    ("Maus, Trackpad, Schalter, Kugelschreiber", ["mouse1", "mouse2", "mouse3", "mouse4", "trackpad1", "trackpad2", "switch", "switch2", "switch3", "pen1", "pen2", "pen3"]),
-    ("Klapptafel wie am Flughafen (flapLo/flapHi = flap etwas tiefer/höher, gegen hörbare Wiederholung)", ["flap", "flapLo", "flapHi", "flapBurst3", "flapBurst5", "flapBurst8", "flapEnd1", "flapEnd2", "flapRun"]),
-    ("Papier", ["page1", "page2", "page3", "tear"]),
-    ("Whooshes (sparsam einsetzen)", ["swish", "whooshShort"]),
-    ("Riser (rückwärts gespieltes Becken), Trommel, Karten, Tasten, Bleistift, Glas, kleiner Swish, Tippen, Münze", ["riser1", "tom1", "riffle1", "key1", "key2", "key3", "pencil1", "pencil2", "cardPlace1", "clink1", "swishSmall", "typeBurst1", "coinCup1"]),
+    ("Camera shutters and film winder", ["shutter2", "shutter3", "shutterSlr2", "shutterSlr3", "shutterInsta1", "shutterInsta2", "shutterOld", "shutterDslr", "shutterBurst2", "shutterBurst3", "shutterBurst4", "winder1", "winder2"]),
+    ("Mouse, trackpad, switches, pen click", ["mouse1", "mouse2", "mouse3", "mouse4", "trackpad1", "trackpad2", "switch", "switch2", "switch3", "pen1", "pen2", "pen3"]),
+    ("Split-flap board like at an airport (flapLo/flapHi = flap slightly lower/higher, to avoid an audible repeat)", ["flap", "flapLo", "flapHi", "flapBurst3", "flapBurst5", "flapBurst8", "flapEnd1", "flapEnd2", "flapRun"]),
+    ("Paper", ["page1", "page2", "page3", "tear"]),
+    ("Whooshes (use sparingly)", ["swish", "whooshShort"]),
+    ("Riser (reversed cymbal), tom drum, cards, keys, pencil, glass, small swish, typing, coin", ["riser1", "tom1", "riffle1", "key1", "key2", "key3", "pencil1", "pencil2", "cardPlace1", "clink1", "swishSmall", "typeBurst1", "coinCup1"]),
 ]
-# Aus einer langen Aufnahme mit mehreren Tönen: name-Präfix → (Rohdatei, Anzahl Einzeltöne)
+# From one long recording with several sounds: name prefix → (raw file, number of single sounds)
 CUTS = {"pen": ("click_pen_longtake_01.wav", 3)}
-# Kürzere Fassung eines fertigen Sounds: name → (Basis, von s, bis s). 5 ms Ein-, 80 ms Ausblende; lead wird neu gemessen.
+# Shorter version of a finished sound: name → (base, from s, to s). 5 ms fade-in, 80 ms fade-out; lead is measured again.
 TRIMS = {}
-# Leichte Tonhöhen-Varianten, damit ein mehrfach gespielter Sound nicht wie eine Wiederholung klingt: name → (Basis, Faktor)
+# Slight pitch variants, so a sound played several times does not sound like a repeat: name → (base, factor)
 VARIANTS = {"flapLo": ("flap", 0.94), "flapHi": ("flap", 1.06)}
-# Bewusst nicht im Kit: synthetische Sounds (Spiele-/UI-Pakete: Ticks, Pops, Blips, Toggles; künstliche Schläge) – „klingt nach Raumschiff“.
-VERWORFEN = ["click_toggle_kenney_01", "pop_pluck_kenney_01", "pop_select_kenney_02", "click_ui_kenney_01", "tick_ui_kenney_01", "tick_ui_kenney_02"]
+# Deliberately not in the kit: synthetic sounds (game/UI packs: ticks, pops, blips, toggles; artificial hits). They sound like a spaceship.
+DISCARDED = ["click_toggle_kenney_01", "pop_pluck_kenney_01", "pop_select_kenney_02", "click_ui_kenney_01", "tick_ui_kenney_01", "tick_ui_kenney_02"]
 
 
 def load(path):
@@ -135,12 +135,12 @@ def prep(y, sync, tail_db=-55, fade_out=0.015):
 
 
 def pitch(y, rate):
-    """Wie ein Sampler: schneller = kürzer und höher."""
+    """Like a sampler: faster = shorter and higher."""
     return librosa.resample(y, orig_sr=SR, target_sr=int(SR / rate))
 
 
 def loud(y):
-    """Lautestes 50-ms-Stück als RMS in dB (kurze Sounds werden mit Stille aufgefüllt, wie das Ohr sie auch leiser hört)."""
+    """Loudest 50 ms stretch as RMS in dB (short sounds are padded with silence, just as the ear hears them as quieter)."""
     w = int(0.05 * SR)
     y = np.pad(y, (0, max(0, w - len(y))))
     e = np.convolve(y ** 2, np.ones(w) / w, mode="valid")
@@ -148,7 +148,7 @@ def loud(y):
 
 
 def events(y, n, gap=0.12, max_len=0.6):
-    """Die n lautesten Einzeltöne einer langen Aufnahme: Stücke über -30 dB (unter der Spitze), Pausen unter 120 ms gehören zum selben Ton."""
+    """The n loudest single sounds of a long recording: stretches louder than -30 dB relative to the peak; pauses under 120 ms belong to the same sound."""
     w = int(0.005 * SR)
     env = np.convolve(np.abs(y), np.ones(w) / w, mode="same")
     on = env > env.max() * 10 ** (-30 / 20)
@@ -196,6 +196,6 @@ def main():
 
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1:  # keine Argumente vorgesehen; --help soll nichts neu schreiben
+    if len(sys.argv) > 1:  # no arguments expected; --help must not rewrite anything
         sys.exit(__doc__)
     main()

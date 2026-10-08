@@ -1,0 +1,4 @@
+__pycache__/
+*.pyc
+# built program (see mic/setinput.swift)
+mic/setinput
