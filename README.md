@@ -28,10 +28,10 @@ Wer es lieber selbst einrichtet, findet dieselben Schritte in [`docs/einrichtung
 
 ## Mehr Videos
 
-| Rundgang durch die Werkzeuge (80 s) | Das Ergebnis (9 s) |
-|:---:|:---:|
-| [<img src="docs/rundgang.jpg" width="520" alt="Rundgang durch die Werkzeuge">](docs/rundgang.mp4) | [<img src="docs/demo.gif" width="165" alt="Das Beispielvideo">](beispiel/demo.mp4) |
-| Tonstudio, Remotion Studio, Hörseite und Terminal in echt | Das Beispielvideo, das im Repo liegt |
+| Ein echtes Video aus dem Kit (16 s) | Rundgang durch die Werkzeuge (80 s) | Die Vorlage im Repo (9 s) |
+|:---:|:---:|:---:|
+| [<img src="docs/real-example.gif" width="165" alt="Ein echtes Video, gebaut mit dem Kit">](docs/real-example.mp4) | [<img src="docs/rundgang.jpg" width="420" alt="Rundgang durch die Werkzeuge">](docs/rundgang.mp4) | [<img src="docs/demo.gif" width="165" alt="Das Beispielvideo">](beispiel/demo.mp4) |
+| Mit diesen Werkzeugen gebaut und so gepostet; hier ohne Musik | Tonstudio, Remotion Studio, Hörseite und Terminal in echt | Dieselben Bausteine ohne eigenes Material |
 
 ## Konfiguration
 
