@@ -1,119 +1,134 @@
 # shortform-edit-kit
 
-Du sagst einem KI-Agenten (Claude Code, Codex, Hermes), was für ein Kurzvideo du willst, und sprichst dein Skript ein. Der Agent baut daraus das Video mit [Remotion](https://www.remotion.dev): Text im Sprechtakt, deine Clips, Sound-Effekte aus echten Aufnahmen, den Export mit geprüfter Lautheit und, nach deiner Freigabe, den Post.
+**Build short vertical videos by talking to your AI agent.** You say what you want and record your script. The agent cuts, adds sound, exports and posts.
 
-*English in one line: a voiceover studio, tools, 233 CC0 sound-effect candidates (53 prepared), agent skills, a posting script and a Remotion demo for short vertical videos. Docs are in German.*
+[![The flow in 30 seconds](docs/flow.gif)](docs/flow.mp4)
 
-[![Der Ablauf in 30 Sekunden](docs/flow.gif)](docs/flow.mp4)
+<p align="center">▶ <a href="docs/flow.mp4"><b>Watch with sound</b></a> (32 s)</p>
 
-▶ Klick aufs Bild spielt den Film mit Ton (32 Sekunden).
+## Install
 
-## So funktioniert es
-
-1. Du sprichst dein Skript im Browser-Tonstudio ein, mit Teleprompter; alles bleibt auf deinem Rechner.
-2. Der Agent misst, wann jedes Wort fällt, und schreibt die Zeit-Tabelle `src/timing.ts`; Bild, Text und Sounds hängen an diesen Zeiten.
-3. Deine Clips kommen in Slots, die sich im Remotion Studio verschieben lassen, ohne Code anzufassen.
-4. Sound-Effekte aus echten Aufnahmen hängen an Wörtern und Bewegungen im Bild, nie lauter als die Musik.
-5. Der Export prüft die Lautheit; gepostet wird erst, wenn du Beschreibung und Veröffentlichung freigibst.
-
-## Installieren
-
-Gib deinem Agenten das hier:
+Paste this to your agent (Claude Code, Codex, Hermes):
 
 ```text
-Klone https://github.com/JasperKallfelz/shortform-edit-kit, lies AGENTS.md und docs/setup.md und richte das Kit ein. Prüfe die Voraussetzungen, installiere das Beispielprojekt, starte das Remotion Studio und sag mir, was noch fehlt (Mikrofon, whisper-Modell, Konten zum Posten).
+Clone https://github.com/JasperKallfelz/shortform-edit-kit, read AGENTS.md and docs/setup.md and set the kit up. Check the prerequisites, install the example project, start Remotion Studio and tell me what is still missing (microphone, whisper model, accounts for posting).
 ```
 
-Wer es lieber selbst einrichtet, findet dieselben Schritte in [`docs/setup.md`](docs/setup.md).
+## A real video made with it
 
-## Mehr Videos
+<table>
+<tr>
+<td width="230"><a href="docs/real-example.mp4"><img src="docs/real-example.gif" width="210" alt="A real video built with the kit"></a></td>
+<td>
+<b>16 seconds, built with exactly these tools.</b><br><br>
+Voiceover recorded in the browser.<br>
+Text pops on every spoken word.<br>
+Clips dropped into slots.<br>
+Every movement has a real sound.<br><br>
+▶ <a href="docs/real-example.mp4">Watch with sound</a> (shown without music)
+</td>
+</tr>
+</table>
 
-| Ein echtes Video aus dem Kit (16 s) | Rundgang durch die Werkzeuge (80 s) | Die Vorlage im Repo (9 s) |
-|:---:|:---:|:---:|
-| [<img src="docs/real-example.gif" width="165" alt="Ein echtes Video, gebaut mit dem Kit">](docs/real-example.mp4) | [<img src="docs/tour.jpg" width="420" alt="Rundgang durch die Werkzeuge">](docs/tour.mp4) | [<img src="docs/demo.gif" width="165" alt="Das Beispielvideo">](example/demo.mp4) |
-| Mit diesen Werkzeugen gebaut und so gepostet; hier ohne Musik | Tonstudio, Remotion Studio, Hörseite und Terminal in echt | Dieselben Bausteine ohne eigenes Material |
+## Effects
 
-## Konfiguration
+Say the name, the agent puts it in.
 
-| Was | Wo | Wofür | Pflicht? |
+<table>
+<tr><td align="center"><a href="EFFECTS.md"><img src="docs/effects/word-pop.gif" width="170" alt="WordPop"></a><br><code>WordPop</code></td><td align="center"><a href="EFFECTS.md"><img src="docs/effects/script-word.gif" width="170" alt="ScriptWord"></a><br><code>ScriptWord</code></td><td align="center"><a href="EFFECTS.md"><img src="docs/effects/map-route.gif" width="170" alt="MapRoute"></a><br><code>MapRoute</code></td><td align="center"><a href="EFFECTS.md"><img src="docs/effects/crowd-wall.gif" width="170" alt="CrowdWall"></a><br><code>CrowdWall</code></td></tr>
+<tr><td align="center"><a href="EFFECTS.md"><img src="docs/effects/photo-collage.gif" width="170" alt="PhotoCollage"></a><br><code>PhotoCollage</code></td><td align="center"><a href="EFFECTS.md"><img src="docs/effects/growth-cards.gif" width="170" alt="GrowthCards"></a><br><code>GrowthCards</code></td><td align="center"><a href="EFFECTS.md"><img src="docs/effects/squiggle-arrow.gif" width="170" alt="SquiggleArrow"></a><br><code>SquiggleArrow</code></td><td align="center"><a href="EFFECTS.md"><img src="docs/effects/path-run.gif" width="170" alt="PathRun"></a><br><code>PathRun</code></td></tr>
+</table>
+
+8 of 13 shown. All of them, with their props: **[EFFECTS.md](EFFECTS.md)**
+
+## Sounds
+
+53 real recordings, no synthetic clicks. Hear them all with `python3 listen.py`.
+
+[![The sound kit: every sound with name, waveform and length](docs/sounds.png)](sfx-kit/README.md)
+
+## How it works
+
+<table>
+<tr><td width="56%"><img src="docs/steps/1-voiceover.png" alt="Voiceover: waveform with word timings"></td><td><b>1 · Speak.</b> Read your script from the teleprompter. Every word gets a time.</td></tr>
+<tr><td><img src="docs/steps/2-clips.png" alt="Clips: thumbnails, one picked for the slot"></td><td><b>2 · Clips.</b> Name a clip. It lands in a slot.</td></tr>
+<tr><td><img src="docs/steps/3-sounds.png" alt="Sounds: one cue per word"></td><td><b>3 · Sounds.</b> Each sound hangs on a word. Re-record and they all move with it.</td></tr>
+<tr><td><img src="docs/steps/4-export.png" alt="Export: loudness meter and two files"></td><td><b>4 · Export.</b> Loudness checked, with and without music.</td></tr>
+<tr><td><img src="docs/steps/5-post.png" alt="Post: draft, approval, published"></td><td><b>5 · Post.</b> Nothing goes public until you approve.</td></tr>
+</table>
+
+All commands, step by step: [`docs/manual.md`](docs/manual.md). For agents: [`AGENTS.md`](AGENTS.md).
+
+<details>
+<summary><b>Configuration</b></summary>
+
+| What | Where | What for | Required? |
 |---|---|---|---|
-| `TONSTUDIO_MODELLE` | Umgebungsvariable | Pfade der Whisper-Modelle (`ggml-*.bin`), durch Komma getrennt | für `npm run vo` |
-| `WHISPER_CLI` | Umgebungsvariable | Pfad zu `whisper-cli`, falls es nicht im `PATH` liegt | nein |
-| `skript.json` | `example/` | gesprochener Text, Sprache und Schlüssel der Wortzeiten | für ein neues Video |
-| Props: `slots`, `music`, `voiceover`, `sfxVolume` | Remotion Studio, `example/src/Demo.tsx` | Clips, Musik, Voiceover, Lautstärke der Effekte | nein |
-| `edit-tools/post.config.json` | Datei, Vorlage `post.config.example.json` | Konto-IDs zum Posten; wird nie eingecheckt | nur zum Posten |
-| `EDIT_HOST` | Umgebungsvariable | SSH-Name des Rechners, auf dem `post_render.sh` rendert | für den Export |
-| `TONSTUDIO_PORT`, `HOERSEITE_PORT` | Umgebungsvariable | Ports der Aufnahme-Seite (3600) und der Hörseite (3700) | nein |
-| `HOERSEITE_STATE` | Umgebungsvariable | Datei, in der die Hörseite die Urteile ablegt (`auswahl.json`) | nein |
+| `VOICE_STUDIO_MODELS` | environment variable | paths of the whisper models (`ggml-*.bin`), comma-separated | for `npm run vo` |
+| `WHISPER_CLI` | environment variable | path to `whisper-cli` if it is not on your `PATH` | no |
+| `script.json` | `example/` | the spoken text, its language and the keys of the word timings | for a new video |
+| Props `slots`, `music`, `voiceover`, `sfxVolume` | Remotion Studio, `example/src/Demo.tsx` | clips, music, voiceover, volume of the effects | no |
+| `edit-tools/post.config.json` | file, template `post.config.example.json` | account ids for posting; never committed | only for posting |
+| `EDIT_HOST` | environment variable | SSH name of the machine `post_render.sh` renders on | for the export |
+| `VOICE_STUDIO_PORT`, `LISTEN_PORT` | environment variable | ports of the recorder page (3600) and the listening page (3700) | no |
+| `LISTEN_STATE` | environment variable | file in which the listening page keeps your picks (`selection.json`) | no |
 
-Alle Stellschrauben mit Fundstelle im Code: [`docs/setup.md`](docs/setup.md#3-konfigurations-referenz).
+Every setting: [`docs/setup.md`](docs/setup.md#3-configuration-reference).
+
+</details>
 
 <details>
-<summary>Was drin ist</summary>
+<summary><b>What is inside</b></summary>
 
-| Pfad | Inhalt |
+| Path | Content |
 |---|---|
-| `AGENTS.md` | Einstieg für einen KI-Agenten, der mit dem Kit ein Video baut oder ändert: Ordnerkarte, fünf Schritte als Checkliste, Hausregeln |
-| `voice-studio/` | Voiceover: im Browser aufnehmen (Teleprompter), aufbereiten, Wortzeiten messen und die Zeit-Tabelle `src/timing.ts` erzeugen. Läuft ganz lokal |
-| `example/` | Remotion-Demo ohne eigenes Material: Text, der zum Sprechtakt aufpoppt, Clip-Karte mit Zoom (auch mit Ambient-Light-Schein), gezeichneter Pfeil, laufende Zahl, Sound-Spur, Prüf-Overlay für die Freihalte-Bereiche von Instagram und TikTok, dazu `skript.json` für das Tonstudio. `demo.mp4` zeigt das Ergebnis |
-| `sfx-kit/` | 53 aufbereitete Sound-Effekte (echte Aufnahmen), Katalog mit Länge, Einsatzpunkt und Lautheit, Skripte zum Aufbereiten und zum Einspielen in ein Remotion-Projekt |
-| `sfx-candidates/` | 233 rohe Kandidaten mit Quelle und Lizenz je Datei (`manifest.tsv`) |
-| `listen.py`, `index.html` | Hörseite im Browser: alle Sounds durchhören, behalten oder aussortieren, auch nur mit der Tastatur |
-| `edit-tools/` | Skripte: Videos aus WhatsApp holen, Kontaktbogen, Dateien sicher ändern, fertiger Export mit Lautheitsprüfung, Posten auf TikTok und Instagram (`post_social.py`). Das README dort beschreibt die Abläufe, `POSTEN.md` das Posten |
-| `skills/` | Zwei Skills für Agenten (Hermes-Format, als Anleitung auch für Claude Code brauchbar) |
-| `flow-film/` | Remotion-Projekt, das den Film oben baut (`docs/flow.mp4` und die stumme Vorschau `docs/flow.gif`): gezeichnete Animation, Ton nur aus dem Sound-Kit |
-| `tour/` | Remotion-Projekt, das `docs/tour.mp4` baut (echte Aufnahmen der Werkzeuge, nachgebautes Terminal) |
-| `docs/` | Handbuch (`manual.md`), Einrichtung und Konfiguration (`setup.md`), was die Forschung zu Zuschauerbindung, Beschreibung, Hashtags und Musikrechten sagt, mit Quellen; die Erfahrungen aus dem Bauen: Skript vor Schnitt, Stimme, Raumklänge, Bildbausteine, Formate kleiner Konten ([`shortform-learnings-2026-10.md`](docs/shortform-learnings-2026-10.md)); dazu die Filme |
+| `AGENTS.md` | entry point for an AI agent that builds or changes a video with the kit: folder map, the five steps as a checklist, house rules |
+| `EFFECTS.md`, `effects/` | every visual effect by name with an animated preview; one file per effect to copy into your project |
+| `voice-studio/` | voiceover: record in the browser (teleprompter), master, measure the word timings and write the timing table `src/timing.ts`. Runs entirely on your machine |
+| `example/` | Remotion example without personal material: text that pops on the spoken word, clip card with zoom (also with an ambient-light glow), drawn arrow, running number, sound track, plus `script.json` for the Voice Studio. `demo.mp4` shows the result |
+| `sfx-kit/` | 53 prepared sound effects (real recordings), a catalogue with length, cue point and loudness, scripts to prepare sounds and to put them into a Remotion project |
+| `sfx-candidates/` | 233 raw candidates with source and licence per file (`manifest.tsv`) |
+| `listen.py`, `index.html` | listening page in the browser: hear every sound, keep or drop, keyboard only if you like |
+| `edit-tools/` | scripts: fetch videos from WhatsApp, contact sheet, safe file edits, final export with loudness check, posting to TikTok and Instagram (`post_social.py`). The README there describes the steps, `POSTING.md` the posting |
+| `skills/` | two skills for agents (Hermes format, also usable as instructions for Claude Code) |
+| `flow-film/` | Remotion project that builds the film at the top (`docs/flow.mp4`, `docs/flow.gif`) |
+| `tour/` | Remotion project for a recorded tour of the tools (`docs/tour.mp4`; it still shows the earlier German interface and will be re-recorded) |
+| `docs/` | setup and configuration (`setup.md`), all commands (`manual.md`), what research says about retention, captions, hashtags and music rights (`research-2026-10.md`), what we learned building videos (`shortform-learnings-2026-10.md`, `sound-and-text-sync.md`) |
 
 </details>
 
 <details>
-<summary>Die Grundsätze dahinter</summary>
+<summary><b>The principles behind it</b></summary>
 
-- **Alles hängt an Wortzeiten.** Bild, Text und Sounds beziehen ihre Einsätze aus einer Tabelle mit den Wortzeiten des
-  Voiceovers (`src/timing.ts`, vom Tonstudio erzeugt). Ein neuer Take verschiebt alles gemeinsam. So werden Varianten eines
-  Videos billig.
-- **Nur echte, aufgenommene Geräusche.** Auslöser, Mausklick, Klapptafel, Papier, Bleistift, Tasten. Keine synthetischen
-  UI-Pakete. Jede Bewegung bekommt einen kleinen Sound, leise genug, dass er nicht eingefügt klingt.
-- **Erst ansehen und messen, dann „fertig“ sagen.** Einzelbild rendern und anschauen, Nur-Effekte-Spur rendern und Pegel
-  vergleichen, Lautheit des Exports prüfen, den veröffentlichten Beitrag zurücklesen.
-- **Die Werkzeuge brechen lieber ab, als zu raten.** Das Tonstudio liefert keine Zeiten, wenn die Wortzahl nicht stimmt; das
-  Post-Skript legt ohne `--publish` nichts Öffentliches an.
-- **Der Mensch gibt frei.** Agenten schlagen vor und bauen; gepostet wird erst nach ausdrücklicher Freigabe der Beschreibung und
-  der Veröffentlichung.
+- **Everything hangs on word timings.** Picture, text and sounds take their cues from a table of the voiceover's word timings (`src/timing.ts`, written by the Voice Studio). A new take moves everything together. That makes variants of a video cheap.
+- **Only real, recorded sounds.** Shutter, mouse click, split-flap board, paper, pencil, keys. No synthetic UI packs. Every movement gets a small sound, quiet enough not to sound pasted in.
+- **Look and measure first, then say "done".** Render a single frame and look at it, render the effects-only track and compare levels, check the loudness of the export, read the published post back.
+- **The tools stop rather than guess.** The Voice Studio gives no timings when the word count does not match; the posting script creates nothing public without `--publish`.
+- **The human approves.** Agents propose and build; a post goes out only after the caption and the publication were approved explicitly.
 
 </details>
 
 <details>
-<summary>Was die Forschung dazu sagt</summary>
+<summary><b>What research says</b></summary>
 
-Zusammenfassung von [`docs/research-2026-10.md`](docs/research-2026-10.md) (Stand 08.10.2026, mit Beleglage je Aussage; vor dem
-Zitieren einer Zahl die Quelle selbst prüfen):
+Summary of [`docs/research-2026-10.md`](docs/research-2026-10.md) (as of 8 Oct 2026, with the strength of evidence per claim; check the source yourself before quoting a figure):
 
-- Die ersten 1,5 bis 3 Sekunden entscheiden: mit dem stärksten Bild beginnen, einen klaren Höhepunkt setzen, das Gesicht früh zeigen,
-  Text im Bild. Sättigung hochdrehen bringt nach Beleglage nichts.
-- Beschreibung und Hashtags sind Nebensache gegenüber Sehdauer und Weiterleitungen. Instagram erlaubt seit Dezember 2025 höchstens 5
-  Hashtags, für TikTok reichen 3 bis 4 passende.
-- Musik: Die Fassung ohne Musik hochladen und den Song in der App aus der Bibliothek der Plattform dazulegen.
-- Varianten und Test-Reels: je Runde nur eine Sache ändern, zuerst die ersten 1,5 Sekunden, und mindestens 72 Stunden warten.
+- The first 1.5 to 3 seconds decide: start with the strongest picture, set one clear peak, show the face early, put text in the picture. Turning up saturation does nothing according to the evidence.
+- Caption and hashtags matter little next to watch time and shares. Instagram has allowed at most 5 hashtags since December 2025; 3 to 4 fitting ones are enough for TikTok.
+- Music: upload the version without music and add the song in the app from the platform's own library.
+- Variants and test reels: change one thing per round, the first 1.5 seconds first, and wait at least 72 hours.
 
 </details>
 
 <details>
-<summary>Was bewusst fehlt</summary>
+<summary><b>What is deliberately missing</b></summary>
 
-Eigenes Videomaterial, Aufnahmen und Voiceover, Musik und alles Kontospezifische (Konten-IDs, Konfiguration, Protokolle). Musik
-gehört nicht ins Repo; siehe [`docs/research-2026-10.md`](docs/research-2026-10.md) zu Musikrechten beim Posten. Welche Dateien nie
-eingecheckt werden, steht in [`AGENTS.md`](AGENTS.md).
+Recordings, music and everything account-specific (account ids, configuration, logs). Music does not belong in the repo; see [`docs/research-2026-10.md`](docs/research-2026-10.md) on music rights when posting. Which files are never committed is listed in [`AGENTS.md`](AGENTS.md).
 
 </details>
 
-**Alle Befehle Schritt für Schritt:** [`docs/manual.md`](docs/manual.md)
+## Licences and thanks
 
-**Für KI-Agenten:** Einstieg, Regeln und die Checkliste stehen in [`AGENTS.md`](AGENTS.md).
-
-## Lizenzen und Dank
-
-Die Sounds sind CC0 bzw. gemeinfrei, Details und Quellen in [`SOUND-LICENSES.md`](SOUND-LICENSES.md).
+The sounds are CC0 or public domain; details and sources in [`SOUND-LICENSES.md`](SOUND-LICENSES.md).
 Additional sounds: Joseph SARDIN – [BigSoundBank.com](https://BigSoundBank.com).
-Für Code und Texte ist noch keine Lizenz festgelegt.
+No licence has been chosen yet for code and texts.
