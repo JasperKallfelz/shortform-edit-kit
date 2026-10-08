@@ -1,0 +1,257 @@
+{
+ "shutter2": {
+  "len": 358,
+  "lead": 0,
+  "loud": -16.9
+ },
+ "shutter3": {
+  "len": 194,
+  "lead": 0,
+  "loud": -19.3
+ },
+ "shutterSlr2": {
+  "len": 369,
+  "lead": 0,
+  "loud": -17.4
+ },
+ "shutterSlr3": {
+  "len": 687,
+  "lead": 0,
+  "loud": -16.7
+ },
+ "shutterInsta1": {
+  "len": 296,
+  "lead": 0,
+  "loud": -21.2
+ },
+ "shutterInsta2": {
+  "len": 290,
+  "lead": 0,
+  "loud": -18.7
+ },
+ "shutterOld": {
+  "len": 2113,
+  "lead": 0,
+  "loud": -19.1
+ },
+ "shutterDslr": {
+  "len": 272,
+  "lead": 0,
+  "loud": -22.0
+ },
+ "shutterBurst2": {
+  "len": 943,
+  "lead": 0,
+  "loud": -23.6
+ },
+ "shutterBurst3": {
+  "len": 1528,
+  "lead": 0,
+  "loud": -23.2
+ },
+ "shutterBurst4": {
+  "len": 1823,
+  "lead": 0,
+  "loud": -23.2
+ },
+ "winder1": {
+  "len": 704,
+  "lead": 0,
+  "loud": -20.5
+ },
+ "winder2": {
+  "len": 580,
+  "lead": 0,
+  "loud": -22.5
+ },
+ "mouse1": {
+  "len": 156,
+  "lead": 0,
+  "loud": -22.8
+ },
+ "mouse2": {
+  "len": 225,
+  "lead": 0,
+  "loud": -24.5
+ },
+ "mouse3": {
+  "len": 192,
+  "lead": 0,
+  "loud": -23.0
+ },
+ "mouse4": {
+  "len": 56,
+  "lead": 0,
+  "loud": -20.8
+ },
+ "trackpad1": {
+  "len": 199,
+  "lead": 0,
+  "loud": -19.1
+ },
+ "trackpad2": {
+  "len": 207,
+  "lead": 0,
+  "loud": -24.2
+ },
+ "switch": {
+  "len": 384,
+  "lead": 0,
+  "loud": -14.5
+ },
+ "switch2": {
+  "len": 235,
+  "lead": 0,
+  "loud": -19.0
+ },
+ "switch3": {
+  "len": 2184,
+  "lead": 0,
+  "loud": -20.0
+ },
+ "flap": {
+  "len": 112,
+  "lead": 0,
+  "loud": -14.4
+ },
+ "flapBurst3": {
+  "len": 410,
+  "lead": 0,
+  "loud": -11.4
+ },
+ "flapBurst5": {
+  "len": 500,
+  "lead": 0,
+  "loud": -11.5
+ },
+ "flapBurst8": {
+  "len": 791,
+  "lead": 0,
+  "loud": -11.0
+ },
+ "flapEnd1": {
+  "len": 1750,
+  "lead": 0,
+  "loud": -14.3
+ },
+ "flapEnd2": {
+  "len": 1450,
+  "lead": 0,
+  "loud": -15.9
+ },
+ "flapRun": {
+  "len": 4559,
+  "lead": 0,
+  "loud": -20.9
+ },
+ "page1": {
+  "len": 512,
+  "lead": 183,
+  "loud": -19.5
+ },
+ "page2": {
+  "len": 1643,
+  "lead": 722,
+  "loud": -20.3
+ },
+ "page3": {
+  "len": 882,
+  "lead": 396,
+  "loud": -19.4
+ },
+ "tear": {
+  "len": 841,
+  "lead": 446,
+  "loud": -18.5
+ },
+ "swish": {
+  "len": 355,
+  "lead": 121,
+  "loud": -13.7
+ },
+ "whooshShort": {
+  "len": 135,
+  "lead": 60,
+  "loud": -11.7
+ },
+ "riser1": {
+  "len": 1500,
+  "lead": 858,
+  "loud": -9.5
+ },
+ "tom1": {
+  "len": 931,
+  "lead": 0,
+  "loud": -11.7
+ },
+ "riffle1": {
+  "len": 596,
+  "lead": 0,
+  "loud": -21.4
+ },
+ "key1": {
+  "len": 340,
+  "lead": 0,
+  "loud": -21.9
+ },
+ "key2": {
+  "len": 315,
+  "lead": 0,
+  "loud": -22.7
+ },
+ "key3": {
+  "len": 172,
+  "lead": 0,
+  "loud": -22.2
+ },
+ "pencil1": {
+  "len": 630,
+  "lead": 0,
+  "loud": -11.5
+ },
+ "pencil2": {
+  "len": 530,
+  "lead": 0,
+  "loud": -12.5
+ },
+ "cardPlace1": {
+  "len": 767,
+  "lead": 170,
+  "loud": -21.7
+ },
+ "clink1": {
+  "len": 384,
+  "lead": 0,
+  "loud": -11.9
+ },
+ "swishSmall": {
+  "len": 298,
+  "lead": 74,
+  "loud": -11.9
+ },
+ "pen1": {
+  "len": 353,
+  "lead": 0,
+  "loud": -26.6
+ },
+ "pen2": {
+  "len": 216,
+  "lead": 0,
+  "loud": -25.3
+ },
+ "pen3": {
+  "len": 242,
+  "lead": 0,
+  "loud": -28.6
+ },
+ "flapLo": {
+  "len": 119,
+  "lead": 0,
+  "loud": -14.1
+ },
+ "flapHi": {
+  "len": 106,
+  "lead": 0,
+  "loud": -14.6
+ }
+}

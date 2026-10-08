@@ -1,0 +1,8 @@
+node_modules/
+out/
+.DS_Store
+__pycache__/
+*.pyc
+# persönliche Urteile von der Hörseite
+auswahl.json
+auswahl.json.tmp

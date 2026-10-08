@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sound-Hörseite</title>
+<style>
+:root { --bg:#f4f3ef; --card:#fff; --ink:#151515; --mute:#6b6a66; --line:#dddbd4; --accent:#e4572e; --accent-ink:#fff; --ok:#2f8f5b; --ok-ink:#fff; }
+@media (prefers-color-scheme: dark) { :root { --bg:#141414; --card:#1d1d1c; --ink:#f0efea; --mute:#9a9892; --line:#30302e; --accent:#f0683f; --accent-ink:#141414; --ok:#57b884; --ok-ink:#141414; } }
+* { box-sizing:border-box; }
+[hidden] { display:none !important; }
+body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.45 -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif; }
+main { max-width:920px; margin:0 auto; padding:40px 20px 80px; }
+h1 { font-size:34px; letter-spacing:-0.02em; margin:0 0 4px; }
+.lede { color:var(--mute); margin:0 0 36px; }
+h2 { font-size:13px; text-transform:uppercase; letter-spacing:0.12em; color:var(--mute); margin:40px 0 12px; font-weight:600; }
+h3 { font-size:17px; margin:26px 0 10px; }
+.count { color:var(--mute); font-weight:400; font-variant-numeric:tabular-nums; }
+ul { list-style:none; margin:0; padding:0; }
+.song { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:14px 16px; margin-bottom:10px; }
+.song-head { display:flex; flex-wrap:wrap; justify-content:space-between; gap:4px 16px; margin-bottom:10px; }
+.song-title { font-weight:600; }
+.meta { color:var(--mute); font-size:14px; font-variant-numeric:tabular-nums; }
+a { color:inherit; }
+audio { width:100%; height:36px; display:block; }
+button { font:inherit; color:inherit; background:none; border:0; cursor:pointer; }
+button:focus-visible { outline:2px solid var(--accent); outline-offset:-2px; }
+.hint { color:var(--mute); font-size:14px; margin:0 0 12px; }
+kbd { font:12px/1 ui-monospace, Menlo, monospace; border:1px solid var(--line); border-bottom-width:2px; border-radius:5px; padding:2px 5px; background:var(--card); color:var(--ink); white-space:nowrap; }
+
+.bar { position:sticky; top:0; z-index:2; display:flex; flex-wrap:wrap; align-items:center; gap:8px 14px; padding:10px 0; background:var(--bg); border-bottom:1px solid var(--line); }
+.seg { display:flex; border:1px solid var(--line); border-radius:8px; overflow:hidden; background:var(--card); }
+.seg button { padding:7px 12px; font-size:14px; border-left:1px solid var(--line); font-variant-numeric:tabular-nums; }
+.seg button:first-child { border-left:0; }
+.seg button[aria-pressed="true"] { background:var(--ink); color:var(--bg); }
+.status { color:var(--mute); font-size:14px; margin-left:auto; }
+.status.err { color:var(--accent); font-weight:600; }
+
+.chips { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:8px; }
+.chip { display:flex; background:var(--card); border:1px solid var(--line); border-radius:10px; overflow:hidden; }
+.chip.playing { border-color:var(--accent); }
+.chip.cur { outline:2px solid var(--accent); outline-offset:1px; }
+.chip.keep { border-color:var(--ok); }
+.chip.drop { opacity:0.45; }
+.chip.drop .label { text-decoration:line-through; }
+.play { flex:1; min-width:0; display:flex; align-items:center; gap:10px; padding:11px 12px; text-align:left; }
+.play:hover, .v:hover { background:color-mix(in srgb, var(--ink) 6%, transparent); }
+.tri { flex:none; width:0; height:0; border-style:solid; border-width:6px 0 6px 10px; border-color:transparent transparent transparent var(--accent); }
+.name { flex:1; min-width:0; overflow-wrap:anywhere; font-size:15px; }
+.secs { flex:none; color:var(--mute); font-size:13px; font-variant-numeric:tabular-nums; }
+.tags { display:flex; flex-wrap:wrap; gap:4px; margin-top:4px; }
+.tags:empty { display:none; }
+.tag { font-size:11px; color:var(--mute); border:1px solid var(--line); border-radius:99px; padding:1px 7px; }
+.tag.new { color:var(--accent); border-color:var(--accent); }
+.v { flex:none; width:40px; border-left:1px solid var(--line); color:var(--mute); font-size:16px; }
+.v.k[aria-pressed="true"] { background:var(--ok); color:var(--ok-ink); }
+.v.d[aria-pressed="true"] { background:var(--ink); color:var(--bg); }
+.empty { color:var(--mute); padding:24px 0; }
+
+.picked { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:16px; }
+.picked p { margin:0 0 10px; color:var(--mute); }
+textarea { width:100%; min-height:120px; font:13px/1.5 ui-monospace, Menlo, monospace; color:var(--ink); background:var(--bg); border:1px solid var(--line); border-radius:8px; padding:10px; resize:vertical; }
+.copy { margin-top:10px; background:var(--accent); color:var(--accent-ink); border-radius:8px; padding:9px 16px; font-weight:600; }
+</style>
+</head>
+<body>
+<main>
+<h1>Sound-Hörseite</h1>
+<p class="lede" id="lede">Alle Sounds zum Durchhören und Aussortieren.</p>
+
+<h2 id="sfx">Sounds</h2>
+<p class="hint">Klick spielt den Sound. <strong>✓</strong> behalten, <strong>✕</strong> raus. Schneller mit der Tastatur: <kbd>←</kbd> <kbd>→</kbd> wechseln und abspielen, <kbd>Leertaste</kbd> nochmal, <kbd>B</kbd> behalten, <kbd>X</kbd> raus, <kbd>U</kbd> Urteil zurücknehmen. Nach <kbd>B</kbd> oder <kbd>X</kbd> läuft gleich der nächste. Alles wird sofort gespeichert.</p>
+<div class="bar">
+  <div class="seg" id="filter" role="group" aria-label="Anzeigen">
+    <button type="button" data-f="alle" aria-pressed="true">Alle <span data-n="alle"></span></button>
+    <button type="button" data-f="offen" aria-pressed="false">Offen <span data-n="offen"></span></button>
+    <button type="button" data-f="keep" aria-pressed="false">Behalten <span data-n="keep"></span></button>
+    <button type="button" data-f="drop" aria-pressed="false">Raus <span data-n="drop"></span></button>
+    <button type="button" data-f="neu" aria-pressed="false">Neu <span data-n="neu"></span></button>
+  </div>
+  <span class="status" id="status" role="status"></span>
+</div>
+<div id="sounds"></div>
+
+<h2>Deine Auswahl</h2>
+<div class="picked">
+<p id="picked-count">Noch nichts sortiert.</p>
+<textarea id="picked-list" readonly aria-label="Sortierte Sounds"></textarea>
+<button class="copy" id="copy" type="button">Liste kopieren</button>
+</div>
+</main>
+<script>
+const $ = (id) => document.getElementById(id);
+const box = $('sounds');
+let sounds = [], cats = [], verdict = {}, since = 0, filter = 'alle', cur = null, playing = null, listKey = '', pending = 0;
+const chips = new Map();
+const player = new Audio();
+
+const fmtSecs = (s) => s == null ? '' : (s < 0.095 ? s.toFixed(2) : s.toFixed(1)).replace('.', ',') + ' s';
+const isNew = (s) => !s.kit && s.mtime > since;
+const matches = (s) => {
+  const v = verdict[s.id];
+  return filter === 'alle' || (filter === 'offen' && !v) || (filter === 'neu' && isNew(s)) || filter === v;
+};
+const visible = () => sounds.filter((s) => !chips.get(s.id).hidden);
+
+const stop = () => { player.pause(); if (playing) chips.get(playing)?.classList.remove('playing'); playing = null; };
+player.addEventListener('ended', stop);
+document.addEventListener('play', (e) => {
+  if (e.target === player) return;
+  stop();
+  document.querySelectorAll('audio').forEach((a) => { if (a !== e.target) a.pause(); });
+}, true);
+
+const select = (id, scroll) => {
+  if (cur) chips.get(cur)?.classList.remove('cur');
+  cur = id;
+  const c = chips.get(id);
+  if (!c) return;
+  c.classList.add('cur');
+  if (scroll) c.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+};
+const play = (id, scroll) => {
+  document.querySelectorAll('audio').forEach((a) => a.pause());
+  stop();
+  select(id, scroll);
+  playing = id;
+  chips.get(id).classList.add('playing');
+  player.src = id.split('/').map(encodeURIComponent).join('/'); player.currentTime = 0; player.play().catch(stop);
+};
+
+const tag = (text, cls) => { const t = document.createElement('span'); t.className = 'tag' + (cls ? ' ' + cls : ''); t.textContent = text; return t; };
+const makeChip = (s) => {
+  const li = document.createElement('li');
+  li.className = 'chip';
+  li.innerHTML = '<button class="play" type="button"><span class="tri" aria-hidden="true"></span><span class="name"><span class="label"></span><span class="tags"></span></span><span class="secs"></span></button>'
+    + '<button class="v k" type="button" aria-pressed="false">✓</button><button class="v d" type="button" aria-pressed="false">✕</button>';
+  li.querySelector('.label').textContent = s.name;
+  li.querySelector('.secs').textContent = fmtSecs(s.secs);
+  const tags = li.querySelector('.tags');
+  if (isNew(s)) tags.append(tag('neu', 'new'));
+  if (s.used) tags.append(tag('im Video als ' + s.used));
+  if (/longtake/.test(s.id)) tags.append(tag('mehrere Töne'));
+  if (!s.kit && (!s.lic || /unbekannt|prüfen|CC-BY/i.test(s.lic + ' ' + s.note))) tags.append(tag(/CC-BY/i.test(s.lic + ' ' + s.note) ? 'Namensnennung nötig' : 'Lizenz offen'));
+  const [p, k, d] = li.querySelectorAll('button');
+  p.title = [s.lic, s.src, s.note].filter(Boolean).join('\n');
+  p.setAttribute('aria-label', s.name + ' abspielen');
+  k.setAttribute('aria-label', s.name + ' behalten');
+  d.setAttribute('aria-label', s.name + ' aussortieren');
+  p.addEventListener('click', () => play(s.id, false));
+  k.addEventListener('click', () => { select(s.id, false); setVerdict(s.id, verdict[s.id] === 'keep' ? null : 'keep'); });
+  d.addEventListener('click', () => { select(s.id, false); setVerdict(s.id, verdict[s.id] === 'drop' ? null : 'drop'); });
+  return li;
+};
+
+const build = () => {
+  box.textContent = '';
+  chips.clear();
+  for (const cat of cats) {
+    const group = sounds.filter((s) => s.cat === cat);
+    if (!group.length) continue;
+    const sec = document.createElement('section');
+    const h = document.createElement('h3');
+    h.append(cat + ' ', Object.assign(document.createElement('span'), { className: 'count' }));
+    const ul = document.createElement('ul');
+    ul.className = 'chips';
+    for (const s of group) { const c = makeChip(s); chips.set(s.id, c); ul.append(c); }
+    sec.append(h, ul);
+    box.append(sec);
+  }
+  if (!sounds.length) box.innerHTML = '<p class="empty">Keine Sounds gefunden.</p>';
+  if (cur && chips.has(cur)) chips.get(cur).classList.add('cur'); else cur = null;
+  if (playing && chips.has(playing)) chips.get(playing).classList.add('playing');
+  paint();
+};
+
+const paint = () => {
+  const n = { alle: sounds.length, offen: 0, keep: 0, drop: 0, neu: 0 };
+  for (const s of sounds) {
+    const v = verdict[s.id], c = chips.get(s.id);
+    n[v || 'offen']++;
+    if (isNew(s)) n.neu++;
+    c.classList.toggle('keep', v === 'keep');
+    c.classList.toggle('drop', v === 'drop');
+    c.querySelector('.k').setAttribute('aria-pressed', v === 'keep');
+    c.querySelector('.d').setAttribute('aria-pressed', v === 'drop');
+    c.hidden = !matches(s);
+  }
+  box.querySelectorAll('section').forEach((sec) => {
+    const shown = sec.querySelectorAll('.chip:not([hidden])').length;
+    sec.hidden = !shown;
+    sec.querySelector('.count').textContent = shown;
+  });
+  document.querySelectorAll('#filter button').forEach((b) => {
+    b.setAttribute('aria-pressed', b.dataset.f === filter);
+    b.querySelector('span').textContent = n[b.dataset.f];
+  });
+  const keep = sounds.filter((s) => verdict[s.id] === 'keep').map((s) => s.id);
+  const drop = sounds.filter((s) => verdict[s.id] === 'drop').map((s) => s.id);
+  $('picked-count').textContent = keep.length + drop.length ? `${keep.length} behalten, ${drop.length} raus, ${n.offen} offen.` : 'Noch nichts sortiert.';
+  $('picked-list').value = `Behalten (${keep.length}):\n${keep.join('\n')}\n\nRaus (${drop.length}):\n${drop.join('\n')}`;
+  $('lede').textContent = `${sounds.length} Sounds zum Durchhören und Aussortieren.`;
+};
+
+const say = (text, err) => { const st = $('status'); st.textContent = text; st.classList.toggle('err', !!err); };
+
+const setVerdict = async (id, v) => {
+  if (v) verdict[id] = v; else delete verdict[id];
+  paint();
+  pending++;
+  try {
+    const r = await fetch('/api/state', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, v }) });
+    if (!r.ok) throw new Error(r.status);
+    say('gespeichert');
+  } catch (e) { say('Nicht gespeichert – läuft die Hörseite noch?', true); }
+  pending--;
+};
+
+const load = async () => {
+  try {
+    const [a, b] = await Promise.all([fetch('/api/sounds').then((r) => r.json()), fetch('/api/state').then((r) => r.json())]);
+    const key = a.sounds.map((s) => s.id + s.mtime).join('|') + '#' + JSON.stringify(a.sounds.map((s) => [s.lic, s.used]));
+    const added = listKey ? a.sounds.length - sounds.length : 0;
+    sounds = a.sounds; cats = a.cats; since = b.since || 0;
+    if (!pending) verdict = b.v || {};
+    if (key !== listKey) { listKey = key; build(); if (added > 0) say(`${added} neue Sounds dazugekommen`); } else paint();
+  } catch (e) {
+    if (!listKey) box.innerHTML = '<p class="empty">Die Liste kommt vom kleinen Server dieser Seite. Bitte über <strong>http://localhost:3700</strong> öffnen.</p>';
+    else say('Verbindung zur Hörseite weg', true);
+  }
+};
+
+$('filter').addEventListener('click', (e) => {
+  const b = e.target.closest('button');
+  if (!b) return;
+  filter = b.dataset.f;
+  paint();
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.metaKey || e.ctrlKey || e.altKey || e.target.closest?.('textarea, input, audio')) return;
+  const list = visible();
+  if (!list.length) return;
+  const i = list.findIndex((s) => s.id === cur);
+  const go = (d) => play(list[Math.max(0, Math.min(list.length - 1, i < 0 ? 0 : i + d))].id, true);
+  const judge = (v) => {
+    if (i < 0) return;
+    const next = list[i + 1] || list[i - 1];
+    setVerdict(cur, v);
+    if (v && next) play(next.id, true);
+  };
+  const k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+  if (k === 'ArrowRight' || k === 'ArrowDown' || k === 'j') go(1);
+  else if (k === 'ArrowLeft' || k === 'ArrowUp' || k === 'k') go(-1);
+  else if (k === ' ') { if (i < 0) go(0); else play(cur, true); }
+  else if (k === 'b' || k === 'Enter') judge('keep');
+  else if (k === 'x' || k === 'Backspace' || k === 'Delete') judge('drop');
+  else if (k === 'u') judge(null);
+  else return;
+  e.preventDefault();
+});
+
+document.addEventListener('keyup', (e) => { if (e.key === ' ' && e.target.closest?.('.chip')) e.preventDefault(); });
+
+$('copy').addEventListener('click', async (e) => {
+  const ta = $('picked-list');
+  try { await navigator.clipboard.writeText(ta.value); } catch (err) { ta.select(); document.execCommand('copy'); }
+  e.currentTarget.textContent = 'Kopiert'; setTimeout(() => { e.currentTarget.textContent = 'Liste kopieren'; }, 1500);
+});
+
+load();
+setInterval(load, 6000);
+</script>
+</body>
+</html>
