@@ -10,8 +10,8 @@ auswahl.json.tmp
 post.config.json
 post-log.jsonl
 *.upload.json
-# Tonstudio: Aufnahmen und das daraus erzeugte Voiceover (tonstudio/README.md)
+# Tonstudio: Aufnahmen und das daraus erzeugte Voiceover (voice-studio/README.md)
 recordings/
-beispiel/public/vo.wav
+example/public/vo.wav
 # Sicherungskopien vor Änderungen (Endung .bak, siehe AGENTS.md)
 *.bak

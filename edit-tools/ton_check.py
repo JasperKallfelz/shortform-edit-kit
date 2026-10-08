@@ -4,7 +4,7 @@
   ton_check.py <sfx.wav> [--musik song.wav --musik-start 0.0 --musik-vol 0.15] [--mix mix.wav]
                [--abschnitt 2.0] [--luecke 0.5]
 
-<sfx.wav> ist der Render nur der Effekte (in `beispiel/`):
+<sfx.wav> ist der Render nur der Effekte (in `example/`):
   npx remotion render Demo sfx.wav --codec=wav --props='{"voVolume":0,"music":""}'
 <mix.wav> ist der Render mit allem (`npx remotion render Demo mix.wav --codec=wav`).
 

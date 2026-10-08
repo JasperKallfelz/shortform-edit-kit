@@ -84,8 +84,8 @@ class ParsingTests(unittest.TestCase):
         self.assertEqual(ps.parse_accounts("No accounts connected. Connect accounts at https://zernio.com"), [])
 
     def test_publish_result(self):
-        res = ps.parse_post_result("✅ Published to tiktok (@beispiel)\nPost ID: 6f1a2b3c4d5e\nURL: pending")
-        self.assertEqual(res, {"kind": "published", "platform": "tiktok", "handle": "@beispiel", "post_id": "6f1a2b3c4d5e"})
+        res = ps.parse_post_result("✅ Published to tiktok (@example)\nPost ID: 6f1a2b3c4d5e\nURL: pending")
+        self.assertEqual(res, {"kind": "published", "platform": "tiktok", "handle": "@example", "post_id": "6f1a2b3c4d5e"})
 
     def test_draft_and_scheduled_results(self):
         self.assertEqual(ps.parse_post_result("Saved as draft.\nPost ID: abc123")["kind"], "draft")

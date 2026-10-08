@@ -88,7 +88,7 @@ Weitere Schalter: `upload --neu` lädt trotz frischem Upload neu hoch; `instagra
 
 UTF-8-Text. Nachgestellte Zeilenumbrüche werden entfernt, innere bleiben. Echtes `#`, echte Umlaute und Emojis. Mehr als 5 Hashtags
 warnt das Skript (Instagram erlaubt seit Dezember 2025 höchstens 5; für TikTok bringt mehr nichts), blockiert aber nicht.
-Hashtags, Länge und Musikrechte: [`../docs/recherche-2026-10.md`](../docs/recherche-2026-10.md).
+Hashtags, Länge und Musikrechte: [`../docs/research-2026-10.md`](../docs/research-2026-10.md).
 
 ## Sichere Reihenfolge
 

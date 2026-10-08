@@ -12,8 +12,8 @@ metadata:
 # Skript, Voiceover, Clips, Sound, Post
 
 Einstieg mit Ordnerkarte, Checkliste und Hausregeln: `AGENTS.md` im Wurzelordner dieses Repos. Volle Fassung aller Abläufe mit Befehlen
-und Begründungen: `edit-tools/README.md`. Voiceover-Werkzeug: `tonstudio/README.md`. Posten: `edit-tools/POSTEN.md`. Sound-Kit und
-Pegel-Regeln: `sfx-kit/README.md`. Beispielprojekt mit allen Bausteinen: `beispiel/`.
+und Begründungen: `edit-tools/README.md`. Voiceover-Werkzeug: `voice-studio/README.md`. Posten: `edit-tools/POSTEN.md`. Sound-Kit und
+Pegel-Regeln: `sfx-kit/README.md`. Beispielprojekt mit allen Bausteinen: `example/`.
 
 Der Mensch tippt keine Befehle. Er sagt in kurzen Sätzen, was er will, oft mehrere Aufträge hintereinander, und will einen
 Vorschlag im Studio sehen oder hören, den er dann korrigiert. Große Auswahl-Aufgaben nicht an ihn zurückgeben.
@@ -31,14 +31,14 @@ Reihenfolge: 1 Skript und Voiceover, 2 Clips, 3 Sound-Design, 4 Fertig machen, 5
 | Clip zu einem Standbild finden | `kontaktbogen.py <ordner>`, Bogen ansehen |
 | Wortzeiten eines Clips | `whisper-cli -m ggml-medium.en.bin -f clip.wav -ml 1 -sow -oj` |
 | Datei im Projekt sicher ändern | `patch_lines.py <datei> <md5> <swaps.json>` (bricht ab, wenn die Datei sich geändert hat) |
-| Sounds zum Aussortieren zeigen | `hoerseite.py` → http://localhost:3700; Urteile in `auswahl.json` |
+| Sounds zum Aussortieren zeigen | `listen.py` → http://localhost:3700; Urteile in `auswahl.json` |
 | Behaltene Sounds aufbereiten und ins Projekt bringen | `sfx-kit/tools/prepare_sfx.py`, dann `sfx-kit/tools/sync_remotion.py <projekt> [md5]` |
 | Export für TikTok/Reels (mit und ohne Musik, Lautheit, Cover) | `EDIT_HOST=<ssh-name> post_render.sh <projekt> <Komposition> <Name> [Frames]` |
 | Konten lesen (nur lesend) | `post_social.py accounts` |
 | Beitrag prüfen, als Entwurf anlegen, veröffentlichen | `post_social.py tiktok <video> --caption-file <datei> [--dry-run] [--publish]`, `post_social.py instagram <video> --caption-file <datei> [--dry-run] [--publish]` |
 | Stand eines Beitrags nachlesen | `post_social.py status --tiktok-post <ID>` bzw. `--instagram-media <ID>` |
 
-Kein `--help` bei `prepare_sfx.py`, `sync_remotion.py`, `hoerseite.py`, `patch_lines.py` und `post_render.sh`: sie führen sofort aus
+Kein `--help` bei `prepare_sfx.py`, `sync_remotion.py`, `listen.py`, `patch_lines.py` und `post_render.sh`: sie führen sofort aus
 oder lesen das erste Argument als Pfad.
 
 ## Skript und Voiceover
@@ -64,7 +64,7 @@ Aufnahmen und das erzeugte Voiceover gehören nicht ins Repo.
 4. Einzelbild rendern (`npx remotion still`) und wirklich ansehen, bevor „fertig“ gesagt wird. Das Layout von Anfang an in den
    Freihalte-Rahmen bauen (1080 × 1920: oben 250 px, unten 480 px, rechts 160 px ab y = 860, links 60 px; Wichtiges endet bei y = 1440
    und rechts bei x = 920) und **jede Szene** mit `--props='{"safeZone":true}'` ansehen, bevor das Video gezeigt wird. Richtwerte,
-   Stand Oktober 2026: `beispiel/README.md`.
+   Stand Oktober 2026: `example/README.md`.
 5. WhatsApp-Clips sind verkleinert (meist 1024 × 576): im Bericht sagen, Original beim Absender anfragen.
 
 ## Sound-Design
@@ -85,7 +85,7 @@ Aufnahmen und das erzeugte Voiceover gehören nicht ins Repo.
 
 - `post_render.sh` liefert 1080 × 1920, 30 fps, H.264 High, AAC 320 kbit/s, höchstens −14 LUFS / −1,2 dBTP, einmal mit und einmal ohne
   Musik (Standardwerte der Komposition entscheiden, was „mit Musik“ enthält), dazu Cover-Bilder. Die gedruckte Lautheit und die Cover lesen.
-- Vor einem öffentlichen Post die Musik-Frage ansprechen (`docs/recherche-2026-10.md`): im Zweifel die Fassung ohne Musik nehmen.
+- Vor einem öffentlichen Post die Musik-Frage ansprechen (`docs/research-2026-10.md`): im Zweifel die Fassung ohne Musik nehmen.
 
 ## Posten
 

@@ -1,7 +1,7 @@
 # AGENTS.md
 
 > **Zuerst einrichten?** Voraussetzungen prüfen, Schritte mit „fertig, wenn …“, alle Stellschrauben und der Selbsttest stehen in
-> [`docs/einrichtung.md`](docs/einrichtung.md). Alle Befehle Schritt für Schritt: [`docs/handbuch.md`](docs/handbuch.md).
+> [`docs/setup.md`](docs/setup.md). Alle Befehle Schritt für Schritt: [`docs/manual.md`](docs/manual.md).
 
 Einstieg für einen KI-Agenten, der mit diesem Kit ein Kurzvideo bauen oder ändern soll. Menschen finden den Überblick in der
 [`README.md`](README.md).
@@ -16,18 +16,18 @@ gibt es ein Werkzeug, und jeder Schritt hat ein Merkmal, an dem man sieht, dass 
 
 | Pfad | Wofür |
 |---|---|
-| `beispiel/` | das Remotion-Projekt (Composition `Demo`): `skript.json`, `src/timing.ts`, `src/Demo.tsx` (Szenen, Props, `SFX_CUES`), `src/lib/` (Wort-DSL, Sound-Spur, `ambient.tsx`: Clip-Karte mit Ambient-Light-Schein, `safezone.tsx`: Freihalte-Bereiche und Prüf-Overlay), `public/` (Sounds, Clips, Voiceover) |
-| `tonstudio/` | Voiceover: `recorder/` (Aufnahme-Seite), `vo/` (aufbereiten, ausrichten, `timing.ts` schreiben), `mikro/` (Eingabegerät umschalten) |
+| `example/` | das Remotion-Projekt (Composition `Demo`): `skript.json`, `src/timing.ts`, `src/Demo.tsx` (Szenen, Props, `SFX_CUES`), `src/lib/` (Wort-DSL, Sound-Spur, `ambient.tsx`: Clip-Karte mit Ambient-Light-Schein, `safezone.tsx`: Freihalte-Bereiche und Prüf-Overlay), `public/` (Sounds, Clips, Voiceover) |
+| `voice-studio/` | Voiceover: `recorder/` (Aufnahme-Seite), `vo/` (aufbereiten, ausrichten, `timing.ts` schreiben), `mikro/` (Eingabegerät umschalten) |
 | `edit-tools/` | `whatsapp_clips.py`, `kontaktbogen.py`, `patch_lines.py`, `ton_check.py`, `beat_align.py`, `post_render.sh`, `post_social.py`, dazu `POSTEN.md` und `tests/` |
-| `sfx-kit/`, `sfx-kandidaten/`, `hoerseite.py` | 53 fertige Sounds mit Katalog und Werkzeugen; 233 rohe Kandidaten mit Lizenz je Datei; die Hörseite zum Aussortieren |
-| `skills/`, `docs/` | zwei Skills (Hermes-Format); die Einrichtung mit Konfigurations-Referenz (`einrichtung.md`), alle Befehle (`handbuch.md`), die Recherche mit Quellen (`recherche-2026-10.md`), Erfahrungen zu Ton und Text-Sync (`ton-und-text-sync.md`), zu Skript, Stimme, Raumklängen, Bildbausteinen und Formaten kleiner Konten (`kurzvideo-erfahrungen-2026-10.md`) und der Rundgang (`rundgang.mp4`) |
+| `sfx-kit/`, `sfx-candidates/`, `listen.py` | 53 fertige Sounds mit Katalog und Werkzeugen; 233 rohe Kandidaten mit Lizenz je Datei; die Hörseite zum Aussortieren |
+| `skills/`, `docs/` | zwei Skills (Hermes-Format); die Einrichtung mit Konfigurations-Referenz (`setup.md`), alle Befehle (`manual.md`), die Recherche mit Quellen (`research-2026-10.md`), Erfahrungen zu Ton und Text-Sync (`sound-and-text-sync.md`), zu Skript, Stimme, Raumklängen, Bildbausteinen und Formaten kleiner Konten (`shortform-learnings-2026-10.md`) und der Rundgang (`tour.mp4`) |
 
 ## Die fünf Schritte
 
-Schritt 1 läuft im Ordner `beispiel/`, die übrigen Befehle vom Wurzelordner des Repos (wo vermerkt: wieder in `beispiel/`).
+Schritt 1 läuft im Ordner `example/`, die übrigen Befehle vom Wurzelordner des Repos (wo vermerkt: wieder in `example/`).
 Die ausführliche Fassung: [`edit-tools/README.md`](edit-tools/README.md).
 
-### 1. Skript und Voiceover ([`tonstudio/README.md`](tonstudio/README.md))
+### 1. Skript und Voiceover ([`voice-studio/README.md`](voice-studio/README.md))
 
 - [ ] `skript.json` enthält den gesprochenen Text; die Schlüssel sind die, die der Code liest (`VO.w.<key>`).
 - [ ] Aufnahme-Seite starten und dem Menschen die Adresse nennen (http://localhost:3600). Aufnehmen kann nur er.
@@ -56,13 +56,13 @@ python3 edit-tools/whatsapp_clips.py export "<Name>" --date JJJJ-MM-TT --fotos
 python3 edit-tools/kontaktbogen.py <ordner>
 ```
 
-Fertig, wenn ein Einzelbild (`npx remotion still Demo bild.png --frame=N`, in `beispiel/`) gerendert und angesehen ist. WhatsApp-Clips
+Fertig, wenn ein Einzelbild (`npx remotion still Demo bild.png --frame=N`, in `example/`) gerendert und angesehen ist. WhatsApp-Clips
 sind verkleinert (meist 1024 × 576): im Bericht sagen, Original beim Absender anfragen.
 
 ### 3. Sound-Design ([`sfx-kit/README.md`](sfx-kit/README.md))
 
-- [ ] Jede Bewegung bekommt eine Cue in `SFX_CUES` (`beispiel/src/Demo.tsx`), an eine Wortzeit oder Animations-Konstante gehängt und benannt.
-- [ ] Neue Sounds: `hoerseite.py` zum Aussortieren, `prepare_sfx.py`, dann `sync_remotion.py beispiel [md5]` (schreibt `src/lib/sfx.tsx`
+- [ ] Jede Bewegung bekommt eine Cue in `SFX_CUES` (`example/src/Demo.tsx`), an eine Wortzeit oder Animations-Konstante gehängt und benannt.
+- [ ] Neue Sounds: `listen.py` zum Aussortieren, `prepare_sfx.py`, dann `sync_remotion.py example [md5]` (schreibt `src/lib/sfx.tsx`
   neu und verschiebt nicht mehr vorhandene WAVs nach `unused/sfx-verworfen`).
 
 ```bash
@@ -70,13 +70,13 @@ npx remotion render Demo sfx.wav --codec=wav --props='{"voVolume":0,"music":""}'
 ```
 
 ```bash
-python3 edit-tools/ton_check.py beispiel/sfx.wav --musik <song.wav> --musik-start <s> --musik-vol 0.15
+python3 edit-tools/ton_check.py example/sfx.wav --musik <song.wav> --musik-start <s> --musik-vol 0.15
 ```
 
-Fertig, wenn die Nur-Effekte-Spur (in `beispiel/`; `voVolume: 0`, nicht `voiceover: ""`, sonst bleibt die Stimme drin) gerendert, je
+Fertig, wenn die Nur-Effekte-Spur (in `example/`; `voVolume: 0`, nicht `voiceover: ""`, sonst bleibt die Stimme drin) gerendert, je
 Abschnitt gegen die Musik gemessen und Lücken über 0,5 s ohne Effekt aufgelistet sind (`ton_check.py` druckt beides; ohne Musik
 entfällt der Vergleich). Wort-Texte stehen zum Wortbeginn voll da (`TEXT_LEAD_MS`); nachgemessen wird an gerenderten Frames,
-siehe [`docs/ton-und-text-sync.md`](docs/ton-und-text-sync.md). Mit Musik: `beat_align.py` legt einen Schlag auf das wichtigste Wort.
+siehe [`docs/sound-and-text-sync.md`](docs/sound-and-text-sync.md). Mit Musik: `beat_align.py` legt einen Schlag auf das wichtigste Wort.
 
 ### 4. Fertig machen ([`edit-tools/post_render.sh`](edit-tools/post_render.sh))
 
@@ -86,7 +86,7 @@ EDIT_HOST=<ssh-name> edit-tools/post_render.sh <projektordner> <Komposition> <Na
 
 Fertig, wenn in `<projekt>/out/post-<Datum>/` beide Dateien (`…_mit-Musik.mp4`, `…_ohne-Musik.mp4`) und die Cover-Bilder liegen, die
 gedruckte Lautheit je Fassung höchstens −14 LUFS zeigt und die Cover angesehen sind. „Mit Musik“ heißt: Standardwerte der Komposition
-(in der Demo ist `music` leer). Die Musikrechte ansprechen ([`docs/recherche-2026-10.md`](docs/recherche-2026-10.md)).
+(in der Demo ist `music` leer). Die Musikrechte ansprechen ([`docs/research-2026-10.md`](docs/research-2026-10.md)).
 
 ### 5. Posten ([`edit-tools/POSTEN.md`](edit-tools/POSTEN.md))
 
@@ -106,20 +106,20 @@ Zeitüberschreitung oder unklarem Ausgang nicht wiederholen, erst im Konto nachs
 ## Hausregeln
 
 - **Nur echte, aufgenommene Geräusche.** Nichts Synthetisches. Neue Sounds nur CC0, gemeinfrei oder ausdrücklich freigegeben, mit Zeile
-  in `sfx-kandidaten/manifest.tsv` ([`SOUNDS-LIZENZEN.md`](SOUNDS-LIZENZEN.md)). Effekte nie lauter als die Musik.
+  in `sfx-candidates/manifest.tsv` ([`SOUND-LICENSES.md`](SOUND-LICENSES.md)). Effekte nie lauter als die Musik.
 - **Jede Cue hängt an einer Wortzeit oder Animations-Konstante**, nie an einer festen Zahl, und hat einen Namen für die Zeitleiste.
 - **Ein Mensch gibt Beschreibungen und das Posten frei.** Nie veröffentlichen oder Entwürfe anlegen, um etwas auszuprobieren: dafür
   gibt es `--dry-run`. Ein TikTok-Entwurf ist schon eine echte Aktion im Konto.
 - **Freihalte-Bereiche einhalten.** Auf 1080 × 1920 bleiben oben 250 px, unten 480 px (Wichtiges endet bei y = 1440), rechts 160 px ab
   y = 860 (dort x ≤ 920) und links 60 px frei von Text, Gesichtern und Zeigern, weil Instagram und TikTok dort ihre Elemente einblenden
-  ([`beispiel/README.md`](beispiel/README.md#freihalte-bereiche-wohin-die-app-ihre-bedienelemente-legt), Stand Oktober 2026, Richtwerte).
+  ([`example/README.md`](example/README.md#freihalte-bereiche-wohin-die-app-ihre-bedienelemente-legt), Stand Oktober 2026, Richtwerte).
   Das Layout von Anfang an im Rahmen bauen und jede Szene mit `--props='{"safeZone":true}'` ansehen, bevor das Video gezeigt wird.
 - **Originale statt Vorschauen** bei Fotos und Videos. Gibt es nur eine Vorschau, sagen.
 - **Erst ansehen und messen, dann „fertig“.** Im Bericht stehen die echte Ausgabe der Prüfungen (Einzelbild, Nur-Effekte-Spur,
   Lautheit, Rücklesen) und was nicht geprüft wurde.
 - **Abbruch nicht überspielen.** Optionen wie `--erlaube-abweichung` erst nach Rückfrage; geschätzte Zeiten im Bericht nennen.
-- **Kein `--help` bei Skripten ohne Hilfe.** `prepare_sfx.py`, `sync_remotion.py`, `hoerseite.py`, `patch_lines.py` und `post_render.sh`
-  führen sofort aus (`prepare_sfx.py` schreibt alle Sounds neu, `hoerseite.py` startet den Server) oder lesen das erste Argument als
+- **Kein `--help` bei Skripten ohne Hilfe.** `prepare_sfx.py`, `sync_remotion.py`, `listen.py`, `patch_lines.py` und `post_render.sh`
+  führen sofort aus (`prepare_sfx.py` schreibt alle Sounds neu, `listen.py` startet den Server) oder lesen das erste Argument als
   Pfad. Den Kopf der Datei lesen statt aufrufen. Hilfe gibt es bei `whatsapp_clips.py`, `kontaktbogen.py`, `post_social.py`, `vo.py`,
   `ton_check.py`, `beat_align.py`.
 - **Nichts Kontospezifisches ausgeben:** Konto-IDs, Upload-Adressen und Beschreibungen nicht in Berichte, Commits oder Dokumente kopieren.

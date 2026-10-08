@@ -29,11 +29,11 @@ import soundfile as sf
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "..", "sounds")
-C = os.path.join(HERE, "..", "..", "sfx-kandidaten")
+C = os.path.join(HERE, "..", "..", "sfx-candidates")
 SR = 48000
 PEAK = 10 ** (-1 / 20)
 
-# name: (Rohdatei in sfx-kandidaten, "onset" | "peak")
+# name: (Rohdatei in sfx-candidates, "onset" | "peak")
 SRC = {
     # Kamera
     "shutter2": ("shutter_slr_trigger_01.wav", "onset"),

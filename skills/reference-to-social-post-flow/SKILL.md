@@ -81,7 +81,7 @@ Nie zum Ausprobieren veröffentlichen oder Entwürfe anlegen: dafür gibt es `--
 - Nichts automatisch wiederholen: nach einer Zeitüberschreitung ist unklar, ob der Beitrag existiert. Erst im Konto nachsehen.
 - Sichtbarkeit, Duett und Stitch lassen sich über Dritt-Werkzeuge oft nicht setzen; in der App nachsehen. Ein eigenes Titelbild lässt
   sich bei TikTok über diesen Weg nicht setzen.
-- Was die Plattformen zu Beschreibung, Hashtags, Cover, Musik und Test-Reels sagen: `docs/recherche-2026-10.md`.
+- Was die Plattformen zu Beschreibung, Hashtags, Cover, Musik und Test-Reels sagen: `docs/research-2026-10.md`.
 
 ## Regeln
 

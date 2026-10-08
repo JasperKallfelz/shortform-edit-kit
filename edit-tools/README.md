@@ -5,7 +5,7 @@ vermessen, Clips ins Projekt bringen, Sounds unterlegen, die Datei für den Post
 Skript und Schnitt achtet.
 
 Den Einstieg für einen Agenten (Ordnerkarte, Checkliste, Hausregeln) gibt [`../AGENTS.md`](../AGENTS.md). Das Voiceover-Werkzeug
-beschreibt [`../tonstudio/README.md`](../tonstudio/README.md), das Posten [`POSTEN.md`](POSTEN.md).
+beschreibt [`../voice-studio/README.md`](../voice-studio/README.md), das Posten [`POSTEN.md`](POSTEN.md).
 
 Annahme: ein Rechner, auf dem das Remotion-Projekt und das Studio laufen („Schnitt-Mac“), und optional ein zweiter, auf dem
 der Agent arbeitet. Wo beides derselbe Rechner ist, entfallen `ssh` und `rsync`.
@@ -13,7 +13,7 @@ der Agent arbeitet. Wo beides derselbe Rechner ist, entfallen `ssh` und `rsync`.
 ## Was schon automatisiert ist
 
 Die Skripte stehen ohne Pfad, sie liegen in `edit-tools/` (Hörseite und Sound-Kit mit `../`). `npm run …` läuft im Projektordner
-(im Repo `beispiel/`).
+(im Repo `example/`).
 
 | Aufgabe | Befehl |
 |---|---|
@@ -24,7 +24,7 @@ Die Skripte stehen ohne Pfad, sie liegen in `edit-tools/` (Hörseite und Sound-K
 | Kontaktbogen eines Ordners (Clip zu einem Standbild finden) | `kontaktbogen.py <ordner>` |
 | Wortzeiten eines Clips | `whisper-cli -m ggml-medium.en.bin -f clip.wav -ml 1 -sow -oj` ([whisper.cpp](https://github.com/ggerganov/whisper.cpp)) |
 | Datei sicher ändern, wenn mehrere Agenten am selben Projekt schreiben | `patch_lines.py <datei> <md5> <swaps.json>` |
-| Sounds zum Aussortieren zeigen | `../hoerseite.py` → http://localhost:3700, Urteile in `../auswahl.json` |
+| Sounds zum Aussortieren zeigen | `../listen.py` → http://localhost:3700, Urteile in `../auswahl.json` |
 | Behaltene Sounds aufbereiten | `../sfx-kit/tools/prepare_sfx.py` |
 | Kit ins Remotion-Projekt bringen (WAVs + Katalog) | `../sfx-kit/tools/sync_remotion.py <projekt> [md5]` |
 | Nur-Effekte-Spur und Mix nachmessen (Pegel je Abschnitt, Lücken, Effekte gegen Musik, Lautheit) | `ton_check.py <sfx.wav> [--musik <song> --musik-start <s> --musik-vol 0.15] [--mix <mix.wav>]` |
@@ -35,21 +35,21 @@ Die Skripte stehen ohne Pfad, sie liegen in `edit-tools/` (Hörseite und Sound-K
 | Stand eines Beitrags nachlesen | `post_social.py status --tiktok-post <ID>` bzw. `--instagram-media <ID>` |
 | Tests des Post-Skripts (ohne Netz; vom Wurzelordner des Repos aus) | `python3 -m unittest discover -s edit-tools/tests` |
 
-Vorsicht beim Ausprobieren: `prepare_sfx.py`, `sync_remotion.py`, `hoerseite.py`, `patch_lines.py` und `post_render.sh` kennen kein
-`--help`. Sie führen sofort aus (`prepare_sfx.py` schreibt alle Sounds neu, `hoerseite.py` startet den Server) oder lesen das erste
+Vorsicht beim Ausprobieren: `prepare_sfx.py`, `sync_remotion.py`, `listen.py`, `patch_lines.py` und `post_render.sh` kennen kein
+`--help`. Sie führen sofort aus (`prepare_sfx.py` schreibt alle Sounds neu, `listen.py` startet den Server) oder lesen das erste
 Argument als Pfad. Hilfe gibt es bei `whatsapp_clips.py`, `kontaktbogen.py`, `post_social.py`, `vo.py`, `ton_check.py` und `beat_align.py`.
 
-Warum die Regeln zu Lautstärke, Text-Vorlauf und Musik so sind und wie man sie nachmisst: [`../docs/ton-und-text-sync.md`](../docs/ton-und-text-sync.md).
+Warum die Regeln zu Lautstärke, Text-Vorlauf und Musik so sind und wie man sie nachmisst: [`../docs/sound-and-text-sync.md`](../docs/sound-and-text-sync.md).
 
 ## Ablauf 1: Skript und Voiceover
 
 Bild, Text und Sounds hängen an den Wortzeiten, darum kommt das Voiceover zuerst. Das Werkzeug dafür ist das Tonstudio
-([`../tonstudio/README.md`](../tonstudio/README.md), dort auch die Voraussetzungen: whisper.cpp, Modelle, `numpy`). Es läuft ganz
+([`../voice-studio/README.md`](../voice-studio/README.md), dort auch die Voraussetzungen: whisper.cpp, Modelle, `numpy`). Es läuft ganz
 lokal, ohne Konto.
 
 1. **Skript festhalten.** `skript.json` im Projektordner enthält die gesprochenen Phrasen und je Phrase einen Schlüssel (`key`), unter
    dem ihr Beginn in `src/timing.ts` landet. Der Code des Videos liest nur diese Schlüssel (`VO.w.<key>`). Steht ein Platzhalter im
-   Text (etwa ein Name), spricht man dort gleich viele Wörter. Beispiel: [`../beispiel/skript.json`](../beispiel/skript.json).
+   Text (etwa ein Name), spricht man dort gleich viele Wörter. Beispiel: [`../example/skript.json`](../example/skript.json).
 2. **Aufnehmen.** `npm run tonstudio`, dann http://localhost:3600. Erst „Pegel testen“ (Spitzen im grünen Bereich), dann aufnehmen.
    Jeder Take liegt sofort unverändert in `recordings/` und wird nie überschrieben.
 3. **Take wählen und vermessen.** `npm run vo -- recordings/<take>.wav` bereitet die Aufnahme auf (−14 LUFS) und schreibt sie als
@@ -74,10 +74,10 @@ Ein Standbild heißt „dieses Video“ – die Datei zu finden ist Aufgabe des 
 3. **Stelle wählen.** Die Einstellung aus dem Standbild, oder den Ton mit whisper mitschreiben und eine Textstelle suchen, die
    zum Voiceover passt. Ein paar Einzelbilder ziehen und ansehen, wo die Person im Bild steht.
 4. **Einbauen.** Datei nach `public/` des Projekts und einen Slot in den Props anlegen (Label, Datei, Startsekunde). So lässt
-   sich der Ausschnitt im Studio verschieben, ohne Code anzufassen. Bausteine aus `beispiel/src/Demo.tsx`:
+   sich der Ausschnitt im Studio verschieben, ohne Code anzufassen. Bausteine aus `example/src/Demo.tsx`:
    - `Inset` – abgerundeter 16:9-Clip auf weißer Karte; mit `zoom` wächst er langsam auf die Person zu.
-   - `AmbientInset` (`beispiel/src/lib/ambient.tsx`) – dasselbe mit Ambient-Light-Schein: dahinter liegt der Clip noch einmal, weichgezeichnet und aufgehellt, und scheint auf das Weiß. Nur auf hellem Grund, Parameter und Erfahrungen in `beispiel/README.md`.
-   - `SafeZoneGuide` und `SAFE` (`beispiel/src/lib/safezone.tsx`) – Freihalte-Bereiche von Instagram und TikTok (oben 250 px, unten 480 px, rechts 160 px ab y = 860, links 60 px) und ein Prüf-Overlay dafür, per Prop `safeZone`. Werte, Quellen und Erfahrungen in `beispiel/README.md`.
+   - `AmbientInset` (`example/src/lib/ambient.tsx`) – dasselbe mit Ambient-Light-Schein: dahinter liegt der Clip noch einmal, weichgezeichnet und aufgehellt, und scheint auf das Weiß. Nur auf hellem Grund, Parameter und Erfahrungen in `example/README.md`.
+   - `SafeZoneGuide` und `SAFE` (`example/src/lib/safezone.tsx`) – Freihalte-Bereiche von Instagram und TikTok (oben 250 px, unten 480 px, rechts 160 px ab y = 860, links 60 px) und ein Prüf-Overlay dafür, per Prop `safeZone`. Werte, Quellen und Erfahrungen in `example/README.md`.
    - `Squiggle` – handgezeichneter Kringel-Pfeil als SVG, der sich zeichnet (`pathLength` 1, `strokeDashoffset` läuft von 1 auf 0).
    - Wort-DSL (`Words`) – jedes Wort mit Schrift, Größe, Position in Prozent und Einsatz aus der Wortzeit.
 5. **Ansehen, bevor „fertig“.** `npx remotion still <Komposition> bild.png --frame=N` und das Bild wirklich anschauen. Wo Text
@@ -91,7 +91,7 @@ Hausregel: jede Bewegung bekommt einen kleinen Sound, aber so leise und passend,
 **Nur echte, aufgenommene Geräusche**, nichts Synthetisches. Auslöser, Mausklick, Klapptafel, Papier, Bleistift, Tasten;
 Whoosh nur ganz minimal. Effekte nie lauter als die Musik. Das Sound-Kit mit Katalog und Pegel-Regeln: [`../sfx-kit/README.md`](../sfx-kit/README.md).
 
-1. Neue Sounds nur aus echten Aufnahmen sammeln, mit Quelle und Lizenz in `../sfx-kandidaten/manifest.tsv`. Das Präfix im
+1. Neue Sounds nur aus echten Aufnahmen sammeln, mit Quelle und Lizenz in `../sfx-candidates/manifest.tsv`. Das Präfix im
    Dateinamen (`flap_`, `flutter_`, `riser_`, `click_`, …) bestimmt die Kategorie auf der Hörseite.
 2. Auf der Hörseite sortieren (✓ / ✕, Tasten B / X). Die Urteile stehen in `auswahl.json`.
 3. Ein Agent wartet nicht auf das Sortieren von hunderten Dateien: nach Beschreibung auswählen, einsetzen, die Cue benennen,
@@ -116,7 +116,7 @@ Was wofür funktioniert: Tastenanschlag je Textzeile, Bleistift auf Schreibschri
 wenn ein Foto oder Clip erscheint, Filmtransport nach einem Foto, Auslöser-Serie auf einer Fotowand, Klapptafel-Klappe für
 Kacheln und laufende Zahlen, Seite blättert auf einen Schnitt, rückwärts gespieltes Becken in ein Musik-Loch vor dem
 Höhepunkt, echte Trommel auf dem Höhepunkt. Einschränkung nach späteren Hörrunden: Auslöser als Übergang auf Schnitten und schnelle
-Klappen-Folgen sind durchgefallen, siehe [`../docs/kurzvideo-erfahrungen-2026-10.md`](../docs/kurzvideo-erfahrungen-2026-10.md#5-geräusche-was-nach-gehör-durchfiel-und-was-blieb).
+Klappen-Folgen sind durchgefallen, siehe [`../docs/shortform-learnings-2026-10.md`](../docs/shortform-learnings-2026-10.md#5-geräusche-was-nach-gehör-durchfiel-und-was-blieb).
 
 ## Ablauf 4: Fertig machen für den Post
 
@@ -135,7 +135,7 @@ Klappen-Folgen sind durchgefallen, siehe [`../docs/kurzvideo-erfahrungen-2026-10
 4. „Mit Musik“ ist die Fassung mit den Standardwerten der Komposition (in der Demo `demoDefaults` in `src/Demo.tsx`, dort ist `music`
    leer). Steht die Musik nur im Props-Feld des Studios und nicht in den Standardwerten, sind beide Dateien gleich: dann die Musik
    in den Standardwerten eintragen, bevor man `post_render.sh` startet.
-5. Musikrechte klären, bevor etwas öffentlich wird (siehe `../docs/recherche-2026-10.md`): im Zweifel die Fassung „ohne Musik“ nehmen
+5. Musikrechte klären, bevor etwas öffentlich wird (siehe `../docs/research-2026-10.md`): im Zweifel die Fassung „ohne Musik“ nehmen
    und den Song in der App aus der Bibliothek der Plattform dazulegen.
 
 ## Ablauf 5: Posten
@@ -144,7 +144,7 @@ Das Skript `post_social.py` lädt die fertige MP4 hoch und legt sie über die Co
 Konfiguration, alle Befehle und die Fallen stehen in [`POSTEN.md`](POSTEN.md). Die sichere Reihenfolge:
 
 1. **Beschreibung schreiben (lassen) und von einem Menschen freigeben lassen.** Erst danach in die Datei. Hashtags: höchstens 5 bei
-   Instagram, 3 bis 4 passende bei TikTok (`../docs/recherche-2026-10.md`).
+   Instagram, 3 bis 4 passende bei TikTok (`../docs/research-2026-10.md`).
 2. **Trockenlauf.** Nichts wird hochgeladen oder angelegt:
 
    ```bash
@@ -169,11 +169,11 @@ Was über diesen Weg nicht geht (TikTok-Titelbild, Instagram-Beitrag ändern ode
 Ein Video ist eine Vorlage, kein Einzelstück. Wer drei bis vier Varianten testen will (zum Beispiel als Test-Reels), spricht
 mehrere ähnliche Skripte ein (Ablauf 1). Jede Variante braucht ihren eigenen Voiceover-Take mit eigenen Wortzeiten; Bild, Sounds und
 Schnitte hängen an den Wortzeiten und wandern mit. Was die Plattformen zu fast gleichen Videos und zum erneuten Posten sagen,
-steht in `../docs/recherche-2026-10.md`.
+steht in `../docs/research-2026-10.md`.
 
 ## Worauf es bei Skript und Schnitt ankommt
 
-Kurzfassung der Recherche in `../docs/recherche-2026-10.md`:
+Kurzfassung der Recherche in `../docs/research-2026-10.md`:
 
 1. Die ersten 1,5 bis 3 Sekunden entscheiden: mit dem stärksten Bild anfangen, nicht mit einem ruhigen Aufbau.
 2. Ein klarer emotionaler Höhepunkt, verbunden mit dem Inhalt. Die Musik kurz davor wegnehmen und auf dem Wort zurückholen.
