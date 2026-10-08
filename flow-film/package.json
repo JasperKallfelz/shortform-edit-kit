@@ -1,7 +1,7 @@
 {
   "name": "flow-film",
   "version": "1.0.0",
-  "description": "Der Ablauf in 30 Sekunden: vom Satz an den Agenten bis zum Post, als Animation mit echten Sounds aus dem Kit (Remotion)",
+  "description": "The flow in 30 seconds: from a sentence to your agent to the published post, as an animation with real sounds from the kit (Remotion)",
   "license": "MIT",
   "private": true,
   "dependencies": {
@@ -20,10 +20,10 @@
   },
   "scripts": {
     "dev": "remotion studio",
-    "vorbereiten": "node scripts/vorbereiten.mjs",
-    "typen": "tsc --noEmit",
-    "render": "remotion render Ablauf out/flow.mp4 --image-format=png --codec=h264 --crf=20 --pixel-format=yuv420p --audio-codec=aac --audio-bitrate=192k",
-    "ton": "remotion render Ablauf out/ton.wav --codec=wav",
-    "vorschau": "node scripts/vorschau.mjs"
+    "prepare-media": "node scripts/prepare.mjs",
+    "typecheck": "tsc --noEmit",
+    "render": "remotion render Flow out/flow.mp4 --image-format=png --codec=h264 --crf=20 --pixel-format=yuv420p --audio-codec=aac --audio-bitrate=192k",
+    "audio": "remotion render Flow out/audio.wav --codec=wav",
+    "preview": "node scripts/preview.mjs"
   }
 }

@@ -74,15 +74,15 @@
   "lead": 0,
   "loud": -25.3
  },
+ "pen3": {
+  "len": 242,
+  "lead": 0,
+  "loud": -28.6
+ },
  "pencil1": {
   "len": 630,
   "lead": 0,
   "loud": -11.5
- },
- "pencil2": {
-  "len": 530,
-  "lead": 0,
-  "loud": -12.5
  },
  "riffle1": {
   "len": 596,
@@ -93,6 +93,11 @@
   "len": 1500,
   "lead": 858,
   "loud": -9.5
+ },
+ "shutterSlr3": {
+  "len": 687,
+  "lead": 0,
+  "loud": -16.7
  },
  "swishSmall": {
   "len": 298,
@@ -123,5 +128,20 @@
   "len": 207,
   "lead": 0,
   "loud": -24.2
+ },
+ "typeBurst1": {
+  "len": 2143,
+  "lead": 0,
+  "loud": -21
+ },
+ "winder1": {
+  "len": 704,
+  "lead": 0,
+  "loud": -20.5
+ },
+ "winder2": {
+  "len": 580,
+  "lead": 0,
+  "loud": -22.5
  }
 }

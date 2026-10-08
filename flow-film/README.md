@@ -1,81 +1,85 @@
-# Ablauf-Film: das Kit in 30 Sekunden
+# Flow film: the kit in 30 seconds
 
-Dieses Projekt baut `docs/flow.mp4` und die stumme Vorschau `docs/flow.gif` für das README: links sagt ein Mensch, was er will,
-in der Mitte arbeitet der Agent die fünf Schritte ab (Voiceover, Clips, Sounds, Export, Post), rechts wächst das Video im Handy.
-1920 × 1080, 30 Bilder pro Sekunde, 32 Sekunden, alles in Remotion gezeichnet, keine Bildschirmaufnahmen.
+This project builds `docs/flow.mp4` and the silent preview `docs/flow.gif` for the README. On the left a person says what they
+want, in the middle the agent works through the five steps (voiceover, clips, sounds, export, post), on the right the video grows
+inside a phone. 1920 × 1080, 30 frames per second, 32 seconds, drawn in Remotion.
 
-Der Ton besteht nur aus Sounds aus `sfx-kit/sounds/` (echte Aufnahmen). Es gibt keine Stimme und keine Musik: Für beides liegt
-nichts im Repo, das man frei weitergeben dürfte.
+The phone shows a real video built with the kit (`docs/real-example.mp4`): while its first line is "recorded" you hear the voice
+alone and see the words pop on exactly the spoken words; at the end the finished video plays with its own sound. Everything else
+you hear are sounds from `sfx-kit/sounds/` (real recordings). There is no music.
 
-| Datei | Inhalt |
+| File | Content |
 |---|---|
-| `src/plan.ts` | Zeitplan, alle Texte und die Liste der Sounds (`CUES`). Jede Zeit steht hier genau einmal, Bild und Ton lesen dieselben Konstanten |
-| `src/Ablauf.tsx` | das Bild: Sprechblasen, die fünf Karten, das Handy |
-| `src/sounds.json` | Länge, Einsatzpunkt und Lautheit der benutzten Sounds, von `npm run vorbereiten` aus dem Katalog des Kits geschrieben |
-| `scripts/vorbereiten.mjs` | kopiert die benutzten Sounds nach `public/sfx/` |
-| `scripts/vorschau.mjs` | legt den Film nach `docs/` und baut die GIF-Vorschauen (`flow.gif`, `demo.gif`) |
+| `src/plan.ts` | schedule, all texts and the list of sounds (`CUES`). Every time lives here exactly once; picture and sound read the same constants |
+| `src/Flow.tsx` | the picture: speech bubbles, the five cards, the phone |
+| `src/sounds.json` | length, cue point and loudness of the sounds in use, written by `npm run prepare-media` from the kit's catalogue |
+| `assets/` | the first spoken line of the real video (`voice-line.wav`) and three clip thumbnails |
+| `scripts/prepare.mjs` | copies sounds, assets and the real video into `public/` |
+| `scripts/preview.mjs` | puts the film into `docs/` and builds the GIF previews and the five step pictures (`docs/steps/`) |
 
-Nicht eingecheckt (siehe `.gitignore`): `node_modules/`, `public/`, `out/`.
+Not committed (see `.gitignore`): `node_modules/`, `public/`, `out/`.
 
-## Bauen
+## Build
 
-Voraussetzungen: Node 20 oder neuer, ffmpeg. Alle Befehle im Ordner `flow-film/`.
+Prerequisites: Node 20 or newer, ffmpeg. All commands in the folder `flow-film/`.
 
 ```bash
 npm install
 ```
 
 ```bash
-npm run vorbereiten
+npm run prepare-media
 ```
 
-Ansehen und ändern im Remotion Studio (Komposition `Ablauf`):
+Look at it and change it in Remotion Studio (composition `Flow`):
 
 ```bash
 npm run dev
 ```
 
-Typen prüfen:
+Check the types:
 
 ```bash
-npm run typen
+npm run typecheck
 ```
 
-Rendern (H.264, yuv420p, AAC) nach `out/flow.mp4`:
+Render (H.264, yuv420p, AAC) to `out/flow.mp4`:
 
 ```bash
 npm run render
 ```
 
-Film und GIF-Vorschauen nach `docs/` legen:
+Put film, previews and step pictures into `docs/`:
 
 ```bash
-npm run vorschau
+npm run preview
 ```
 
-## Ändern
+## Change
 
-- **Texte:** `TEXT` in `src/plan.ts` (Sprechblasen, Rückmeldungen des Agenten, Titel, Schluss).
-- **Tempo:** `S` (Beginn der fünf Schritte) und `T` in `src/plan.ts`. Die Sounds hängen an denselben Konstanten und wandern mit.
-- **Sounds:** `CUES` in `src/plan.ts`. `at` ist der Frame, auf dem der Sound sitzt, `db` der Zielpegel seiner lautesten Stelle; die
-  Lautstärke wird aus dem Katalogwert `loud` gerechnet. Nach einem neuen Soundnamen einmal `npm run vorbereiten`.
-- **Gesamtlautstärke:** Prop `sfxVolume` (im Studio rechts, beim Rendern `--props='{"sfxVolume":0.8}'`).
+- **Texts:** `TEXT` in `src/plan.ts` (speech bubbles, the agent's reports, title, closing).
+- **Pace:** `S` (start of the five steps) and `T` in `src/plan.ts`. The sounds hang on the same constants and move with them.
+- **Sounds:** `CUES` in `src/plan.ts`. `at` is the frame the sound sits on, `db` the target level of its loudest part; the volume is
+  computed from the catalogue value `loud`. After adding a new sound name, run `npm run prepare-media` once.
+- **Another video in the phone:** replace `docs/real-example.mp4` and `assets/voice-line.wav`, then set `WORDS`, `WAVE`, `LINE_MS`,
+  `REAL_FRAMES` and `PLAY_MS` in `src/plan.ts` and `CLIP` (where the clip sits in the picture) in `src/Flow.tsx`.
+- **Overall volume:** props `sfxVolume` (effects) and `videoVolume` (voice and the real video), in the Studio on the right or when
+  rendering with `--props='{"sfxVolume":0.8,"videoVolume":1}'`.
 
-## Prüfen
+## Check
 
-Nur den Ton rendern und Lautheit und Spitze messen:
+Render only the effects and look at levels per section and stretches without any effect:
 
 ```bash
-npm run ton
+npx remotion render Flow out/sfx.wav --codec=wav --props='{"sfxVolume":1,"videoVolume":0}'
 ```
 
 ```bash
-ffmpeg -hide_banner -i out/ton.wav -af ebur128=peak=true -f null -
+python3 ../edit-tools/sound_check.py out/sfx.wav --section 4 --gap 1.2
 ```
 
-Gemessen am 08.10.2026: −33,0 LUFS über den ganzen Film, Spitze −4,5 dBFS. Der Wert über den ganzen Film ist niedrig, weil zwischen den
-Geräuschen Stille liegt. Pegel je Abschnitt und Strecken ohne Effekt zeigt das Werkzeug aus dem Kit:
+Loudness and peak of the whole film:
 
 ```bash
-python3 ../edit-tools/ton_check.py out/ton.wav --abschnitt 4 --luecke 1.2
+ffmpeg -hide_banner -i out/flow.mp4 -af ebur128=peak=true -f null -
 ```
