@@ -3,15 +3,15 @@ out/
 .DS_Store
 __pycache__/
 *.pyc
-# persönliche Urteile von der Hörseite
-auswahl.json
-auswahl.json.tmp
-# Posten: Konto-Konfiguration, Protokoll echter Aktionen, gemerkte temporäre Upload-URLs (edit-tools/POSTEN.md)
+# personal picks from the listening page
+selection.json
+selection.json.tmp
+# posting: account configuration, log of real actions, remembered temporary upload URLs (edit-tools/POSTING.md)
 post.config.json
 post-log.jsonl
 *.upload.json
-# Tonstudio: Aufnahmen und das daraus erzeugte Voiceover (voice-studio/README.md)
+# Voice Studio: recordings and the voiceover made from them (voice-studio/README.md)
 recordings/
 example/public/vo.wav
-# Sicherungskopien vor Änderungen (Endung .bak, siehe AGENTS.md)
+# backup copies before changes (extension .bak, see AGENTS.md)
 *.bak

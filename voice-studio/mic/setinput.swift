@@ -1,6 +1,6 @@
-// Setzt das Standard-Eingabegerät von macOS auf das Mikrofon, dessen Name den übergebenen Text enthält. Ohne Argument: Liste aller Eingabegeräte.
-// Bauen (einmalig):  swiftc -O voice-studio/mikro/setinput.swift -o voice-studio/mikro/setinput
-// Benutzen:          voice-studio/mikro/setinput "USB"       (Teil des Namens genügt; die Datei `setinput` wird nicht eingecheckt)
+// Sets the default input device of macOS to the microphone whose name contains the given text. Without an argument: lists all input devices.
+// Build (once):  swiftc -O voice-studio/mic/setinput.swift -o voice-studio/mic/setinput
+// Use:           voice-studio/mic/setinput "USB"       (part of the name is enough; the `setinput` binary is not checked in)
 import CoreAudio
 import Foundation
 
@@ -18,7 +18,7 @@ func name(_ id: AudioDeviceID) -> String {
     return (n?.takeRetainedValue() as String?) ?? ""
 }
 
-// Hat das Gerät mindestens einen Eingabekanal? (Lautsprecher und reine Ausgabegeräte fallen weg.)
+// Does the device have at least one input channel? (Speakers and output-only devices drop out.)
 func hasInput(_ id: AudioDeviceID) -> Bool {
     var a = AudioObjectPropertyAddress(mSelector: kAudioDevicePropertyStreamConfiguration, mScope: kAudioDevicePropertyScopeInput, mElement: kAudioObjectPropertyElementMain)
     var s: UInt32 = 0
@@ -32,18 +32,18 @@ func hasInput(_ id: AudioDeviceID) -> Bool {
 
 let inputs = ids.filter(hasInput)
 guard CommandLine.arguments.count > 1 else {
-    print("Eingabegeräte (Name oder Teil davon als Argument übergeben):")
+    print("Input devices (pass the name or part of it as an argument):")
     inputs.forEach { print("  \(name($0))") }
     exit(0)
 }
 let want = CommandLine.arguments[1]
 guard let target = inputs.first(where: { name($0).localizedCaseInsensitiveContains(want) }) else {
-    print("Kein Eingabegerät mit \"\(want)\" gefunden. Vorhanden:")
+    print("No input device matching \"\(want)\" found. Available:")
     inputs.forEach { print("  \(name($0))") }
     exit(1)
 }
 var dev = target
 var d = AudioObjectPropertyAddress(mSelector: kAudioHardwarePropertyDefaultInputDevice, mScope: kAudioObjectPropertyScopeGlobal, mElement: kAudioObjectPropertyElementMain)
 let r = AudioObjectSetPropertyData(AudioObjectID(kAudioObjectSystemObject), &d, 0, nil, UInt32(MemoryLayout<AudioDeviceID>.size), &dev)
-print(r == 0 ? "Standard-Eingabe: \(name(target))" : "Fehler \(r)")
+print(r == 0 ? "Default input: \(name(target))" : "Error \(r)")
 exit(r == 0 ? 0 : 1)

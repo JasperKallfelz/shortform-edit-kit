@@ -1,7 +1,7 @@
 {
   "name": "shortform-edit-kit-example",
   "version": "1.0.0",
-  "description": "Kleines Remotion-Beispiel: Wort-Timing, Sound-Cues, Inset-Clips und ein gezeichneter Pfeil",
+  "description": "Small Remotion example: word timing, sound cues, inset clips and a drawn arrow",
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
@@ -26,7 +26,7 @@
     "build": "remotion bundle",
     "render": "remotion render Demo out/demo.mp4",
     "lint": "eslint src && tsc",
-    "tonstudio": "node ../voice-studio/recorder/server.mjs",
+    "voice-studio": "node ../voice-studio/recorder/server.mjs",
     "vo": "python3 ../voice-studio/vo/vo.py"
   }
 }

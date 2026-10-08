@@ -1,97 +1,98 @@
-# Ton und Text-Sync: was sich beim Bauen gezeigt hat
+# Sound and text sync: what building showed
 
-Erfahrungen aus einem 16-Sekunden-Video mit Voiceover, Musik und rund 50 Sound-Cues, das in mehreren Runden nach Gehör
-korrigiert wurde. Die Regeln selbst stehen in [`../sfx-kit/README.md`](../sfx-kit/README.md) und
-[`../AGENTS.md`](../AGENTS.md); hier steht, warum sie so sind und wie man sie nachmisst.
+Learnings from a 16-second video with voiceover, music and about 50 sound cues that was corrected by ear in several rounds.
+The rules themselves are in [`../sfx-kit/README.md`](../sfx-kit/README.md) and [`../AGENTS.md`](../AGENTS.md); this page
+says why they are the way they are and how to re-measure them.
 
-## Text muss zum Wort voll da sein
+## Text must be fully there on the word
 
-Ein Text gilt erst dann als synchron, wenn er **beim Wortbeginn fertig sichtbar** ist, nicht wenn er dort erst startet.
+A text counts as in sync only when it is **fully visible at the start of the word**, not when it only starts there.
 
-- Die Wortzeiten können stimmen (±20–40 ms) und der Text wirkt trotzdem zu spät: Das Einblenden dauert 3 Frames, der Text ist
-  also erst 1–3 Frames nach dem Wort voll zu sehen. Am Videoanfang waren es 100 ms.
-- Deshalb startet jeder Wort-Text um die Dauer seines Einblendens früher (`TEXT_LEAD_MS = 100` in `example/src/Demo.tsx`).
-  2–4 Frames Vorlauf lesen sich wie „gleichzeitig“; mehr als etwa 5 Frames wirken wie ein Spoiler.
-- Beginnt eine Szene genau auf einem Wort, kann der Text nicht vor dem Schnitt kommen. Dann den Einsatz negativ werden lassen
-  (nicht bei 0 klemmen): Der Text steht im ersten Frame der Szene schon deckend da.
-- Zeilen, die ohne Einblenden hart wechseln (Untertitel), sind sofort voll da, aber gleichzeitig mit der Stimme, nicht davor.
-  Ob auch sie 2–3 Frames früher kommen sollen, ist eine eigene Entscheidung.
+- The word timings can be right (±20–40 ms) and the text still looks late: the fade-in takes 3 frames, so the text is fully
+  visible only 1–3 frames after the word. At the start of the video it was 100 ms.
+- Therefore every word text starts earlier by the duration of its fade-in (`TEXT_LEAD_MS = 100` in
+  `example/src/Demo.tsx`). 2–4 frames of lead read as "simultaneous"; more than about 5 frames look like a spoiler.
+- If a scene begins exactly on a word, the text cannot come before the cut. Then let the start time go negative (do not
+  clamp it at 0): the text is already fully opaque in the first frame of the scene.
+- Lines that change hard without a fade-in (subtitles) are fully there at once, but at the same time as the voice, not
+  before it. Whether they should also come 2–3 frames earlier is a separate decision.
 
-**Nachmessen, nicht aus dem Code schließen.** Die Frames wirklich rendern und je Textzeile zählen, ab welchem Frame sie deckend
-ist; den Spracheinsatz aus dem Spektrogramm der Aufnahme lesen und beides vergleichen.
+**Re-measure, do not infer from the code.** Really render the frames and count, for each text line, from which frame it is
+opaque; read the speech onset from the spectrogram of the recording and compare both.
 
 ```bash
 npx remotion render Demo /tmp/seq --frames=0-70 --sequence --scale=0.25
 ```
 
-Die Vorschau im Studio ist beim Ton nicht frame-genau, vor allem direkt nach dem Start. Wirkt dort etwas minimal versetzt,
-zählt der Render.
+The preview in the studio is not frame-accurate for sound, especially right after the start. If something looks minimally
+offset there, the render counts.
 
-## Lautstärke: gegen die Musik messen
+## Loudness: measure against the music
 
-- Der häufigste Fehler: die Effekte an der Stimme ausrichten. Dann sind sie viel zu laut. Maßstab ist die Musik.
-- In drei Hörrunden pendelte sich das Ziel ein: zuerst zu laut, 2 dB unter der Musik dann zu leise, am Ende **die lauteste
-  0,4-s-Stelle der Effekte so laut wie die Musik, nicht darüber**.
-- Zwei Ebenen trennen: Die `vol`-Werte der Cues legen das Verhältnis der Sounds untereinander fest, ein Gesamtregler
-  (`sfxVolume`) die Lautstärke aller zusammen. Dann ändert „alles etwas lauter“ eine Zahl statt fünfzig.
-- Korrekturen kommen nach Gehör in Kategorien („die Whooshes“, „die kurzen Sounds an Übergängen“, „bei der Stelle mit den
-  Fotos“), selten pro Cue. Deshalb jede Cue benennen und Änderungen als kurze Namensliste zurückmelden.
-- Kurze Sounds (Auslöser, Klicks) wirken als Übergang schnell zu laut; wo der Sound zum Bild gehört (ein Foto erscheint),
-  darf er kräftiger sein. Whooshes vertragen etwas mehr.
+- The most common mistake: aligning the effects to the voice. Then they are far too loud. The yardstick is the music.
+- Over three listening rounds the target settled: first too loud, then 2 dB below the music was too quiet, and in the end
+  **the loudest 0.4 s point of the effects as loud as the music, not above it**.
+- Separate two levels: the `vol` values of the cues set the ratio of the sounds to each other, one master control
+  (`sfxVolume`) sets the loudness of all of them together. Then "everything a bit louder" changes one number instead of
+  fifty.
+- Corrections come by ear in categories ("the whooshes", "the short sounds at transitions", "at the spot with the photos"),
+  rarely per cue. So name every cue and report changes back as a short list of names.
+- Short sounds (shutter, clicks) quickly get too loud as a transition; where the sound belongs to the image (a photo
+  appears), it may be stronger. Whooshes tolerate a little more.
 
-Messen:
-
-```bash
-python3 edit-tools/ton_check.py sfx.wav --musik <song.wav> --musik-start <s> --musik-vol 0.15 --mix mix.wav
-```
-
-Das zeigt den Pegel je Abschnitt, Lücken ohne Effekt, die lauteste Stelle der Effekte gegen die Musik und Lautheit und Spitze
-des Gesamtmixes. Ein lauter Schlag auf einem betonten Wort kann die Spitze des Mixes bis an die Vollaussteuerung treiben,
-obwohl jede Spur für sich Luft hat: nach jeder Pegeländerung die Spitze neu messen.
-
-## Viele Ereignisse dicht hintereinander
-
-Poppen 30 Kacheln innerhalb von 22 Frames auf, wird ein Klick je Kachel zum Rattern. Nach Zeit ausdünnen, nicht nach Nummer:
-die Ereignisse nach ihrem Frame sortieren und höchstens alle 4 Frames eines klicken lassen. Das bleibt richtig, wenn sich
-Anzahl oder Reihenfolge der Kacheln ändert.
-
-## Sitzt jede Cue auf ihrem Frame?
-
-Die Nur-Effekte-Spur rendern und für jede Cue die aufbereitete Datei per Kreuzkorrelation im Render suchen (Fenster ±80 ms um
-die erwartete Stelle). Liegt der Treffer innerhalb ±2 ms, sitzt die Cue. Zwei Fallen:
-
-- Sehr leise Cues fallen unter jede Schwelle. Das ist dann eine Grenze der Messung, kein Positionsfehler: die gefundene Stelle
-  prüfen, nicht nur „gefunden/nicht gefunden“.
-- Direkt neben einem lauten Sound (ein Schlag, ein Auslöser mit Ausklang) trifft die Korrelation den lauten Nachbarn. Solche
-  Cues im Bericht als „nicht einzeln nachweisbar“ nennen statt als Fehler oder als bestanden.
-
-## Musik
-
-- Den Einstieg so wählen, dass ein Schlag auf das wichtigste Wort fällt, und ihn aus der Wortzeit berechnen (Songstelle minus
-  Wortzeit). Kommt ein neuer Take, bleibt der Schlag auf dem Wort.
+Measuring:
 
 ```bash
-python3 edit-tools/beat_align.py <song.wav> example/src/timing.ts <wort> --auch <wort>,<wort>
+python3 edit-tools/sound_check.py sfx.wav --music <song.wav> --music-start <s> --music-vol 0.15 --mix mix.wav
 ```
 
-- Bei 172 BPM liegen die Schläge 348 ms auseinander; ein beliebiger Schnitt liegt im Mittel knapp 90 ms daneben. Schnitte, die
-  am Voiceover hängen, treffen den Beat nur zufällig. Sagen, welche sitzen und welche nicht, statt „beatgenau“ zu behaupten.
-- Bewährtes Muster aus Werbefilmen: kurz vor dem Höhepunkt die Musik wegnehmen und sie genau auf einem Schnitt zurückbringen.
-  In einem vermessenen 4-Minuten-Spot waren das rund 7 Sekunden Stille (etwa 3 % der Länge), direkt gefolgt vom lautesten
-  10-Sekunden-Block. Auf 16 Sekunden übertragen ist das etwa eine halbe Sekunde.
-- Eine Tonhöhen-Variante als eigene Datei backen, nicht über das Abspieltempo im Video: Vorschau und Render behandeln die
-  Tonhöhe verschieden, die gebackene Datei klingt in beiden gleich.
+This shows the level per section, gaps without an effect, the loudest point of the effects against the music, and the
+loudness and peak of the full mix. A loud hit on an emphasised word can push the peak of the mix up to full scale although
+each track has headroom on its own: re-measure the peak after every level change.
 
-## Fallen beim Messen fremder Videos
+## Many events in quick succession
 
-- Ein Detektor für hohe Impulse („Klick auf dem Schnitt?“) schlägt auch bei Sprachkonsonanten an. Bei anderthalb Treffern pro
-  Sekunde und ±120 ms Fenster liegen schon aus Zufall rund 30 % der Schnitte „auf einem Impuls“. Ein Wert von 40–50 % belegt
-  dann nichts. Erst Stimme, Musik und Rest trennen, dann zählen.
-- Wortzeiten aus einer Spracherkennung können mehrere hundert Millisekunden danebenliegen. Wörter nach einer Sprechpause am
-  gemessenen Einsatz ausrichten (das macht `voice-studio/vo/`), den Rest am Spektrogramm stichprobenartig prüfen.
+If 30 tiles pop up within 22 frames, one click per tile turns into rattling. Thin out by time, not by number: sort the
+events by their frame and let at most one of them click every 4 frames. This stays right when the number or order of the
+tiles changes.
 
-## Zwei Agenten an einer Datei
+## Is every cue on its frame?
 
-Was in der Praxis einen Beinahe-Verlust verhindert hat: Jede Änderung prüft direkt vor dem Schreiben die Prüfsumme und bricht
-ab, wenn sie nicht passt. Danach geht die neue Prüfsumme mit zwei Sätzen an die andere Session (was geändert wurde, was
-unberührt blieb). Wer einen größeren Umbau vorhat, kündigt ihn an und nennt die Namen, an denen fremde Teile hängen.
+Render the effects-only track and, for each cue, search for the processed file in the render by cross-correlation (window
+±80 ms around the expected position). If the hit is within ±2 ms, the cue sits. Two traps:
+
+- Very quiet cues fall below any threshold. That is then a limit of the measurement, not a position error: check the
+  position that was found, not just "found/not found".
+- Right next to a loud sound (a hit, a shutter with its tail), the correlation hits the loud neighbour. Report such cues as
+  "not individually verifiable" instead of as an error or as passed.
+
+## Music
+
+- Choose the entry so that a beat falls on the most important word, and compute it from the word time (song position minus
+  word time). When a new take comes, the beat stays on the word.
+
+```bash
+python3 edit-tools/beat_align.py <song.wav> example/src/timing.ts <word> --also <word>,<word>
+```
+
+- At 172 BPM the beats are 348 ms apart; an arbitrary cut is off by just under 90 ms on average. Cuts that hang on the
+  voiceover hit the beat only by chance. Say which ones sit and which do not, instead of claiming "beat-accurate".
+- A proven pattern from commercials: take the music away shortly before the climax and bring it back exactly on a cut. In a
+  measured 4-minute spot that was about 7 seconds of silence (about 3% of the length), directly followed by the loudest
+  10-second block. Transferred to 16 seconds, that is about half a second.
+- Bake a pitch variant as its own file, not via the playback rate in the video: preview and render treat pitch differently,
+  the baked file sounds the same in both.
+
+## Traps when measuring other people's videos
+
+- A detector for high impulses ("click on the cut?") also fires on speech consonants. At one and a half hits per second and
+  a ±120 ms window, about 30% of the cuts are "on an impulse" by chance alone. A value of 40–50% then proves nothing. First
+  separate voice, music and the rest, then count.
+- Word timings from speech recognition can be off by several hundred milliseconds. Align words after a speech pause to the
+  measured onset (that is what `voice-studio/vo/` does), and spot-check the rest against the spectrogram.
+
+## Two agents on one file
+
+What prevented a near-loss in practice: every change checks the checksum right before writing and aborts if it does not
+match. Then the new checksum goes to the other session in two sentences (what was changed, what was left untouched).
+Whoever plans a bigger rework announces it and names the identifiers that parts owned by others depend on.

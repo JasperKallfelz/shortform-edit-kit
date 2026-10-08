@@ -1,7 +1,7 @@
-// Drei Schriften, die den Look tragen:
-// - sans: enge, fette Grotesk (Inter, negatives Letter-Spacing)
-// - serifItalic: Didone-Kursiv (Playfair Display Italic)
-// - script: Schreibschrift (Pinyon Script)
+// Three fonts that carry the look:
+// - sans: tight, bold grotesque (Inter, negative letter-spacing)
+// - serifItalic: Didone italic (Playfair Display Italic)
+// - script: handwriting script (Pinyon Script)
 import { loadFont as loadInter } from "@remotion/google-fonts/Inter";
 import { loadFont as loadPlayfair } from "@remotion/google-fonts/PlayfairDisplay";
 import { loadFont as loadPinyon } from "@remotion/google-fonts/PinyonScript";

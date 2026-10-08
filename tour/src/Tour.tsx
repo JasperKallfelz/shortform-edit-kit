@@ -8,60 +8,60 @@ import marks from "./marks.json";
 
 const M = marks as Record<string, { seconds: number; marks: Record<string, number> }>;
 const f = (s: number) => Math.round(s * FPS);
-const OVERLAP = 12; // Frames, in denen eine Szene in die nächste übergeht
+const OVERLAP = 12; // frames in which one scene passes into the next
 
-// ---------------------------------------------------------------- Aufnahmen: Abschnitte (Rohzeit) und Zoom (Rohzeit)
-const tonSegs: Seg[] = [
+// ---------------------------------------------------------------- Captures: segments (raw time) and zoom (raw time)
+const voiceSegs: Seg[] = [
   { from: 1.2, to: 5.8, speed: 3.2 },
-  { from: 5.8, to: M.tonstudio.marks["aufnahme-laeuft"] + 0.1, speed: 1.4 },
-  { from: M.tonstudio.marks["aufnahme-laeuft"] + 0.1, to: M.tonstudio.marks["stopp"] - 0.4, speed: 2.8 },
-  { from: M.tonstudio.marks["stopp"] - 0.4, to: M.tonstudio.marks["stopp"] + 4.0, speed: 1.6 },
+  { from: 5.8, to: M["voice-studio"].marks["recording-started"] + 0.1, speed: 1.4 },
+  { from: M["voice-studio"].marks["recording-started"] + 0.1, to: M["voice-studio"].marks["stop"] - 0.4, speed: 2.8 },
+  { from: M["voice-studio"].marks["stop"] - 0.4, to: M["voice-studio"].marks["stop"] + 4.0, speed: 1.6 },
 ];
-const tonZoomRaw = [
+const voiceZoomRaw = [
   { t: 1.2, s: 1.0, u: 0.5, v: 0.5 },
   { t: 3.9, s: 1.0, u: 0.5, v: 0.5 },
   { t: 5.8, s: 1.5, u: 0.24, v: 0.3 },
   { t: 10.4, s: 1.3, u: 0.38, v: 0.17 },
-  { t: M.tonstudio.marks["stopp"] + 0.1, s: 1.75, u: 0.24, v: 0.56 },
+  { t: M["voice-studio"].marks["stop"] + 0.1, s: 1.75, u: 0.24, v: 0.56 },
 ];
 
 const propsSegs: Seg[] = [
-  { from: 1.4, to: M.props.marks["geklickt"] + 0.05, speed: 2.1 },
-  { from: M.props.marks["meldung-weg"] + 0.1, to: M.props.marks["spielt"] + 4.0, speed: 1.15 },
+  { from: 1.4, to: M.props.marks["clicked"] + 0.05, speed: 2.1 },
+  { from: M.props.marks["message-gone"] + 0.1, to: M.props.marks["playing"] + 4.0, speed: 1.15 },
 ];
 const propsZoomRaw = [
   { t: 1.4, s: 1.0, u: 0.5, v: 0.5 },
   { t: 3.0, s: 1.0, u: 0.5, v: 0.5 },
   { t: 4.6, s: 1.7, u: 0.89, v: 0.45 },
   { t: 7.0, s: 1.8, u: 0.89, v: 0.3 },
-  { t: M.props.marks["geklickt"], s: 1.5, u: 0.5, v: 0.38 },
-  { t: M.props.marks["meldung-weg"] + 0.6, s: 1.25, u: 0.5, v: 0.55 },
+  { t: M.props.marks["clicked"], s: 1.5, u: 0.5, v: 0.38 },
+  { t: M.props.marks["message-gone"] + 0.6, s: 1.25, u: 0.5, v: 0.55 },
 ];
 
-const hoerSegs: Seg[] = [{ from: 1.0, to: M.hoerseite.marks["sortiert"] + 2.3, speed: 1.95 }];
-const hoerZoomRaw = [
+const listenSegs: Seg[] = [{ from: 1.0, to: M.listen.marks["sorted"] + 2.3, speed: 1.95 }];
+const listenZoomRaw = [
   { t: 1.0, s: 1.0, u: 0.5, v: 0.5 },
   { t: 2.6, s: 1.0, u: 0.5, v: 0.5 },
   { t: 4.4, s: 1.5, u: 0.5, v: 0.4 },
-  { t: M.hoerseite.marks["sortiert"] - 0.6, s: 1.5, u: 0.5, v: 0.4 },
-  { t: M.hoerseite.marks["sortiert"] + 0.4, s: 1.9, u: 0.36, v: 0.27 },
-  { t: M.hoerseite.marks["sortiert"] + 1.3, s: 1.9, u: 0.36, v: 0.27 },
-  { t: M.hoerseite.marks["sortiert"] + 2.3, s: 1.0, u: 0.5, v: 0.5 },
+  { t: M.listen.marks["sorted"] - 0.6, s: 1.5, u: 0.5, v: 0.4 },
+  { t: M.listen.marks["sorted"] + 0.4, s: 1.9, u: 0.36, v: 0.27 },
+  { t: M.listen.marks["sorted"] + 1.3, s: 1.9, u: 0.36, v: 0.27 },
+  { t: M.listen.marks["sorted"] + 2.3, s: 1.0, u: 0.5, v: 0.5 },
 ];
 
-const zeitSegs: Seg[] = [{ from: 4.8, to: M.zeitleiste.seconds - 0.6, speed: 1.65 }];
-const zeitZoomRaw = [
+const timelineSegs: Seg[] = [{ from: 4.8, to: M.timeline.seconds - 0.6, speed: 1.65 }];
+const timelineZoomRaw = [
   { t: 4.8, s: 1.0, u: 0.5, v: 0.5 },
   { t: 6.2, s: 1.0, u: 0.5, v: 0.5 },
   { t: 7.8, s: 1.35, u: 0.5, v: 0.62 },
-  { t: M.zeitleiste.marks["sfx-gewaehlt"] - 0.4, s: 1.9, u: 0.88, v: 0.2 },
-  { t: M.zeitleiste.marks["spielt"] - 0.3, s: 1.3, u: 0.5, v: 0.52 },
+  { t: M.timeline.marks["sfx-selected"] - 0.4, s: 1.9, u: 0.88, v: 0.2 },
+  { t: M.timeline.marks["playing"] - 0.3, s: 1.3, u: 0.5, v: 0.52 },
 ];
 
 const toLocal = (segs: Seg[], keys: { t: number; s: number; u: number; v: number }[]): ZoomKey[] =>
   keys.map((k) => ({ ...k, t: rawToLocal(segs, k.t) }));
 
-// ---------------------------------------------------------------- Terminal-Szenen
+// ---------------------------------------------------------------- Terminal scenes
 const voBuilt = build(voScript, 10, 0.75);
 const renderBuilt = build(renderScript, 10, 0.8);
 const postBuilt = build(postScript, 10, 0.8);
@@ -79,13 +79,13 @@ type Scene = {
 
 const sceneList: Scene[] = [
   {
-    id: "ton", seconds: planSeconds(tonSegs), title: "Tonstudio · localhost:3600", tone: "dark",
-    caption: "Skript ablesen und aufnehmen: Jeder Take wird sofort gesichert.",
-    zoom: toLocal(tonSegs, tonZoomRaw), body: <CaptureVideo name="tonstudio" segs={tonSegs} />, sfx: "page1",
+    id: "voice", seconds: planSeconds(voiceSegs), title: "Voice Studio · localhost:3600", tone: "dark",
+    caption: "Read the script and record: every take is saved right away.",
+    zoom: toLocal(voiceSegs, voiceZoomRaw), body: <CaptureVideo name="voice-studio" segs={voiceSegs} />, sfx: "page1",
   },
   {
     id: "vo", seconds: (voBuilt.end + 62) / FPS, title: "Terminal", tone: "dark",
-    caption: "Ein Befehl macht aus dem Take das Voiceover und die Tabelle der Wortzeiten.",
+    caption: "One command turns the take into the voiceover and the table of word timings.",
     zoom: [
       { t: 0, s: 1.0, u: 0.5, v: 0.5 },
       { t: 0.7, s: 1.0, u: 0.5, v: 0.5 },
@@ -96,22 +96,22 @@ const sceneList: Scene[] = [
   },
   {
     id: "props", seconds: planSeconds(propsSegs), title: "Remotion Studio · localhost:3000", tone: "dark",
-    caption: "Clips in die Slots eintragen: Datei und Startsekunde, ohne Code anzufassen.",
+    caption: "Enter clips into the slots: file and start second, without touching code.",
     zoom: toLocal(propsSegs, propsZoomRaw), body: <CaptureVideo name="props" segs={propsSegs} />, sfx: "page1",
   },
   {
-    id: "hoer", seconds: planSeconds(hoerSegs), title: "Hörseite · localhost:3700", tone: "light",
-    caption: "Sounds mit der Tastatur sortieren: Pfeile wechseln, B behält, X sortiert aus.",
-    zoom: toLocal(hoerSegs, hoerZoomRaw), body: <CaptureVideo name="hoerseite" segs={hoerSegs} />, sfx: "page3",
+    id: "listen", seconds: planSeconds(listenSegs), title: "Listening page · localhost:3700", tone: "light",
+    caption: "Sort sounds with the keyboard: arrows switch, B keeps, X drops.",
+    zoom: toLocal(listenSegs, listenZoomRaw), body: <CaptureVideo name="listen" segs={listenSegs} />, sfx: "page3",
   },
   {
-    id: "zeit", seconds: planSeconds(zeitSegs), title: "Remotion Studio · localhost:3000", tone: "dark",
-    caption: "Jeder Effekt ist eine benannte Sequenz „SFX · …“ und hängt an einer Wortzeit.",
-    zoom: toLocal(zeitSegs, zeitZoomRaw), body: <CaptureVideo name="zeitleiste" segs={zeitSegs} />, sfx: "page1",
+    id: "timeline", seconds: planSeconds(timelineSegs), title: "Remotion Studio · localhost:3000", tone: "dark",
+    caption: "Every effect is a named sequence \"SFX · …\" and is tied to a word timing.",
+    zoom: toLocal(timelineSegs, timelineZoomRaw), body: <CaptureVideo name="timeline" segs={timelineSegs} />, sfx: "page1",
   },
   {
     id: "render", seconds: (renderBuilt.end + 60) / FPS, title: "Terminal", tone: "dark",
-    caption: "Zwei Dateien, mit und ohne Musik, Lautheit höchstens −14 LUFS.",
+    caption: "Two files, with and without music, loudness at most −14 LUFS.",
     zoom: [
       { t: 0, s: 1.0, u: 0.5, v: 0.5 },
       { t: 0.7, s: 1.0, u: 0.5, v: 0.5 },
@@ -122,7 +122,7 @@ const sceneList: Scene[] = [
   },
   {
     id: "post", seconds: (postBuilt.end + 84) / FPS, title: "Terminal", tone: "dark",
-    caption: "Ohne --publish entsteht höchstens ein Entwurf, im Trockenlauf gar nichts.",
+    caption: "Without --publish you get at most a draft, and in a dry run nothing at all.",
     zoom: [
       { t: 0, s: 1.0, u: 0.5, v: 0.5 },
       { t: 0.7, s: 1.0, u: 0.5, v: 0.5 },
@@ -133,13 +133,13 @@ const sceneList: Scene[] = [
   },
 ];
 
-// Kapitel über mehrere Szenen
+// Chapters spanning several scenes
 const chapters = [
-  { n: 1, title: "Skript und Voiceover", ids: ["ton", "vo"] },
-  { n: 2, title: "Clips reindroppen", ids: ["props"] },
-  { n: 3, title: "Sound-Design", ids: ["hoer", "zeit"] },
-  { n: 4, title: "Fertig machen", ids: ["render"] },
-  { n: 5, title: "Posten", ids: ["post"] },
+  { n: 1, title: "Script and voiceover", ids: ["voice", "vo"] },
+  { n: 2, title: "Drop in clips", ids: ["props"] },
+  { n: 3, title: "Sound design", ids: ["listen", "timeline"] },
+  { n: 4, title: "Final export", ids: ["render"] },
+  { n: 5, title: "Posting", ids: ["post"] },
 ];
 
 const INTRO = f(2.6);
@@ -156,18 +156,18 @@ const lens: Record<string, number> = {};
   starts["end"] = t;
 }
 export const TOTAL_FRAMES = starts["end"] + END;
-if (typeof process !== "undefined" && process.env.RUNDGANG_DEBUG) console.log("SZENEN " + JSON.stringify(sceneList.map((s) => [s.id, +s.seconds.toFixed(1)])));
+if (typeof process !== "undefined" && process.env.TOUR_DEBUG) console.log("SCENES " + JSON.stringify(sceneList.map((s) => [s.id, +s.seconds.toFixed(1)])));
 
-// ---------------------------------------------------------------- Einleitung und Schluss
+// ---------------------------------------------------------------- Intro and ending
 const Intro: React.FC = () => {
   const frame = useCurrentFrame();
   const a = interpolate(frame, [0, 14, INTRO - 16, INTRO], [0, 1, 1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
-  const steps = ["Skript und Voiceover", "Clips reindroppen", "Sound-Design", "Fertig machen", "Posten"];
+  const steps = ["Script and voiceover", "Drop in clips", "Sound design", "Final export", "Posting"];
   return (
     <AbsoluteFill style={{ alignItems: "center", justifyContent: "center", opacity: a }}>
       <div style={{ textAlign: "center", transform: `translateY(${(1 - a) * 14}px)` }}>
         <div style={{ fontSize: 104, fontWeight: 700, letterSpacing: -3, color: COLORS.ink }}>shortform-edit-kit</div>
-        <div style={{ marginTop: 14, fontSize: 38, fontWeight: 500, color: COLORS.inkSoft }}>Rundgang durch die Werkzeuge</div>
+        <div style={{ marginTop: 14, fontSize: 38, fontWeight: 500, color: COLORS.inkSoft }}>A tour of the tools</div>
         <div style={{ marginTop: 44, display: "flex", gap: 14, justifyContent: "center" }}>
           {steps.map((s, i) => {
             const p = interpolate(frame, [18 + i * 5, 30 + i * 5], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
@@ -188,7 +188,7 @@ const Ending: React.FC = () => {
   const frame = useCurrentFrame();
   const a = Easing.out(Easing.cubic)(Math.min(1, frame / 16));
   const out = interpolate(frame, [END - 14, END], [1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
-  const items = ["Skript und Voiceover", "Clips reindroppen", "Sound-Design", "Fertig machen", "Posten"];
+  const items = ["Script and voiceover", "Drop in clips", "Sound design", "Final export", "Posting"];
   return (
     <AbsoluteFill style={{ opacity: a * out }}>
       <div style={{ position: "absolute", left: 360, top: 100, width: 496, height: 880, borderRadius: 44, background: "#12141c", padding: 10, boxShadow: "0 60px 120px -30px rgba(38,40,100,0.5), 0 28px 56px -24px rgba(20,20,50,0.5)", transform: `translateY(${(1 - a) * 24}px)` }}>
@@ -199,9 +199,9 @@ const Ending: React.FC = () => {
         </div>
       </div>
       <div style={{ position: "absolute", left: 990, top: 250, width: 700, color: COLORS.ink }}>
-        <div style={{ fontSize: 22, fontWeight: 600, letterSpacing: 3, color: COLORS.accent, textTransform: "uppercase" }}>Das Ergebnis</div>
+        <div style={{ fontSize: 22, fontWeight: 600, letterSpacing: 3, color: COLORS.accent, textTransform: "uppercase" }}>The result</div>
         <div style={{ marginTop: 10, fontSize: 82, fontWeight: 700, letterSpacing: -2.5, lineHeight: 1.02 }}>shortform-edit-kit</div>
-        <div style={{ marginTop: 18, fontSize: 30, fontWeight: 500, color: COLORS.inkSoft, lineHeight: 1.35 }}>Das Demo-Video aus dem Ordner <span style={{ fontFamily: MONO, fontSize: 27 }}>example/</span>, gebaut mit Remotion.</div>
+        <div style={{ marginTop: 18, fontSize: 30, fontWeight: 500, color: COLORS.inkSoft, lineHeight: 1.35 }}>The demo video from the <span style={{ fontFamily: MONO, fontSize: 27 }}>example/</span> folder, built with Remotion.</div>
         <div style={{ marginTop: 40, display: "flex", flexDirection: "column", gap: 12 }}>
           {items.map((s, i) => {
             const p = interpolate(frame, [30 + i * 7, 44 + i * 7], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
@@ -213,25 +213,25 @@ const Ending: React.FC = () => {
             );
           })}
         </div>
-        <div style={{ marginTop: 40, fontSize: 30, fontWeight: 600, color: COLORS.accent, opacity: interpolate(frame, [80, 96], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }) }}>Ein Mensch gibt frei.</div>
+        <div style={{ marginTop: 40, fontSize: 30, fontWeight: 600, color: COLORS.accent, opacity: interpolate(frame, [80, 96], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }) }}>A human approves.</div>
       </div>
     </AbsoluteFill>
   );
 };
 
-/** Regel am Ende des letzten Terminals. */
+/** Rule at the end of the last terminal. */
 const Rule: React.FC<{ total: number }> = ({ total }) => {
   const frame = useCurrentFrame();
   const start = total - f(2.7);
   const a = interpolate(frame, [start, start + 14, total - 14, total], [0, 1, 1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
   return (
     <div style={{ position: "absolute", left: 0, right: 0, bottom: 98, display: "flex", justifyContent: "center", opacity: a, transform: `translateY(${(1 - a) * 12}px)` }}>
-      <div style={{ padding: "16px 40px", borderRadius: 18, background: COLORS.accent, color: "#fff", fontSize: 40, fontWeight: 700, letterSpacing: -0.5, boxShadow: "0 16px 40px rgba(60,70,220,0.4)" }}>Ein Mensch gibt frei.</div>
+      <div style={{ padding: "16px 40px", borderRadius: 18, background: COLORS.accent, color: "#fff", fontSize: 40, fontWeight: 700, letterSpacing: -0.5, boxShadow: "0 16px 40px rgba(60,70,220,0.4)" }}>A human approves.</div>
     </div>
   );
 };
 
-export const Rundgang: React.FC = () => (
+export const Tour: React.FC = () => (
   <Stage>
     <Sequence from={0} durationInFrames={INTRO}>
       <Intro />
@@ -251,12 +251,12 @@ export const Rundgang: React.FC = () => (
       const from = starts[c.ids[0]];
       const to = starts[c.ids[c.ids.length - 1]] + lens[c.ids[c.ids.length - 1]];
       return (
-        <Sequence key={c.n} from={from} durationInFrames={to - from} name={`Kapitel ${c.n}`}>
+        <Sequence key={c.n} from={from} durationInFrames={to - from} name={`Chapter ${c.n}`}>
           <Chapter n={c.n} title={c.title} total={to - from} />
         </Sequence>
       );
     })}
-    <Sequence from={starts["end"]} durationInFrames={END} name="Schluss">
+    <Sequence from={starts["end"]} durationInFrames={END} name="End">
       <Ending />
       <Audio src={staticFile("sfx/shutter3.wav")} volume={0.14} />
     </Sequence>

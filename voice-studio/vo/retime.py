@@ -1,64 +1,64 @@
 #!/usr/bin/env python3
-"""Schreibt src/timing.ts aus den Phrasenzeiten der Ausrichtung (align.py) und dem Skript (skript.json).
+"""Writes src/timing.ts from the phrase times of the alignment (align.py) and the script (script.json).
 
-Die Datei hat immer dieselbe Gestalt: `VO.file` (Audiodatei unter public/), `VO.endMs` (Länge des Videos) und `VO.w` mit einem
-Eintrag je Schlüssel aus dem Skript. Der Code des Videos liest nur diese Datei – ein neuer Take ergibt eine neue Datei, und Bild,
-Text und Sounds wandern von selbst mit."""
+The file always has the same shape: `VO.file` (audio file under public/), `VO.endMs` (length of the video) and `VO.w` with one
+entry per key from the script. The video code reads only this file – a new take produces a new file, and picture, text and
+sounds move along by themselves."""
 import json
 import os
 import re
 import shutil
 
-import skript as sk
+import script as sc
 
-MARKE = "Automatisch erzeugt"
+MARKER = "Generated automatically"
 
 
-def ist_erzeugt(pfad: str) -> bool:
+def is_generated(path: str) -> bool:
     try:
-        with open(pfad, encoding="utf-8") as f:
-            return MARKE in f.read(600)
+        with open(path, encoding="utf-8") as f:
+            return MARKER in f.read(600)
     except FileNotFoundError:
-        return True  # nichts da, nichts zu sichern
+        return True  # nothing there, nothing to back up
 
 
-def erzeuge(s: dict, zeiten: list, sprech_ende_ms: int, datei: str, herkunft: str, setze: dict = None) -> str:
-    ph = sk.phrasen(s)
-    ende = int(round((sprech_ende_ms + int(s["ausklangMs"])) / 50.0) * 50)  # Ausklang nach dem letzten Wort
-    zeilen = []
-    for zi, z in enumerate(s["zeilen"]):
-        mine = [(p, t) for p, t in zip(ph, zeiten) if p["zeile"] == zi]
-        text = re.sub(r"\s+", " ", " ".join(p["text"] for p in z["phrasen"])).strip()
-        kopf = f'{z["hinweis"]}: ' if z.get("hinweis") else ""
-        zeilen.append(f'    // {kopf}"{text}"')
-        zeilen.append("    " + " ".join(f"{p['key']}: {t}," for p, t in mine))
-    hand = ""
-    if setze:
-        hand = "// Von Hand gesetzt (--setze): " + ", ".join(f"{k}={v}" for k, v in setze.items()) + "\n"
-    return f'''// Zeitpunkte des Voiceovers – die einzige Stelle, an der Zeiten stehen.
-// {MARKE} (voice-studio/vo/vo.py) – nicht von Hand ändern, sondern einen neuen Take ausrichten lassen: npm run vo -- recordings/<take>.wav
-// Eine einzelne falsche Zeit lässt sich beim Aufruf mit --setze <schlüssel>=<ms> überschreiben.
-// Herkunft: {herkunft}
-{hand}// Jede Zahl = Beginn der Phrase in Millisekunden ab Start der Audiodatei. Phrasen direkt nach einer Sprechpause sind auf den
-// gemessenen Einsatz gezogen, die übrigen stammen aus der Text-Ausrichtung (Median mehrerer Whisper-Modelle).
+def generate(s: dict, times: list, speech_end_ms: int, file: str, source: str, overrides: dict = None) -> str:
+    ph = sc.phrases(s)
+    end = int(round((speech_end_ms + int(s["tailMs"])) / 50.0) * 50)  # tail after the last word
+    rows = []
+    for li, line in enumerate(s["lines"]):
+        mine = [(p, t) for p, t in zip(ph, times) if p["line"] == li]
+        text = re.sub(r"\s+", " ", " ".join(p["text"] for p in line["phrases"])).strip()
+        head = f'{line["note"]}: ' if line.get("note") else ""
+        rows.append(f'    // {head}"{text}"')
+        rows.append("    " + " ".join(f"{p['key']}: {t}," for p, t in mine))
+    manual = ""
+    if overrides:
+        manual = "// Set by hand (--set): " + ", ".join(f"{k}={v}" for k, v in overrides.items()) + "\n"
+    return f'''// Voiceover timings – the only place where times are stored.
+// {MARKER} (voice-studio/vo/vo.py) – do not edit by hand, align a new take instead: npm run vo -- recordings/<take>.wav
+// A single wrong time can be overridden when calling it with --set <key>=<ms>.
+// Source: {source}
+{manual}// Each number = start of the phrase in milliseconds from the start of the audio file. Phrases directly after a speech pause are
+// pulled to the measured onset, the others come from the text alignment (median of several Whisper models).
 export const VO = {{
-  /** Audiodatei unter public/ ("" = kein Voiceover) */
-  file: {json.dumps(datei, ensure_ascii=False)},
-  /** Länge des Videos in ms (letztes Wort endet bei {sprech_ende_ms} ms, danach Ausklang) */
-  endMs: {ende},
+  /** Audio file under public/ ("" = no voiceover) */
+  file: {json.dumps(file, ensure_ascii=False)},
+  /** Length of the video in ms (the last word ends at {speech_end_ms} ms, followed by the tail) */
+  endMs: {end},
   w: {{
-{chr(10).join(zeilen)}
+{chr(10).join(rows)}
   }},
 }};
 '''
 
 
-def schreibe(ziel: str, text: str, sicherung: str):
-    """Schreibt die timing.ts. Eine von Hand geschriebene Datei wird vorher einmal nach `sicherung` kopiert."""
-    if os.path.exists(ziel) and not ist_erzeugt(ziel) and not os.path.exists(sicherung):
-        os.makedirs(os.path.dirname(sicherung) or ".", exist_ok=True)
-        shutil.copyfile(ziel, sicherung)
-        print(f"Die handgeschriebene {os.path.basename(ziel)} wurde gesichert: {os.path.relpath(sicherung)}")
-    os.makedirs(os.path.dirname(ziel) or ".", exist_ok=True)
-    with open(ziel, "w", encoding="utf-8") as f:
+def write(target: str, text: str, backup: str):
+    """Writes timing.ts. A hand-written file is copied once to `backup` first."""
+    if os.path.exists(target) and not is_generated(target) and not os.path.exists(backup):
+        os.makedirs(os.path.dirname(backup) or ".", exist_ok=True)
+        shutil.copyfile(target, backup)
+        print(f"The hand-written {os.path.basename(target)} was backed up: {os.path.relpath(backup)}")
+    os.makedirs(os.path.dirname(target) or ".", exist_ok=True)
+    with open(target, "w", encoding="utf-8") as f:
         f.write(text)

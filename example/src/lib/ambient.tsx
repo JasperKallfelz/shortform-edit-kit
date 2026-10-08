@@ -1,47 +1,47 @@
-// Ambient Light: eine Clip-Karte auf weißem Grund, hinter der dasselbe Medium noch einmal liegt – vergrößert, stark weichgezeichnet,
-// aufgehellt und kräftiger gefärbt. So scheint das Video auf das Weiß, wie beim Ambient-Modus von YouTube.
-// Gedacht für 1080 × 1920 bei 30 fps und einen hellen Hintergrund; auf Dunkel ist der Schein nicht zu sehen.
+// Ambient light: a clip card on a white background, with the same media behind it once more – enlarged, heavily blurred,
+// brightened and more strongly colored. This way the video glows onto the white, like YouTube's ambient mode.
+// Meant for 1080 × 1920 at 30 fps and a light background; on dark the glow is not visible.
 import React from "react";
 import { Img, interpolate, OffthreadVideo, spring, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
 
-/** Der Schein hinter der Karte: wie weit er reicht (scale), wie weich (blur in Bildpunkten, abgestimmt auf 1080 × 1920), wie hell
- *  (brightness), wie kräftig die Farben (saturate) und wie deckend (opacity). Auf Weiß kann ein Schein nur färben, nicht aufhellen:
- *  ohne brightness > 1 wirkt dunkles Material wie ein schmutziger Schatten statt wie Licht. */
+/** The glow behind the card: how far it reaches (scale), how soft (blur in pixels, tuned to 1080 × 1920), how bright
+ *  (brightness), how strong the colors are (saturate) and how opaque (opacity). On white, a glow can only tint, not brighten:
+ *  without brightness > 1, dark material looks like a dirty shadow instead of light. */
 export const AMBIENT = { scale: 1.07, blur: 58, brightness: 1.3, saturate: 1.8, opacity: 0.85 };
 
-/** Platzhalter, solange kein Clip gesetzt ist: ein bunter Verlauf, damit man den Schein im Studio ohne eigenes Material sieht. */
+/** Placeholder while no clip is set: a colorful gradient, so that you can see the glow in the studio without material of your own. */
 const PLACEHOLDER = "linear-gradient(135deg, #2f6df6 0%, #12b76a 55%, #f5b301 100%)";
 
 const isImage = (file: string) => /\.(jpe?g|png|webp)$/i.test(file);
 
 export type AmbientInsetProps = {
-  /** Datei unter public/ (Video oder Bild: jpg, png, webp). Leer = bunter Verlauf als Platzhalter. */
+  /** File under public/ (video or image: jpg, png, webp). Empty = colorful gradient as a placeholder. */
   clip: string;
-  /** Startstelle im Video in Sekunden (bei Bildern ohne Wirkung). */
+  /** Start point in the video in seconds (no effect for images). */
   startSec?: number;
-  /** Länge der Szene in Frames: über diese Dauer läuft der langsame Zoom. */
+  /** Length of the scene in frames: the slow zoom runs over this duration. */
   frames: number;
-  /** Abstand von oben in % der Bildhöhe. */
+  /** Distance from the top in % of the frame height. */
   top?: number;
-  /** Breite der Karte in % der Bildbreite. */
+  /** Width of the card in % of the frame width. */
   width?: number;
-  /** Seitenverhältnis der Karte, als CSS-Wert. */
+  /** Aspect ratio of the card, as a CSS value. */
   aspect?: string;
-  /** Eckenradius in Bildpunkten. */
+  /** Corner radius in pixels. */
   radius?: number;
-  /** Bildausschnitt im Clip (CSS object-position), z. B. "50% 30%" für eine Person im oberen Drittel. */
+  /** Crop within the clip (CSS object-position), e.g. "50% 30%" for a person in the upper third. */
   focus?: string;
-  /** Maßstab am Ende des Zooms (1 = kein Zoom). */
+  /** Scale at the end of the zoom (1 = no zoom). */
   zoomTo?: number;
-  /** Abspielgeschwindigkeit des Videos (gilt für Karte und Schein gleichermaßen). */
+  /** Playback speed of the video (applies to card and glow alike). */
   rate?: number;
-  /** false = Karte ohne Schein (spart die zweite Videoebene). */
+  /** false = card without glow (saves the second video layer). */
   glow?: boolean;
 };
 
-/** Abgerundetes Inset auf weißer Karte, optional mit Ambient-Light-Schein. Der äußere Rahmen trägt Lage, Einpoppen (Spring) und Einblenden,
- *  Schein und Karte bewegen sich also zusammen. Der Schein liegt als Geschwister UNTER der Karte und bekommt dieselben `startSec`
- *  und `rate`, sonst laufen die Farben dem Bild hinterher. */
+/** Rounded inset on a white card, optionally with an ambient-light glow. The outer frame carries position, pop-in (spring) and fade-in,
+ *  so glow and card move together. The glow sits as a sibling UNDER the card and gets the same `startSec`
+ *  and `rate`, otherwise the colors lag behind the picture. */
 export const AmbientInset: React.FC<AmbientInsetProps> = ({ clip, startSec = 0, frames, top = 37, width = 86, aspect = "16 / 9", radius = 28, focus = "50% 50%", zoomTo = 1.08, rate = 1, glow = true }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
@@ -83,7 +83,7 @@ export const AmbientInset: React.FC<AmbientInsetProps> = ({ clip, startSec = 0, 
           {media(fill)}
         </div>
       ) : null}
-      {/* Der Schatten ist kleiner und blasser als beim Inset der Demo (0 10px 30px / 0.12), damit er den Schein nicht verschmutzt. */}
+      {/* The shadow is smaller and paler than on the demo inset (0 10px 30px / 0.12), so that it does not dirty the glow. */}
       <div style={{ position: "absolute", inset: 0, boxShadow: "0 8px 22px rgba(0,0,0,0.10)", borderRadius: radius, overflow: "hidden", background: "#dfe3ea" }}>
         {media({ ...fill, transform: `scale(${zoom})` })}
       </div>

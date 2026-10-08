@@ -1,0 +1,30 @@
+{
+  "language": "en",
+  "file": "vo.wav",
+  "tailMs": 640,
+  "lines": [
+    {
+      "note": "Scene 1",
+      "phrases": [
+        { "key": "thisIs", "text": "this is" },
+        { "key": "yourHook", "text": "your hook,", "display": "your *hook* |" },
+        { "key": "hello", "text": "hello", "display": "*hello* ||" }
+      ]
+    },
+    {
+      "note": "Scene 2",
+      "phrases": [
+        { "key": "look", "text": "look at these" },
+        { "key": "numbers", "text": "numbers", "display": "*numbers* ||" }
+      ]
+    },
+    {
+      "note": "Scene 3",
+      "phrases": [
+        { "key": "im", "text": "I'm" },
+        { "key": "yourName", "text": "Your Name,", "display": "*Your Name* |" },
+        { "key": "thanks", "text": "thanks for watching" }
+      ]
+    }
+  ]
+}

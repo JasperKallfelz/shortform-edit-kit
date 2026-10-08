@@ -1,23 +1,23 @@
-# Tonstudio
+# Voice Studio
 
-Lokale Werkzeuge für das Voiceover eines Kurzvideos: im Browser aufnehmen, die Aufnahme aufbereiten, die Wortzeiten messen und
-daraus die Zeit-Tabelle `src/timing.ts` des Remotion-Projekts erzeugen. Bild, Text und Sounds hängen an dieser Tabelle und
-wandern mit, wenn ein neuer Take kommt. **Alles läuft auf dem eigenen Rechner**: kein Konto, keine Cloud, die Aufnahme-Seite
-hört nur auf `127.0.0.1`, die Spracherkennung (whisper.cpp) rechnet lokal.
+Local tools for the voiceover of a short video: record in the browser, master the recording, measure the word timings and
+generate the timing table `src/timing.ts` of the Remotion project from them. Picture, text and sounds hang on this table and
+move along when a new take comes in. **Everything runs on your own computer**: no account, no cloud, the recorder page
+listens only on `127.0.0.1`, and the speech recognition (whisper.cpp) runs locally.
 
 ```
-skript.json ──► Aufnahme-Seite ──► recordings/take-….wav ──► npm run vo ──► public/vo.wav
- (Sätze + Schlüssel)  (Teleprompter)                          (aufbereiten,     src/timing.ts
-                                                               Wörter messen)   (Bild, Text, Ton folgen)
+script.json ──► recorder page ──► recordings/take-….wav ──► npm run vo ──► public/vo.wav
+ (sentences + keys)  (teleprompter)                          (master,          src/timing.ts
+                                                              measure words)   (picture, text, sound follow)
 ```
 
-## Voraussetzungen
+## Requirements
 
-- Node 20+ (die Aufnahme-Seite braucht keine Pakete), ein aktueller Browser
-- Python 3.9+ mit `numpy`, ffmpeg
-- [whisper.cpp](https://github.com/ggerganov/whisper.cpp) (`whisper-cli`) und mindestens ein ggml-Modell. Mehrere Modelle machen die
-  Zeiten genauer (Median), eines reicht zum Anfangen. Für Englisch z. B. `medium.en` und `medium`; für andere Sprachen ein Modell ohne `.en`.
-- Optional macOS: Swift, um das Eingabegerät umzuschalten (`mikro/setinput.swift`)
+- Node 20+ (the recorder page needs no packages), a current browser
+- Python 3.9+ with `numpy`, ffmpeg
+- [whisper.cpp](https://github.com/ggerganov/whisper.cpp) (`whisper-cli`) and at least one ggml model. Several models make the
+  times more accurate (median), one is enough to start. For English, for example, `medium.en` and `medium`; for other languages a model without `.en`.
+- Optional, macOS: Swift, to switch the input device (`mic/setinput.swift`)
 
 ```bash
 brew install whisper-cpp ffmpeg
@@ -27,153 +27,153 @@ brew install whisper-cpp ffmpeg
 pip install numpy
 ```
 
-Modelle laden (im Ordner von whisper.cpp) und die Pfade bekanntmachen, durch Komma getrennt. Alternativ bei jedem Aufruf `--modelle`:
+Download models (in the whisper.cpp folder) and tell the tool the paths, separated by commas. Alternatively, pass `--models` on every call:
 
 ```bash
 sh models/download-ggml-model.sh medium.en
 ```
 
 ```bash
-export TONSTUDIO_MODELLE=~/whisper/ggml-medium.en.bin,~/whisper/ggml-medium.bin
+export VOICE_STUDIO_MODELS=~/whisper/ggml-medium.en.bin,~/whisper/ggml-medium.bin
 ```
 
-Fehlt `whisper-cli` im `PATH`, den Pfad in `WHISPER_CLI` angeben. Fehlt ein Modell, bricht `vo` mit einer Meldung ab, bevor etwas geändert wird.
+If `whisper-cli` is not in the `PATH`, give the path in `WHISPER_CLI`. If a model is missing, `vo` aborts with a message before anything is changed.
 
-## Schritt 0: Skript-Datei im Videoprojekt
+## Step 0: Script file in the video project
 
-`skript.json` sagt, was gesprochen wird und unter welchem Schlüssel jede Phrase in `src/timing.ts` landet (die Schlüssel, die der Code
-des Videos benutzt). Der Wert eines Schlüssels ist der Beginn des **ersten Wortes** seiner Phrase.
+`script.json` says what is spoken and under which key each phrase ends up in `src/timing.ts` (the keys that the code of the video
+uses). The value of a key is the start of the **first word** of its phrase.
 
 ```json
 {
-  "sprache": "en",
-  "datei": "vo.wav",
-  "ausklangMs": 640,
-  "zeilen": [
+  "language": "en",
+  "file": "vo.wav",
+  "tailMs": 640,
+  "lines": [
     {
-      "hinweis": "Szene 1",
-      "phrasen": [
+      "note": "Scene 1",
+      "phrases": [
         { "key": "thisIs", "text": "this is" },
-        { "key": "yourHook", "text": "your hook,", "anzeige": "your *hook* |" }
+        { "key": "yourHook", "text": "your hook,", "display": "your *hook* |" }
       ]
     }
   ]
 }
 ```
 
-| Feld | Bedeutung |
+| Field | Meaning |
 |---|---|
-| `sprache` | Sprache der Aufnahme (Whisper-Kürzel: `en`, `de`, …) |
-| `datei` | Name des fertigen Voiceovers unter `public/` |
-| `ausklangMs` | Zeit nach dem letzten Wort bis zum Ende des Videos (`endMs`) |
-| `zeilen[].hinweis` | optional: steht links auf dem Teleprompter und als Kommentar in `timing.ts` |
-| `phrasen[].key` | Name in `timing.ts` (Buchstaben, Ziffern, `_`; je Datei einmalig) |
-| `phrasen[].text` | die gesprochenen Wörter, in Sprechreihenfolge; Satzzeichen sind erlaubt |
-| `phrasen[].anzeige` | optional, nur für den Bildschirm: `*betont*`, `\|` Atemzug, `\|\|` Pause, `^` Stimme hoch, `~` Stimme fällt |
+| `language` | language of the recording (Whisper code: `en`, `de`, …) |
+| `file` | name of the finished voiceover under `public/` |
+| `tailMs` | time from the last word to the end of the video (`endMs`) |
+| `lines[].note` | optional: shown on the left of the teleprompter and as a comment in `timing.ts` |
+| `phrases[].key` | name in `timing.ts` (letters, digits, `_`; unique per file) |
+| `phrases[].text` | the spoken words, in speaking order; punctuation is allowed |
+| `phrases[].display` | optional, for the screen only: `*stressed*`, `\|` breath, `\|\|` pause, `^` voice up, `~` voice falls |
 
-Steht im Skript ein Platzhalter (etwa „Your Name“), spricht man dort seinen eigenen Namen mit **gleicher Wortzahl**.
+If the script contains a placeholder (such as "Your Name"), you say your own name there with the **same word count**.
 
-Ein neues Video braucht nur eine neue `skript.json` und passende Schlüssel im Code. Die zwei Befehle kommen in die `package.json`
-des Projekts (Pfad zu `voice-studio/` anpassen):
+A new video needs only a new `script.json` and matching keys in the code. The two commands go into the `package.json`
+of the project (adjust the path to `voice-studio/`):
 
 ```json
-"tonstudio": "node ../voice-studio/recorder/server.mjs",
+"voice-studio": "node ../voice-studio/recorder/server.mjs",
 "vo": "python3 ../voice-studio/vo/vo.py"
 ```
 
-## Schritt 1: Aufnehmen
+## Step 1: Record
 
 ```bash
-npm run tonstudio
+npm run voice-studio
 ```
 
-Dann http://localhost:3600 öffnen. Links Pegelanzeige und Aufnahme-Knopf, rechts das Skript zum Ablesen (Schriftgröße mit A−/A+, „Marken“
-blendet die Betonungszeichen aus). Zuerst „Pegel testen“: Die Spitzen sollen im grünen Bereich liegen (−12 bis −6 dBFS). Nach dem Start
-läuft ein Countdown von 3 Sekunden. **Jeder Take wird sofort in `recordings/` gesichert** (24 Bit, 48 kHz, nie überschrieben), und die
-Seite zeigt den Befehl für den nächsten Schritt. Optionen: `--port`, `--ordner`, `--skript`, `--projekt` (`node ../voice-studio/recorder/server.mjs --help`).
+Then open http://localhost:3600. On the left are the level meter and the record button, on the right the script to read from (font size with A−/A+, "Marks"
+hides the stress marks). First press "Test level": the peaks should lie in the green zone (−12 to −6 dBFS). After the start,
+a 3-second countdown runs. **Every take is saved to `recordings/` immediately** (24 bit, 48 kHz, never overwritten), and the
+page shows the command for the next step. Options: `--port`, `--dir`, `--script`, `--project` (`node ../voice-studio/recorder/server.mjs --help`).
 
-## Schritt 2: Take wählen, aufbereiten, Zeiten messen
+## Step 2: Choose a take, master it, measure the times
 
 ```bash
 npm run vo -- recordings/take-20261008-141530-1.wav
 ```
 
-Das Werkzeug (`voice-studio/vo/vo.py`) macht vier Dinge und überschreibt `public/` und `src/timing.ts` erst, wenn die Ausrichtung gelungen ist:
+The tool (`voice-studio/vo/vo.py`) does four things and overwrites `public/` and `src/timing.ts` only once the alignment has succeeded:
 
-1. **Aufbereiten** (`master.py`): Klang, Kompressor, Pegel auf −14 LUFS im Video, Begrenzer. Ergebnis `public/<datei aus skript.json>`
-   als Zweikanal-WAV. Wird ein Ziel verfehlt, bricht es ab.
-2. **Hören**: Jedes Whisper-Modell hört die Aufnahme frei ab und liefert für jedes Wort eine DTW-Zeit (Dynamic Time Warping: wo das
-   Modell das Ende des Stückes hört). Das Ende des vorigen Wortes ist der Beginn des nächsten, über die Modelle gilt der Median.
-3. **Zuordnen**: Gehörte Wörter und Skript werden verglichen. Stimmt die Wortzahl nicht, bricht das Werkzeug ab, statt falsche Zeiten zu liefern.
-4. **Einrasten**: Aus der Lautstärke werden die Sprechpausen gemessen. Das Wort direkt nach einer Pause beginnt exakt am gemessenen Einsatz,
-   das ist die verlässlichste Zeitangabe. Danach schreibt `retime.py` die `timing.ts` (`file`, `endMs` und je Schlüssel ein Wert in ms).
+1. **Master** (`master.py`): tone, compressor, level to −14 LUFS in the video, limiter. Result: `public/<file from script.json>`
+   as a two-channel WAV. If a target is missed, it aborts.
+2. **Listen**: Each Whisper model transcribes the recording freely and returns a DTW time for every word (Dynamic Time Warping: where the
+   model hears the end of the piece). The end of the previous word is the start of the next; across the models, the median applies.
+3. **Match**: Heard words and script are compared. If the word count does not match, the tool aborts instead of returning wrong times.
+4. **Snap**: The speech pauses are measured from the loudness. The word directly after a pause starts exactly at the measured onset;
+   this is the most reliable timing. After that, `retime.py` writes `timing.ts` (`file`, `endMs` and one value in ms per key).
 
-Zuletzt steht eine Tabelle mit Schlüssel, Beginn, Pause (●), Streuung zwischen den Modellen und den Zeiten je Modell da. Zeilen mit
-„uneinig“ oder „GESCHÄTZT“ sind die, die man sich ansehen sollte. Ein Bericht liegt als `<take>.ausrichtung.json` neben dem Take.
+At the end there is a table with key, start, pause (●), spread between the models and the times per model. Rows with
+"models disagree" or "ESTIMATED" are the ones to look at. A report is saved as `<take>.alignment.json` next to the take.
 
-Weitere Optionen:
+Further options:
 
-| Option | Wirkung |
+| Option | Effect |
 |---|---|
-| `--kette tief` | Klang-Variante: `neutral` (Standard) nimmt nur Trittschall und Mulm weg, `tief` gibt dünnen Stimmen mehr Körper (Details in `master.py`) |
-| `--modelle a.bin,b.bin` | Whisper-Modelle statt `TONSTUDIO_MODELLE` |
-| `--setze hello=1500` | einen Zeitwert von Hand überschreiben (wiederholbar) |
-| `--erlaube-abweichung` | Wörter überspringen, die Whisper anders zählt als das Skript; ihre Zeiten werden geschätzt |
-| `--skript`, `--zeiten`, `--public`, `--projekt` | andere Pfade, falls das Projekt anders aufgebaut ist |
+| `--chain deep` | tone variant: `neutral` (default) only removes rumble and mud, `deep` gives thin voices more body (details in `master.py`) |
+| `--models a.bin,b.bin` | Whisper models instead of `VOICE_STUDIO_MODELS` |
+| `--set hello=1500` | override a time value by hand (repeatable) |
+| `--allow-mismatch` | skip words that Whisper counts differently from the script; their times are estimated |
+| `--script`, `--timing`, `--public`, `--project` | other paths, if the project is laid out differently |
 
-Den Anfang aus einem Take und den Rest aus einem anderen nehmen (Schnitte in eine Sprechpause legen, kurze Blenden sind drin; `bis_ms` = -1 heißt bis zum Ende, optional folgt ein Gain in dB):
+To take the beginning from one take and the rest from another (put the cuts in a speech pause; short crossfades are built in; `to_ms` = -1 means to the end, optionally a gain in dB follows):
 
 ```bash
 npm run vo -- recordings/take-a.wav:0:3800 recordings/take-b.wav:1740:-1:1.5
 ```
 
-Eine von Hand geschriebene `timing.ts` wird beim ersten Überschreiben nach `recordings/timing-handgeschrieben.ts` gesichert.
+A hand-written `timing.ts` is saved to `recordings/timing-handwritten.ts` the first time it is overwritten.
 
-## Schritt 3: Ansehen
+## Step 3: Look at it
 
 ```bash
 npm run dev
 ```
 
-Im Studio die Komposition neu laden: Das Voiceover spielt (aus `VO.file`), die Länge folgt der Aufnahme, Text und Sounds sitzen an den neuen Zeiten.
+In the studio, reload the composition: the voiceover plays (from `VO.file`), the length follows the recording, and text and sounds sit at the new times.
 
 ```bash
 npx remotion render Demo out/video.mp4
 ```
 
-## Typische Probleme
+## Typical problems
 
-- **Der Browser fragt nicht nach dem Mikrofon / „Freigabe fehlt“.** Die Seite muss über `http://localhost:3600` laufen. Im Browser auf das Schloss
-  in der Adressleiste klicken, das Mikrofon erlauben, Seite neu laden. Unter macOS zusätzlich: Systemeinstellungen → Datenschutz → Mikrofon → Browser.
-- **Falsches Gerät, „KEIN SIGNAL“, zu leise.** Oben rechts in der Seite das Mikrofon wählen (die Seite merkt sich die Wahl). Reicht das nicht: macOS
-  Systemeinstellungen → Ton → Eingabe prüfen, den Pegel dort und am Audio-Interface (Gain) einstellen. Das Standard-Eingabegerät lässt sich auch umschalten:
+- **The browser does not ask for the microphone / "Permission missing".** The page must run via `http://localhost:3600`. In the browser, click the lock
+  in the address bar, allow the microphone, reload the page. On macOS additionally: System Settings → Privacy → Microphone → browser.
+- **Wrong device, "NO SIGNAL", too quiet.** At the top right of the page, choose the microphone (the page remembers the choice). If that is not enough: macOS
+  System Settings → Sound → check the input, set the level there and on the audio interface (gain). The default input device can also be switched:
   ```bash
-  swiftc -O voice-studio/mikro/setinput.swift -o voice-studio/mikro/setinput
+  swiftc -O voice-studio/mic/setinput.swift -o voice-studio/mic/setinput
   ```
   ```bash
-  voice-studio/mikro/setinput "Teil des Gerätenamens"
+  voice-studio/mic/setinput "part of the device name"
   ```
-  Ohne Argument listet `setinput` alle Eingabegeräte auf.
-- **Whisper hört ein Wort falsch.** Bei **gleicher Wortzahl** (Eigennamen, „Your Name“ → echter Name) ist das unkritisch: Die Zuordnung geht Stelle für Stelle,
-  die Meldung „Anders gehört“ ist nur ein Hinweis. Weicht die **Wortzahl** ab (Zahlen wie „2026“ statt „twenty twenty-six“, zusammen- oder getrennt gesprochene Wörter,
-  verschluckte Wörter), bricht `vo` mit „Skript: … gehört: …“ ab. Dann das Skript an das Gesprochene anpassen oder neu aufnehmen. Geht beides nicht,
-  `--erlaube-abweichung` setzen und die geschätzten Zeiten prüfen.
-- **Eine einzelne Zeit stimmt nicht.** Take mit `--setze` neu verarbeiten, z. B. `npm run vo -- recordings/take.wav --setze hello=1500`. Die Zahl aus dem
-  Studio ablesen (Zeitleiste, Millisekunden = Bild ÷ 30 × 1000). Von Hand in `timing.ts` ändern geht auch, hält aber nur bis zum nächsten `vo`-Lauf.
-  Die Werte gelten für genau diesen Take; bei einem neuen Take neu prüfen.
-- **Meldung „Modell versteht nur Englisch“.** Modelle mit `.en` im Namen sind englisch. Für `"sprache": "de"` ein Modell ohne `.en` (z. B. `medium`) angeben.
-- **Modellname unbekannt.** Die DTW-Zeiten brauchen den Standardnamen (`ggml-medium.en.bin`, `ggml-small.bin`, …). Bei anderen Dateinamen weist das Werkzeug darauf hin
-  und nimmt die ungenaueren Wortstempel von Whisper; die Dateien besser nicht umbenennen.
+  Without an argument, `setinput` lists all input devices.
+- **Whisper hears a word wrong.** With the **same word count** (proper names, "Your Name" → real name) this is harmless: the matching goes position by position,
+  and the message "Heard differently" is only a hint. If the **word count** differs (numbers like "2026" instead of "twenty twenty-six", words spoken together or apart,
+  swallowed words), `vo` aborts with "Script: … heard: …". Then adapt the script to what was spoken, or record again. If neither is possible,
+  set `--allow-mismatch` and check the estimated times.
+- **A single time is wrong.** Process the take again with `--set`, for example `npm run vo -- recordings/take.wav --set hello=1500`. Read the number from the
+  studio (timeline, milliseconds = frame ÷ 30 × 1000). Changing it by hand in `timing.ts` also works, but only lasts until the next `vo` run.
+  The values apply to exactly this take; check them again for a new take.
+- **Message "model only understands English".** Models with `.en` in the name are English. For `"language": "de"`, give a model without `.en` (for example `medium`).
+- **Model name unknown.** The DTW times need the standard name (`ggml-medium.en.bin`, `ggml-small.bin`, …). For other file names, the tool points this out
+  and uses Whisper's less accurate word stamps; better not to rename the files.
 
-## Dateien
+## Files
 
-| Pfad | Inhalt |
+| Path | Contents |
 |---|---|
-| `recorder/server.mjs`, `recorder/recorder.html` | Aufnahme-Seite und ihr kleiner lokaler Server (Aufnahme per AudioWorklet, Teleprompter aus `skript.json`) |
-| `vo/vo.py` | der Befehl hinter `npm run vo`: Stücke zusammensetzen, aufbereiten, ausrichten, schreiben |
-| `vo/master.py` | Aufbereitung, auch einzeln aufrufbar: `master.py roh.wav ziel.wav [neutral\|tief]` |
-| `vo/align.py` | Wort-Ausrichtung (Modelle, Zuordnung, Einrasten auf Pausen), auch einzeln aufrufbar |
-| `vo/retime.py`, `vo/skript.py` | schreibt `timing.ts`; liest und prüft `skript.json` |
-| `mikro/setinput.swift` | Quelltext zum Umschalten des Standard-Eingabegeräts unter macOS (das gebaute Programm wird nicht eingecheckt) |
+| `recorder/server.mjs`, `recorder/recorder.html` | recorder page and its small local server (recording via AudioWorklet, teleprompter from `script.json`) |
+| `vo/vo.py` | the command behind `npm run vo`: assemble pieces, master, align, write |
+| `vo/master.py` | mastering, can also be called on its own: `master.py raw.wav target.wav [neutral\|deep]` |
+| `vo/align.py` | word alignment (models, matching, snapping to pauses), can also be called on its own |
+| `vo/retime.py`, `vo/script.py` | writes `timing.ts`; reads and validates `script.json` |
+| `mic/setinput.swift` | source for switching the default input device on macOS (the built program is not checked in) |
 
-Aufnahmen (`recordings/`) und das erzeugte Voiceover gehören nicht ins Repository; die `.gitignore` des Beispielprojekts schließt sie aus.
+Recordings (`recordings/`) and the generated voiceover do not belong in the repository; the `.gitignore` of the example project excludes them.

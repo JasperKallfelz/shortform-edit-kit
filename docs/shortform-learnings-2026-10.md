@@ -1,266 +1,271 @@
-# Kurzvideo-Erfahrungen: Skript, Stimme, Raumklänge, Bildbausteine, Formate
+# Short-form video learnings: script, voice, room tone, visual building blocks, formats
 
-Erfahrungen vom 08.10.2026 aus der Arbeit an Kurzvideos von rund 13 Sekunden: Voiceover, Musik, rund 25 Sound-Cues und
-Raumklänge, an einem Tag mehrfach nach Gehör korrigiert. Das Dokument ergänzt
-[`sound-and-text-sync.md`](sound-and-text-sync.md) (Text-Vorlauf, Lautstärke gegen die Musik, Sitz der Cues), das hier nicht
-wiederholt wird. Zu jedem Punkt steht, was sich bewährt hat, warum, und woran man es prüft. „Nach Gehör“ heißt: Der Mensch,
-der das Video abnimmt, hat gehört und entschieden. Messwerte zeigen, dass sich etwas verändert hat, nicht dass es besser klingt.
+Learnings from 8 Oct 2026, from working on short videos of about 13 seconds: voiceover, music, about 25 sound cues and
+room tones, corrected by ear several times in one day. This document complements
+[`sound-and-text-sync.md`](sound-and-text-sync.md) (text lead, loudness against the music, cue placement), which is not
+repeated here. Every point says what worked, why, and how to check it. "By ear" means: the human who signs off the video
+listened and decided. Measurements show that something changed, not that it sounds better.
 
-## 1. Erst das Skript, dann der Schnitt
+## 1. Script first, then the edit
 
-Beim Einsprechen ändert sich der Wortlaut mehrfach: Wörter fallen weg, ein Halbsatz wird besser, eine Zahl wird anders genannt.
-Alles, was am Wortlaut hängt, muss mitziehen. Wer vorher schneidet, schneidet mehrfach.
+While you record, the wording changes several times: words drop out, a half-sentence gets better, a number is said
+differently. Everything that depends on the wording has to follow. If you cut first, you cut several times.
 
-- **Den Teleprompter nach jeder Änderung sofort nachziehen.** `skript.json` ist Teleprompter-Text und Zuordnung der Schlüssel
-  zugleich. Wird anders gesprochen, als dort steht, bricht `npm run vo` bei abweichender Wortzahl ab; das ist der Schutz, kein
-  Fehler. Steht der neue Wortlaut sofort im Skript, liest der Mensch beim nächsten Durchgang ihn ab.
-- **Einen Take immer erst mitschreiben, bevor er eingesetzt wird.** Der gesprochene Wortlaut gilt, nicht das Skript. Eine
-  Mitschrift per Spracherkennung zeigt, was wirklich auf der Aufnahme steht:
+- **Update the teleprompter right after every change.** `script.json` is the teleprompter text and the key mapping at the
+  same time. If you speak something other than what is written there, `npm run vo` aborts when the word count differs; that
+  is the safeguard, not a bug. If the new wording is in the script immediately, the human reads it off on the next pass.
+- **Always transcribe a take before you use it.** The spoken wording counts, not the script. A speech-recognition transcript
+  shows what is really on the recording:
 
   ```bash
-  whisper-cli -m <modell> -f recordings/<take>.wav -l de -otxt
+  whisper-cli -m <model> -f recordings/<take>.wav -l <language> -otxt
   ```
 
-- **Der Text im Bild folgt dem gesprochenen Wortlaut.** Das gilt für Wörter genauso wie für Zahlen: Die Zahl, auf die ein
-  Zähler im Bild läuft, ist ein Prop (`counterTo`) und kein fester Wert im Code, damit sie mit dem Take wandert.
+- **The text on screen follows the spoken wording.** This applies to words as much as to numbers: the number a counter on
+  screen runs to is a prop (`counterTo`) and not a fixed value in the code, so it moves with the take.
 
-**Prüfen:** Jeden Wort-Text im Bild neben die Mitschrift des eingesetzten Takes legen (Einzelbild rendern und ablesen), dazu die
-Zeilen „uneinig“ und „GESCHÄTZT“ der `vo`-Tabelle ansehen.
+**Check:** Put every word text on screen next to the transcript of the take in use (render a still and read it off), and
+look at the "models disagree" and "ESTIMATED" rows of the `vo` table.
 
-## 2. Aufnahme: ganze Stücke, dann zusammensetzen
+## 2. Recording: whole passes, then assemble
 
-- **Den ganzen Text mehrmals in einem Stück sprechen.** Bei einem Versprecher nicht anhalten und korrigieren, sondern neu
-  ansetzen und weitersprechen. Der Fluss bleibt erhalten, und am Ende gibt es mehrere vollständige Durchgänge.
-- **Aus den sauberen Stücken zusammensetzen.** Etwa die Zeilen 1 bis 2 aus dem zweiten und die Zeilen 3 bis 4 aus dem ersten
-  Durchgang. Die Schnitte gehören in Sprechpausen, dort stört kein Wortanfang, und die Wortzeiten rasten an Pausen ein:
+- **Speak the whole text several times in one piece.** After a slip, do not stop and correct: start again and keep going.
+  The flow stays intact, and in the end you have several complete passes.
+- **Assemble from the clean parts.** For example, lines 1 to 2 from the second pass and lines 3 to 4 from the first pass.
+  Put the cuts in speech pauses; no word onset is disturbed there, and the word timings snap to pauses:
 
   ```bash
   npm run vo -- recordings/take-a.wav:0:3800 recordings/take-b.wav:1740:-1
   ```
 
-- **Lange Einzelaufnahmen im Browser vermeiden.** Die Aufnahme-Seite hält den Take im Arbeitsspeicher des Tabs und schreibt ihn erst
-  beim Stopp nach `recordings/`. Stürzt der Tab ab oder lädt er neu, bevor gestoppt wurde, ist alles weg. Besser viele kurze
-  Durchgänge, jeder mit Stopp.
+- **Avoid long single recordings in the browser.** The recorder page keeps the take in the memory of the tab and writes it
+  to `recordings/` only when you stop. If the tab crashes or reloads before you stop, everything is gone. Better: many
+  short passes, each with a stop.
 
-**Prüfen:** Nach jedem Durchgang liegt eine neue Datei in `recordings/`. Nach dem Zusammensetzen die Übergänge anhören (kein
-abgeschnittener Atem, kein halbes Wort) und festhalten, welcher Take für welche Zeilen verwendet wurde.
+**Check:** After each pass a new file is in `recordings/`. After assembling, listen to the joins (no cut-off breath, no half
+word) and note which take was used for which lines.
 
-## 3. Tempo: Sprechpausen kürzen
+## 3. Pace: shorten speech pauses
 
-Bei rund 13 Sekunden zählt jede Pause. Gekürzt wurde so:
+With about 13 seconds, every pause counts. It was shortened like this:
 
-- Sprechpausen zwischen den Phrasen auf **0,08 bis 0,12 s**.
-- Vorlauf vor dem ersten Wort **2 Bilder** (67 ms), der Ausklang nach dem letzten Wort kurz (`ausklangMs` in `skript.json`).
-- Beispiel in Zahlen: **13,3 s → 11,4 s**, rund 14 % kürzer.
+- Speech pauses between the phrases to **0.08 to 0.12 s**.
+- Lead-in before the first word **2 frames** (67 ms), the tail after the last word short (`tailMs` in `script.json`).
+- Example in numbers: **13.3 s → 11.4 s**, about 14% shorter.
 
-Ein eigenes Werkzeug zum Kürzen liegt im Kit nicht. Geschnitten wird an den gemessenen Pausen, jeweils mit kurzen Blenden; die
-Pausen misst `voice-studio/vo/align.py` (ab 120 ms), grob geht es auch mit ffmpeg:
+The kit has no dedicated tool for shortening. You cut at the measured pauses, each time with short fades; the pauses are
+measured by `voice-studio/vo/align.py` (from 120 ms), and roughly it also works with ffmpeg:
 
 ```bash
 ffmpeg -i voiceover.wav -af silencedetect=n=-45dB:d=0.05 -f null - 2>&1 | grep silence_duration
 ```
 
-Jede Zeile ist eine Pause mit Dauer; die erste ist der Vorlauf, die letzte der Ausklang. Die Schwelle (−45 dB) hängt vom
-Raumrauschen der Aufnahme ab und gehört einmal nach Gehör eingestellt.
+Each line is a pause with its duration; the first is the lead-in, the last is the tail. The threshold (−45 dB) depends on
+the room noise of the recording and needs to be set once by ear.
 
-**Beachten:** `align.py` zählt Lücken erst ab 120 ms als Sprechpause. Pausen von 0,08 bis 0,12 s liegen an dieser Grenze, das Einrasten
-auf gemessene Einsätze hat danach weniger Anker. In der `vo`-Tabelle die Zeilen ohne ● und mit „GESCHÄTZT“ oder „uneinig“ ansehen.
+**Note:** `align.py` counts gaps as a speech pause only from 120 ms. Pauses of 0.08 to 0.12 s sit at this limit, so
+snapping to measured onsets has fewer anchors afterwards. In the `vo` table, look at the rows without ● and with
+"ESTIMATED" or "models disagree".
 
-**Danach neu ausrichten.** Mit dem Kürzen verschieben sich alle Wortzeiten. Die alte `timing.ts` passt nicht mehr zur neuen
-Aufnahme: `npm run vo` mit dem gekürzten Take noch einmal laufen lassen. Bild, Text und Cues hängen an dieser Tabelle und wandern
-mit, sobald sie stimmt. Behält man mehrere Fassungen der Stimme, gehören Datei und Zeit-Tabelle paarweise zusammen: Ein
-Kommentar neben dem Prop `voiceover` sagt, welche Datei zu welcher Tabelle passt. Eine Fassung mit den alten, längeren Pausen
-passt nur zur gesicherten alten Tabelle.
+**Re-align afterwards.** Shortening shifts all word timings. The old `timing.ts` no longer fits the new recording: run
+`npm run vo` again with the shortened take. Picture, text and cues hang on this table and move along as soon as it is
+right. If you keep several versions of the voice, the file and the timing table belong together in pairs: a comment next
+to the `voiceover` prop says which file fits which table. A version with the old, longer pauses fits only the saved old
+table.
 
-**Prüfen:** Länge vor und nach (`ffprobe -v error -show_entries format=duration -of csv=p=0 <datei>`), Pausenliste mit
-`silencedetect`, im Studio die neue Länge, ein Einzelbild auf einem betonten Wort (Frame = Millisekunden × 0,03).
+**Check:** Length before and after (`ffprobe -v error -show_entries format=duration -of csv=p=0 <file>`), pause list with
+`silencedetect`, the new length in the studio, a still on an emphasised word (frame = milliseconds × 0.03).
 
-## 4. Stimme: drei Wünsche nacheinander
+## 4. Voice: three wishes in a row
 
-Die Stimme wurde in drei Runden nach Gehör verändert, immer aus denselben Stücken neu aufbereitet:
+The voice was changed in three rounds by ear, each time reprocessed from the same pieces:
 
-| Wunsch | Eingriff | erwartete Wirkung |
+| Wish | Change | Expected effect |
 |---|---|---|
-| „tiefer“ | Anhebung um 140 Hz (im Kit: `--kette tief`, +5 dB bei 140 Hz, siehe `voice-studio/vo/master.py`) | mehr Körper |
-| „glatter, sauberer“ | Rauschminderung; Absenkung bei 4 kHz und 6,5 kHz; Höhen insgesamt leicht zurück | weniger Zischeln und Rauheit, die Stimme wird dumpfer |
-| „mehr Klarheit“ | untere Mitten um 280 Hz −3 dB; Präsenz um 2,8 kHz +2,5 dB; schmale Absenkung bei 4,2 kHz; Höhen leicht +1,5 dB | Sprache wird verständlicher, aber wieder heller |
+| "deeper" | boost at 140 Hz (in the kit: `--chain deep`, +5 dB at 140 Hz, see `voice-studio/vo/master.py`) | more body |
+| "smoother, cleaner" | noise reduction; cut at 4 kHz and 6.5 kHz; highs slightly back overall | less sibilance and roughness, the voice gets duller |
+| "more clarity" | low mids around 280 Hz −3 dB; presence around 2.8 kHz +2.5 dB; narrow cut at 4.2 kHz; highs slightly +1.5 dB | speech becomes more intelligible, but brighter again |
 
-**Ehrlich dazu:** Glätten und Klarheit ziehen in entgegengesetzte Richtungen. Das Glätten nimmt Höhe weg, die Klarheit gibt sie
-(teils) wieder her. Es gibt keine Einstellung, die beides ganz erfüllt; die Fassung wählt der Mensch nach Gehör. Die Ketten
-„glatter“ und „klarer“ sind nicht im Kit, nur die Werte oben.
+**Honestly:** Smoothing and clarity pull in opposite directions. Smoothing takes away highs, clarity gives (some of) them
+back. There is no setting that fully satisfies both; the human picks the version by ear. The "smoother" and "clearer"
+chains are not in the kit, only the values above.
 
-**Messbar machen:** Mittlere Pegel je Frequenzband vorher und nachher vergleichen, und zwar bei **gleicher Lautheit**
-(−14 LUFS, wie `master.py` sie herstellt). Sonst wirkt jede lautere Fassung „klarer“. Ein Messwerkzeug in zwanzig Zeilen
-(numpy und ffmpeg), getestet an Rauschen mit bekannter Anhebung:
+**Make it measurable:** Compare the mean level per frequency band before and after, at **equal loudness** (−14 LUFS, as
+`master.py` produces it). Otherwise every louder version seems "clearer". A measuring tool in twenty lines (numpy and
+ffmpeg), tested on noise with a known boost:
 
 ```python
 import subprocess
 import numpy as np
 
 SR = 48000
-BAENDER = [(100, 200), (200, 400), (400, 800), (800, 1600), (1600, 3200), (3200, 6400), (6400, 12800)]
+BANDS = [(100, 200), (200, 400), (400, 800), (800, 1600), (1600, 3200), (3200, 6400), (6400, 12800)]
 
 
-def lade(pfad):
-    """Datei als Mono-Folge von Abtastwerten (ffmpeg dekodiert beliebige Formate)."""
-    roh = subprocess.run(["ffmpeg", "-v", "error", "-i", pfad, "-ac", "1", "-ar", str(SR), "-f", "f32le", "-"], capture_output=True).stdout
-    return np.frombuffer(roh, dtype=np.float32).astype(np.float64)
+def load(path):
+    """File as a mono sequence of samples (ffmpeg decodes any format)."""
+    raw = subprocess.run(["ffmpeg", "-v", "error", "-i", path, "-ac", "1", "-ar", str(SR), "-f", "f32le", "-"], capture_output=True).stdout
+    return np.frombuffer(raw, dtype=np.float32).astype(np.float64)
 
 
-def baender_db(y):
-    """Mittlerer Pegel je Frequenzband in dB (50-ms-Blöcke, leise Blöcke ausgelassen)."""
+def bands_db(y):
+    """Mean level per frequency band in dB (50 ms blocks, quiet blocks left out)."""
     n = SR // 20
     blocks = y[: len(y) // n * n].reshape(-1, n) * np.hanning(n)
-    blocks = blocks[(blocks ** 2).mean(axis=1) > 1e-6]  # Pausen und Rauschteppich zählen nicht mit
+    blocks = blocks[(blocks ** 2).mean(axis=1) > 1e-6]  # pauses and noise floor do not count
     p = (np.abs(np.fft.rfft(blocks, axis=1)) ** 2).mean(axis=0)
     f = np.fft.rfftfreq(n, 1 / SR)
-    return [10 * np.log10(p[(f >= a) & (f < b)].sum() + 1e-20) for a, b in BAENDER]
+    return [10 * np.log10(p[(f >= a) & (f < b)].sum() + 1e-20) for a, b in BANDS]
 
 
-vor, nach = baender_db(lade("vor.wav")), baender_db(lade("nach.wav"))
-for (lo, hi), x, y in zip(BAENDER, vor, nach):
+before, after = bands_db(load("before.wav")), bands_db(load("after.wav"))
+for (lo, hi), x, y in zip(BANDS, before, after):
     print(f"{lo:>5}-{hi:<5} Hz  {y - x:+5.1f} dB")
 ```
 
-Eine breite Anhebung verteilt sich über Nachbarbänder: Bei +6 dB bei 2,8 kHz und −6 dB bei 280 Hz (beide Q = 1) zeigte die Messung
-+4,7 dB im Band 1,6 bis 3,2 kHz und −5,0 dB im Band 200 bis 400 Hz. Die Richtung stimmt, die Höhe nicht auf das dB.
+A broad boost spreads over neighbouring bands: with +6 dB at 2.8 kHz and −6 dB at 280 Hz (both Q = 1), the measurement
+showed +4.7 dB in the 1.6 to 3.2 kHz band and −5.0 dB in the 200 to 400 Hz band. The direction is right; the amount is not
+exact to the dB.
 
-## 5. Geräusche: was nach Gehör durchfiel und was blieb
+## 5. Sounds: what failed by ear and what stayed
 
-| Geräusch | Einsatz | Urteil |
+| Sound | Use | Verdict |
 |---|---|---|
-| Kamera-Auslöser (`shutterInsta1/2`) | als Übergang auf Schnitten und beim Erscheinen eines Clips | **durchgefallen**: „passt nirgendwo rein“. Auf Schnitten liegt jetzt Papier (`page1`, `page3`) |
-| schnelle Klappen-Folgen (`flapBurst3`, `flapBurst8`, Klapptafel-Serien) | auf Zahlen und Fragezeichen | **durchgefallen**: Die Reihe klingt wie ein mehrfacher Auslöser („Shutter, Shutter, Shutter“). Entfernt; bei einer wachsenden Mauer genügt ein einzelnes Blättern statt einer Klappe je Reihe |
-| ein einzelnes Blättern (`riffle1`) | auf einem durchblätternden Kalender | **bestätigt**: „sehr clean“ |
+| Camera shutter (`shutterInsta1/2`) | as a transition on cuts and when a clip appears | **failed**: "doesn't fit anywhere". On cuts there is now paper (`page1`, `page3`) |
+| fast flap sequences (`flapBurst3`, `flapBurst8`, split-flap board series) | on numbers and question marks | **failed**: The row sounds like a multiple shutter ("Shutter, Shutter, Shutter"). Removed; for a growing wall, a single riffle is enough instead of one flap per row |
+| a single riffle (`riffle1`) | on a calendar that flips through | **confirmed**: "very clean" |
 
-**Regel:** keine schnellen mechanischen Wiederholungen. Viele gleiche Einzelklänge in kurzer Folge hört das Ohr als Maschine
-(Auslöser-Serie, Klappen-Reihe), nicht als Bewegung. Läuft im Bild etwas weiter, lieber **einen** durchgehenden Klang darunter
-legen als einen je Schritt. Der Auslöser bleibt ein Geräusch für ein Foto, das erscheint; als Übergang und beim Einblenden eines
-Videoclips hat er nicht getragen. Das schränkt die Liste „Was wofür funktioniert“ in
-[`../edit-tools/README.md`](../edit-tools/README.md#ablauf-3-sound-design) ein.
+**Rule:** no fast mechanical repetitions. The ear hears many identical single sounds in quick succession as a machine
+(shutter series, flap row), not as movement. If something keeps running on screen, put **one** continuous sound under it
+instead of one per step. The shutter stays a sound for a photo that appears; as a transition and when a video clip fades
+in, it did not carry. This narrows the list "What works for what" in
+[`../edit-tools/README.md`](../edit-tools/README.md#step-3-sound-design).
 
-**Prüfen:** Die Cue-Liste hat Namen („Papier · Schnitt auf die Blase“): Rückmeldungen nach Gehör kommen als Namen oder
-Kategorien und lassen sich so ohne Suchen umsetzen. Nach dem Entfernen die Nur-Effekte-Spur neu rendern und die Lücken ansehen
-(`ton_check.py`), damit an der Stelle nicht plötzlich Stille ist.
+**Check:** The cue list has names ("Paper · cut to the bubble"): feedback by ear comes as names or categories and can be
+applied without searching. After removing, re-render the effects-only track and look at the gaps (`sound_check.py`), so
+that there is not suddenly silence at that spot.
 
-## 6. „Immersiv“, ohne aufdringlich zu werden
+## 6. "Immersive", without becoming intrusive
 
-Das fertige Ergebnis wurde als „super super gut“ bestätigt. Zwei Schichten tragen es: **leise Raumklänge unter jeder Szene** und
-**thematische Einzelgeräusche** an einzelnen Wörtern oder Bildern.
+The finished result was confirmed as "super super good". Two layers carry it: **quiet room tones under every scene** and
+**themed single sounds** on individual words or images.
 
-### Raumklänge aus dem eigenen Material
+### Room tones from your own material
 
-- Wind unter Außenaufnahmen, Stimmengewirr unter einer Menschenmenge. Die Klänge stammen aus den **eigenen Clips** des Projekts:
-  Das passt zum Bild und braucht keine Lizenz. Eben deshalb liegen sie nicht im Sound-Kit und nicht in diesem Repo; die Bausteine
-  zum Abspielen (unten) schon.
-- **Ruhige Stellen per Pegel suchen**, nicht nach Gefühl: den Pegel je halbe Sekunde berechnen und Abschnitte nehmen, in denen er
-  kaum schwankt (keine Sprache, kein Schlag):
+- Wind under outdoor shots, crowd chatter under a crowd of people. The sounds come from the project's **own clips**: that
+  fits the picture and needs no licence. For exactly that reason they are not in the sound kit and not in this repo; the
+  building blocks for playing them (below) are.
+- **Find quiet spots by level**, not by feel: compute the level per half second and take sections in which it barely
+  varies (no speech, no hit):
 
   ```python
-  def ruhige_stuecke(y, min_halbsek=4, max_schwankung_db=3.0):
-      """Startzeiten (s) und Pegel (dBFS) von Abschnitten, in denen der RMS-Pegel je halbe Sekunde kaum schwankt."""
+  def quiet_sections(y, min_half_secs=4, max_swing_db=3.0):
+      """Start times (s) and level (dBFS) of sections in which the RMS level per half second barely varies."""
       n = SR // 2
       blocks = y[: len(y) // n * n].reshape(-1, n)
-      pegel = 20 * np.log10(np.sqrt((blocks ** 2).mean(axis=1)) + 1e-9)
+      levels = 20 * np.log10(np.sqrt((blocks ** 2).mean(axis=1)) + 1e-9)
       out = []
-      for i in range(len(pegel) - min_halbsek + 1):
-          w = pegel[i : i + min_halbsek]
-          if w.max() - w.min() <= max_schwankung_db:
+      for i in range(len(levels) - min_half_secs + 1):
+          w = levels[i : i + min_half_secs]
+          if w.max() - w.min() <= max_swing_db:
               out.append((i / 2, round(float(w.mean()), 1)))
       return out
   ```
 
-  (`SR`, `lade` und `np` wie im Beispiel oben; getestet an Rauschen mit einem eingefügten Knall: Die Fenster mit dem Knall fehlen.)
-- **Mit Spracherkennung prüfen, dass kein Wort verständlich ist.** Eine Menschenmenge darf nach Stimmen klingen, aber niemand soll
-  zu verstehen sein. Die Mitschrift des Stücks (`whisper-cli … -otxt`) sollte leer sein. Spracherkennung erfindet bei Rauschen
-  manchmal Wörter: Ein „Treffer“ heißt dann Nachhören, nicht automatisch Verwerfen.
+  (`SR`, `load` and `np` as in the example above; tested on noise with an inserted bang: the windows containing the bang
+  are missing.)
+- **Use speech recognition to check that no word is intelligible.** A crowd may sound like voices, but nobody should be
+  understandable. The transcript of the piece (`whisper-cli … -otxt`) should be empty. On noise, speech recognition
+  sometimes invents words: a "hit" then means listening again, not automatically discarding.
 
-### Thematische Einzelgeräusche
+### Themed single sounds
 
-| Bild oder Wort | Geräusch |
+| Image or word | Sound |
 |---|---|
-| Tippen unter dem Wort „engineer“ | `typeBurst1` (Tastatur, 2,1 s), auf die Länge des Abschnitts begrenzt |
-| Münze auf einer Geldsumme | `coinCup1` (Münze fällt in eine Tasse) |
-| Aufzieh-Ton, der endet, wenn die hochlaufende Zahl ankommt | `riser1`, die lauteste Stelle (`lead`) auf dem Frame, auf dem die Zahl ihr Ziel erreicht |
-| Eine Karte erscheint | `cardPlace1`, die Karte „landet“ auf dem Geräusch |
-| kleine Bewegung (etwa ein Sprung) | `swishSmall`, sehr leise: ein Luftzug, kein Whoosh |
+| Typing under the word "engineer" | `typeBurst1` (keyboard, 2.1 s), limited to the length of the section |
+| Coin on a sum of money | `coinCup1` (coin drops into a cup) |
+| Riser that ends when the counting-up number arrives | `riser1`, the loudest point (`lead`) on the frame where the number reaches its target |
+| A card appears | `cardPlace1`, the card "lands" on the sound |
+| Small movement (such as a jump) | `swishSmall`, very quiet: a breath of air, not a whoosh |
 
-Die beiden neuen Kit-Sounds `typeBurst1` und `coinCup1` sind aus den Kandidaten `type_burst_macbook_01.wav` und
-`sparkle_coin_cup_01.wav` entstanden (Quelle und Lizenz in `sfx-candidates/manifest.tsv`).
+The two new kit sounds `typeBurst1` and `coinCup1` were made from the candidates `type_burst_macbook_01.wav` and
+`sparkle_coin_cup_01.wav` (source and licence in `sfx-candidates/manifest.tsv`).
 
-### Bausteine und ein eigener Regler
+### Building blocks and a separate volume control
 
-Raumklänge sind Dauerklänge und verhalten sich im Mix anders als Einzelschläge. Sie bekommen deshalb einen **eigenen
-Lautstärke-Regler** (`atmoVolume`, 0 = aus), getrennt von `sfxVolume`. „Alle Geräusche etwas lauter“ hebt dann nicht den Wind, und
-mit 0 lässt sich Vorher und Nachher direkt hören.
+Room tones are continuous sounds and behave differently in the mix than single hits. They therefore get their **own volume
+control** (`atmoVolume`, 0 = off), separate from `sfxVolume`. "All sounds a bit louder" then does not raise the wind, and
+with 0 you can hear before and after directly.
 
 ```tsx
-const TON = "ton/"; // Ordner unter public/ mit den Raumklängen und Zusatz-Geräuschen
+const AUDIO = "audio/"; // folder under public/ with the room tones and extra sounds
 const clamp = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
 
-/** Leiser Raumklang unter einem Abschnitt, mit kurzer Ein- und Ausblende. startSec = Stelle in der Datei. */
+/** Quiet room tone under a section, with a short fade in and out. startSec = position in the file. */
 const Bed: React.FC<{ from: number; frames: number; file: string; startSec: number; vol: number; fade?: number; name: string }> = ({ from, frames, file, startSec, vol, fade = 4, name }) => (
   <Sequence from={from} durationInFrames={frames} layout="none" name={`Atmo · ${name}`}>
-    <Audio src={staticFile(TON + file)} trimBefore={Math.round(startSec * 30)} volume={(fr) => vol * interpolate(fr, [0, fade, frames - fade, frames], [0, 1, 1, 0], clamp)} />
+    <Audio src={staticFile(AUDIO + file)} trimBefore={Math.round(startSec * 30)} volume={(fr) => vol * interpolate(fr, [0, fade, frames - fade, frames], [0, 1, 1, 0], clamp)} />
   </Sequence>
 );
 
-/** Einzelnes Geräusch; frames begrenzt die Länge, die letzten 3 Frames blenden aus (auch für Kit-Sounds, z. B. "sfx/typeBurst1.wav"). */
+/** Single sound; frames limits the length, the last 3 frames fade out (also for kit sounds, e.g. "sfx/typeBurst1.wav"). */
 const Extra: React.FC<{ at: number; frames: number; file: string; vol: number; name: string }> = ({ at, frames, file, vol, name }) => (
-  <Sequence from={Math.max(0, at)} durationInFrames={frames} layout="none" name={`Ton · ${name}`}>
+  <Sequence from={Math.max(0, at)} durationInFrames={frames} layout="none" name={`Sound · ${name}`}>
     <Audio src={staticFile(file)} volume={(fr) => vol * interpolate(fr, [frames - 3, frames], [1, 0], clamp)} />
   </Sequence>
 );
 ```
 
-Eingesetzt wird beides hinter der Cue-Spur, jeweils nur bei `atmoVolume > 0`:
+Both are placed behind the cue track, each only when `atmoVolume > 0`:
 
 ```tsx
 {atmoVolume > 0 ? (
   <>
-    <Bed from={start(0)} frames={len(0)} file="wind.wav" startSec={1} vol={0.75 * atmoVolume} name="draußen (Szene 1)" />
-    <Extra at={pop(w.sum)} frames={19} file="sfx/coinCup1.wav" vol={0.07 * atmoVolume} name="Münze · Summe" />
+    <Bed from={start(0)} frames={len(0)} file="wind.wav" startSec={1} vol={0.75 * atmoVolume} name="outdoors (scene 1)" />
+    <Extra at={pop(w.sum)} frames={19} file="sfx/coinCup1.wav" vol={0.07 * atmoVolume} name="Coin · sum" />
   </>
 ) : null}
 ```
 
-### Prüfung
+### Checking
 
-Geräusche allein und Musik allein rendern und **je Szene vergleichen**, dazu der Gesamtmix:
+Render the sounds alone and the music alone and **compare per scene**, plus the full mix:
 
 ```bash
 npx remotion render Demo sfx.wav --codec=wav --props='{"voVolume":0,"music":""}'
-npx remotion render Demo musik.wav --codec=wav --props='{"voVolume":0,"sfxVolume":0,"music":"<song.wav>"}'
-python3 edit-tools/ton_check.py sfx.wav --musik <song.wav> --musik-start <s> --musik-vol 0.15 --mix mix.wav
+npx remotion render Demo music.wav --codec=wav --props='{"voVolume":0,"sfxVolume":0,"music":"<song.wav>"}'
+python3 edit-tools/sound_check.py sfx.wav --music <song.wav> --music-start <s> --music-vol 0.15 --mix mix.wav
 ```
 
-Die Raumklänge zählen in der Geräusch-Spur mit, solange `atmoVolume` nicht 0 ist. Gemessen im Projekt: Die Geräusche blieben in
-jeder Szene **4 bis 21 dB unter der Musik**; zusammen lagen sie bei etwa **−34,6 LUFS**, die Musik bei **−25,8 LUFS**, der Gesamtmix
-bei **−14,5 LUFS**. Das passt zur Regel „Effekte nie lauter als die Musik“ ([`../sfx-kit/README.md`](../sfx-kit/README.md)); die Lücke
-von rund 9 dB zwischen Geräuschen und Musik im Ganzen passt dazu, dass nichts aufdringlich klang.
+The room tones count in the sound track as long as `atmoVolume` is not 0. Measured in the project: the sounds stayed
+**4 to 21 dB below the music** in every scene; together they were at about **−34.6 LUFS**, the music at **−25.8 LUFS**, the
+full mix at **−14.5 LUFS**. That fits the rule "effects never louder than the music"
+([`../sfx-kit/README.md`](../sfx-kit/README.md)); the gap of about 9 dB between sounds and music overall fits with nothing
+sounding intrusive.
 
-## 7. Bild-Bausteine, die sich bewährt haben
+## 7. Visual building blocks that worked
 
-Gleicher Look in allen Szenen (weiße Fläche, große Schrift, ein Rot), jede Bewegung an eine Wortzeit gehängt (`pop()` und
-`start()` wie in [`../example/src/Demo.tsx`](../example/src/Demo.tsx)). Der Text steht 3 Bilder (100 ms) vor dem Wort voll da,
-siehe [`sound-and-text-sync.md`](sound-and-text-sync.md).
+The same look in all scenes (white surface, large type, one red), every movement hung on a word time (`pop()` and
+`start()` as in [`../example/src/Demo.tsx`](../example/src/Demo.tsx)). The text is fully there 3 frames (100 ms) before the
+word, see [`sound-and-text-sync.md`](sound-and-text-sync.md).
 
-- **Eine Zahl, groß und rot.** Die Wort-DSL genügt: `{ ms: w.sum, text: "€100", font: "sans", size: 350, weight: 900, color: RED }`. Die Zahl
-  in extrafetter Schrift ist der Blickfang der Szene.
-- **„Welt“-Fläche, aus der die Kamera herausfährt.** Erst ein Detail in voller Größe (ein Kreis, gefüllt mit Kacheln), dann fährt
-  die Kamera heraus und zeigt die Menge ringsum. Erst Detail, dann Menge: Das Detail ist lesbar, solange es groß ist, und die Menge zeigt danach, wie viele es sind.
-- **Hochlaufende Zahl mit Plus am Ziel**, schnell los und langsam an.
-- **Abreißkalender**, der Monate durchblättert (ein Zeitsprung in einem Bild).
-- **Handgezeichneter Pfeil.** Der Pfad zeichnet sich über `strokeDashoffset`, ein leichtes Zittern kommt von einem
-  SVG-Filter mit wechselndem `seed`, ein weißer Rand hält den Strich über Video lesbar.
+- **One number, big and red.** The word DSL is enough: `{ ms: w.sum, text: "€100", font: "sans", size: 350, weight: 900, color: RED }`. The
+  number in extra-bold type is the eye-catcher of the scene.
+- **A "world" surface the camera pulls out of.** First a detail at full size (a circle filled with tiles), then the camera
+  pulls out and shows the crowd around it. First the detail, then the crowd: the detail is readable as long as it is large,
+  and the crowd then shows how many there are.
+- **Counting-up number with a plus at the target**, fast start and slow arrival.
+- **Tear-off calendar** that flips through months (a time jump in one image).
+- **Hand-drawn arrow.** The path draws itself via `strokeDashoffset`, a slight wobble comes from an SVG filter with a
+  changing `seed`, a white outline keeps the stroke readable over video.
 
-Alle Zeitangaben in den Ausschnitten sind Frames bei 30 fps; `RED` und `FONTS` kommen aus dem Projekt. Die Ausschnitte sind
-verallgemeinert (ohne die Texte, Bilder und Namen des Originals) und mit `tsc` gegen Remotion 4.0.532 geprüft.
+All times in the snippets are frames at 30 fps; `RED` and `FONTS` come from the project. The snippets are generalised
+(without the texts, images and names of the original) and checked with `tsc` against Remotion 4.0.532.
 
-### Zufall ohne `Math.random`
+### Randomness without `Math.random`
 
-Remotion rendert jeden Frame einzeln. `Math.random()` liefert dann in jedem Frame andere Werte, die Menge ringsum würde flimmern.
-Ein kleiner Zufallsgenerator mit festem Startwert (`seed`) liefert dieselbe Folge in jedem Frame:
+Remotion renders every frame on its own. `Math.random()` then returns different values in every frame, and the crowd around
+it would flicker. A small random generator with a fixed start value (`seed`) returns the same sequence in every frame:
 
 ```tsx
 const rng = (seed: number) => {
@@ -275,18 +280,18 @@ const rng = (seed: number) => {
 };
 ```
 
-### Welt mit Zoom-out
+### World with zoom-out
 
 ```tsx
-/** Eine große Fläche, deren Nullpunkt die Mitte des Details ist. Die Kamera zeigt sie erst in voller Größe und fährt ab `zoomAt` heraus;
- *  danach driftet sie noch langsam weiter, damit das Bild nicht einfriert. */
+/** One large surface whose origin is the centre of the detail. The camera first shows it at full size and pulls out from `zoomAt`;
+ *  afterwards it keeps drifting slowly so the image does not freeze. */
 const World: React.FC<{ zoomAt: number; frames: number; centre: { x: number; y: number }; detail: React.ReactNode; crowd: React.ReactNode }> = ({ zoomAt, frames, centre, detail, crowd }) => {
   const frame = useCurrentFrame();
   const ZOOM = { to: 0.5, drift: 0.45, frames: 24 };
   const out = interpolate(frame, [zoomAt, zoomAt + ZOOM.frames], [0, 1], { ...clamp, easing: Easing.inOut(Easing.cubic) });
   const drift = interpolate(frame, [zoomAt + ZOOM.frames, frames], [0, 1], clamp);
   const scale = 1 + (ZOOM.to - 1) * out + (ZOOM.drift - ZOOM.to) * drift;
-  const crowdOpacity = interpolate(frame, [zoomAt - 2, zoomAt + 5], [0, 1], clamp); // die Menge erscheint kurz vor der Fahrt
+  const crowdOpacity = interpolate(frame, [zoomAt - 2, zoomAt + 5], [0, 1], clamp); // the crowd appears shortly before the move
   return (
     <div style={{ position: "absolute", inset: 0, overflow: "hidden" }}>
       <div style={{ position: "absolute", left: centre.x, top: centre.y, width: 0, height: 0, transform: `scale(${scale})` }}>
@@ -298,8 +303,8 @@ const World: React.FC<{ zoomAt: number; frames: number; centre: { x: number; y: 
 };
 ```
 
-Die Menge ringsum ist ein Raster (jede zweite Reihe um eine halbe Zelle versetzt), in dem alle Zellen im Detail ausgelassen
-werden. Sie wird einmal beim Laden mit `rng` erzeugt:
+The crowd around it is a grid (every second row offset by half a cell) in which all cells within the detail are left out.
+It is generated once at load with `rng`:
 
 ```tsx
 const CELL = 150;
@@ -310,16 +315,16 @@ const CROWD_CELLS = (() => {
     for (let gx = -10; gx <= 10; gx++) {
       const x = gx * CELL + (gy % 2 ? CELL / 2 : 0);
       const y = gy * CELL;
-      const ask = r() < 0.45 ? 6 + Math.floor(r() * 20) : null; // Frame (nach dem Zoom-Start), an dem ein Fragezeichen aufpoppt
-      if (Math.hypot(x, y) < 425 + 90) continue; // nichts im Detail und nichts direkt am Rand
+      const ask = r() < 0.45 ? 6 + Math.floor(r() * 20) : null; // frame (after the zoom starts) at which a question mark pops up
+      if (Math.hypot(x, y) < 425 + 90) continue; // nothing in the detail and nothing right at the edge
       out.push({ x, y, ask });
     }
   return out;
 })();
 ```
 
-Eine Kachel im Detail blendet in 5 Frames ein und bleibt dann ruhig. Fehlt die Bilddatei, steht der Name als Text da, damit das
-Video auch mit unvollständigem Material baut:
+A tile in the detail fades in over 5 frames and then stays still. If the image file is missing, the name is shown as text,
+so that the video builds even with incomplete material:
 
 ```tsx
 const Cell: React.FC<{ name: string; file?: string; x: number; y: number; w: number; h: number; at: number }> = ({ name, file, x, y, w, h, at }) => {
@@ -333,15 +338,15 @@ const Cell: React.FC<{ name: string; file?: string; x: number; y: number; w: num
 };
 ```
 
-### Hochlaufende Zahl und Kalender
+### Counting-up number and calendar
 
 ```tsx
-/** Zahl, die zwischen den Frames `from` und `to` von a auf b läuft (schnell los, langsam an) und am Ziel ein Plus bekommt. */
+/** Number that runs from a to b between the frames `from` and `to` (fast start, slow arrival) and gets a plus at the target. */
 const Counter: React.FC<{ from: number; to: number; a: number; b: number }> = ({ from, to, a, b }) => {
   const frame = useCurrentFrame();
   if (frame < from) return null;
   const t = interpolate(frame, [from, to], [0, 1], { extrapolateRight: "clamp", easing: Easing.out(Easing.quad) });
-  const value = Math.round((a + (b - a) * t) / 10) * 10; // in Zehnerschritten: Einer wären zu schnell zum Lesen
+  const value = Math.round((a + (b - a) * t) / 10) * 10; // in steps of ten: single digits would be too fast to read
   return (
     <div style={{ color: RED, fontWeight: 900, fontVariantNumeric: "tabular-nums" }}>
       €{value.toLocaleString("en-US")}
@@ -351,13 +356,13 @@ const Counter: React.FC<{ from: number; to: number; a: number; b: number }> = ({
 };
 
 const MONTHS = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
-/** Abreißkalender: blättert in `frames` Frames `steps` Monate weiter, ab Monat `startMonth` (0 = Januar) im Jahr `startYear`. */
+/** Tear-off calendar: flips `steps` months onward in `frames` frames, starting at month `startMonth` (0 = January) in year `startYear`. */
 const Calendar: React.FC<{ frames: number; steps: number; startMonth: number; startYear: number }> = ({ frames, steps, startMonth, startYear }) => {
   const frame = useCurrentFrame();
   const step = Math.floor(interpolate(frame, [2, Math.max(3, frames - 4)], [0, steps], clamp));
   const month = (startMonth + step) % 12;
   const year = startYear + Math.floor((startMonth + step) / 12);
-  const tilt = step > 0 && step < steps ? (frame % 2 === 0 ? -7 : 5) : 0; // jedes Blatt kippt kurz nach vorn, solange geblättert wird
+  const tilt = step > 0 && step < steps ? (frame % 2 === 0 ? -7 : 5) : 0; // each sheet tilts forward briefly while flipping
   return (
     <div style={{ perspective: 1200 }}>
       <div style={{ transform: `rotateX(${tilt}deg)`, transformOrigin: "50% 0%" }}>
@@ -369,15 +374,15 @@ const Calendar: React.FC<{ frames: number; steps: number; startMonth: number; st
 };
 ```
 
-Der Ton dazu: **ein** Blättern (`riffle1`) unter dem ganzen Durchlauf, nicht ein Klick je Monat (siehe Abschnitt 5). Der Zähler hat
-sein Ziel auf dem Frame `to`; dorthin gehört die lauteste Stelle des Aufzieh-Tons (`riser1` mit `lead`).
+The sound for it: **one** riffle (`riffle1`) under the whole run, not one click per month (see section 5). The counter
+reaches its target on frame `to`; the loudest point of the riser (`riser1` with `lead`) belongs there.
 
-### Handgezeichneter Pfeil
+### Hand-drawn arrow
 
 ```tsx
-/** Die Linie zeichnet sich ab Frame `at` in `draw` Frames (pathLength 1, strokeDashoffset 1 → 0), danach die Spitze.
- *  Der Filter lässt den Strich zittern: feTurbulence + feDisplacementMap, der seed wechselt alle 4 Frames.
- *  Der weiße Rand (breiterer Strich darunter) hält den Pfeil über einem Clip lesbar. */
+/** The line draws itself from frame `at` over `draw` frames (pathLength 1, strokeDashoffset 1 → 0), then the head.
+ *  The filter makes the stroke wobble: feTurbulence + feDisplacementMap, the seed changes every 4 frames.
+ *  The white outline (a wider stroke underneath) keeps the arrow readable over a clip. */
 const HandArrow: React.FC<{ at: number; path: string; head: string; draw?: number }> = ({ at, path, head, draw = 13 }) => {
   const frame = useCurrentFrame();
   if (frame < at) return null;
@@ -406,59 +411,60 @@ const HandArrow: React.FC<{ at: number; path: string; head: string; draw?: numbe
 };
 ```
 
-Der Pfeil beginnt, sobald das Wort steht, auf das er zeigt (`at` aus der Wortzeit plus ein paar Frames). Der Pfad führt an Text vorbei,
-der darüber liegt, und endet im Bild, auf das er zeigt; im Beispielprojekt liegt die einfachere Fassung ohne Zittern als `Squiggle`.
+The arrow starts as soon as the word it points at is up (`at` from the word time plus a few frames). The path leads past
+text that lies above it and ends in the image it points at; in the example project, the simpler version without the wobble
+is `Squiggle`.
 
-**Prüfen:** Pro Baustein Einzelbilder an Anfang, Mitte und Ende der Bewegung rendern und ansehen (`npx remotion still … --frame=N`).
-Beim Zoom-out auf Ränder achten (leerer Bereich am Bildrand), beim Pfeil auf Lesbarkeit über dem Clip, beim Zähler darauf, dass
-die Endzahl die gesprochene ist.
+**Check:** For each building block, render stills at the start, middle and end of the movement and look at them
+(`npx remotion still … --frame=N`). On the zoom-out, watch the edges (empty area at the edge of the frame); on the arrow,
+the readability over the clip; on the counter, that the end number is the spoken one.
 
-## 8. Formate, die bei kleinen Konten weit über die Followerzahl liefen
+## 8. Formats that ran far beyond the follower count on small accounts
 
-Aus einer Auswertung von Instagram-Reels (Stand 08.10.2026): Gesucht waren Reels, die bei kleinen Konten weit über die
-Followerzahl hinaus liefen, um ihre Bauart zu übernehmen. Ein Beispiel für die Größenordnung: ein Konto mit **rund 1.400 Followern
-und 1,9 Mio. Aufrufen** bei einem Reel von 11 Sekunden. Als Muster, ohne Konten:
+From an evaluation of Instagram Reels (as of 8 Oct 2026): The search was for reels that ran far beyond the follower count
+on small accounts, in order to adopt their construction. An example of the order of magnitude: an account with **about
+1,400 followers and 1.9 million views** on an 11-second reel. As patterns, without accounts:
 
-| Muster | Bauart (knapp) |
+| Pattern | Construction (brief) |
 |---|---|
-| ein Bild, eine Zeile, lange Beschreibung | eine einzige Einstellung (stehend oder eine ruhige Kamerafahrt), 5–10 s, ein bis drei Zeilen Text im Bild; die Zeile bricht teils mit „…“ ab, die Geschichte steht in der Beschreibung (650–1.400 Zeichen) |
-| Uhrzeiten über Clips | Titelzeile, dann fünf bis sieben Uhrzeiten mit je einer kleinen Zeile über ruhigen Clips (rund 16 s); als Variante eine feste Einstellung im Zeitraffer, über der eine Uhr durchläuft |
-| Liste in schnellen Schnitten | etwa jede Sekunde ein anderer Clip mit einem Etikett oben im Bild; oder zwei Personen im Bild, über denen nacheinander Etiketten erscheinen (der Witz liegt im Unterschied) |
-| „Tag 1“-Serien | der erste Teil einer Serie („Tag 1 von …“), meist gesprochen mit Wort-für-Wort-Untertiteln und kurzen Zwischenbildern vom Bildschirm |
-| Alter und Geständnis | eine stehende Einstellung am Schreibtisch, darüber Alter plus ein Eingeständnis oder eine Frage in Anführungszeichen mit der Antwort darunter; 7–10 s, kein Sprecher |
+| one image, one line, long caption | a single shot (static or a calm camera move), 5–10 s, one to three lines of text on screen; the line sometimes breaks off with "…", the story is in the caption (650–1,400 characters) |
+| times of day over clips | title line, then five to seven times of day, each with a small line, over calm clips (about 16 s); as a variant, a fixed shot in time-lapse over which a clock runs |
+| list in fast cuts | about every second a different clip with a label at the top of the frame; or two people in frame, over whom labels appear one after another (the joke is in the difference) |
+| "Day 1" series | the first part of a series ("Day 1 of …"), mostly spoken with word-by-word subtitles and short insert shots of the screen |
+| age and confession | a static shot at a desk, over it the age plus an admission or a question in quotation marks with the answer below; 7–10 s, no speaker |
 
-Die Bauart ist an je zehn Standbildern pro Video und an den Beschreibungstexten abgelesen, nicht an Angaben der Konten.
+The construction was read from ten stills per video and from the caption texts, not from information given by the accounts.
 
-Gemeinsam war fast allen: **6 bis 16 Sekunden und kein Sprecher**. Das Kit baut auf Voiceover und Wortzeiten; diese Formate kommen
-ohne Sprecher aus. Ob ein Voiceover bei ihnen hilft oder schadet, zeigt die Auswertung nicht.
+Common to almost all: **6 to 16 seconds and no speaker**. The kit builds on voiceover and word timings; these formats get
+by without a speaker. Whether a voiceover helps or hurts them is not shown by the evaluation.
 
-**Grenzen der Auswertung, ehrlich:**
+**Limits of the evaluation, honestly:**
 
-- **Gerundete Zahlen.** Die Plattform zeigt Aufrufe und Follower gerundet („307K“); Verhältnisse sind Größenordnungen.
-- **Followerzahl von heute.** Wie viele Follower das Konto beim Posten hatte, ist unbekannt. Bei seither gewachsenen Konten war das
-  Verhältnis damals höher als berechnet.
-- **Auswahl der Plattform.** Die Reels kamen aus Themenseiten und einer Suche, also aus dem, was die Plattform zeigt. Konten mit
-  geringer Reichweite fehlen zwangsläufig: Das ist eine Auswahl der Erfolgreichen, kein Vergleich mit den Erfolglosen.
-- **Kleine Stichprobe, nur Instagram.** Angesehen und mitgeschrieben wurde rund ein Dutzend Reels, die Bauart wurde an
-  Kontaktbögen und Mitschriften abgelesen. Zusammenhang ist kein Beweis, dass das Format die Reichweite verursacht hat.
-- **Aufrufe sind keine Follower.** Wie viele neue Follower ein solches Reel brachte, ist nicht erhoben.
-- **Folgeteile einer Serie** wurden nicht untersucht, nur der erste Teil.
+- **Rounded numbers.** The platform shows views and followers rounded ("307K"); ratios are orders of magnitude.
+- **Follower count of today.** How many followers the account had at the time of posting is unknown. For accounts that have
+  grown since, the ratio back then was higher than calculated.
+- **Selection by the platform.** The reels came from topic pages and a search, so from what the platform shows. Accounts
+  with little reach are necessarily missing: this is a selection of the successful, not a comparison with the unsuccessful.
+- **Small sample, Instagram only.** About a dozen reels were watched and transcribed; the construction was read from
+  contact sheets and transcripts. Correlation is not proof that the format caused the reach.
+- **Views are not followers.** How many new followers such a reel brought was not collected.
+- **Follow-up parts of a series** were not examined, only the first part.
 
-Daraus folgt: als Ausgangspunkt für eigene Tests nehmen, nicht als Rezept. Je Runde eine Sache ändern und mindestens 72 Stunden
-warten ([`research-2026-10.md`](research-2026-10.md), Abschnitt 5).
+It follows: use this as a starting point for your own tests, not as a recipe. Change one thing per round and wait at least
+72 hours ([`research-2026-10.md`](research-2026-10.md), section 5).
 
-## 9. Zusammenarbeit mehrerer Agenten an einem Projekt
+## 9. Several agents working on one project
 
-Die Regeln zu Prüfsumme und Meldung stehen in [`sound-and-text-sync.md`](sound-and-text-sync.md) und [`../AGENTS.md`](../AGENTS.md).
-Dazu kam an diesem Tag:
+The rules on checksums and reporting are in [`sound-and-text-sync.md`](sound-and-text-sync.md) and
+[`../AGENTS.md`](../AGENTS.md). Added on this day:
 
-- **Ein Schreiber je Datei, md5 vor dem Schreiben** (`md5 -q <datei>`, dann `patch_lines.py` oder `sync_remotion.py` mit dem md5).
-- **Geteilte Bausteine nur nach Absprache ändern.** Importiert eine zweite Komposition Bausteine, Konstanten oder Props-Typen aus
-  der Datei der ersten (hier etwa Clip-Rahmen, Rot und Text-Vorlauf), verschiebt jede Änderung dort auch das andere Video. Wer so
-  eine Datei anfassen will, sagt es vorher und nennt die Namen, an denen Fremdes hängt.
-- **Zusammengehörige Dateien in einem Schritt übertragen.** Zeit-Tabelle und Voiceover-Datei, Cue-Liste und Sound-Dateien,
-  Komposition und Props gehören zusammen. Kommt die neue Tabelle vor der neuen Aufnahme an (oder umgekehrt), zeigt das Studio
-  falsch ausgerichtete Wörter, und niemand sieht gleich, warum. Ein `rsync` über alle betroffenen Pfade in **einem** Aufruf, danach
-  die Prüfsummen auf beiden Seiten vergleichen.
+- **One writer per file, md5 before writing** (`md5 -q <file>`, then `patch_lines.py` or `sync_remotion.py` with the md5).
+- **Change shared building blocks only after agreeing.** If a second composition imports building blocks, constants or props
+  types from the file of the first one (here, for example, clip frames, red and text lead), every change there also shifts
+  the other video. Whoever wants to touch such a file says so beforehand and names the identifiers that others depend on.
+- **Transfer files that belong together in one step.** Timing table and voiceover file, cue list and sound files,
+  composition and props belong together. If the new table arrives before the new recording (or the other way round), the
+  studio shows misaligned words, and nobody sees right away why. Use one `rsync` over all affected paths in **one** call,
+  then compare the checksums on both sides.
 
-**Prüfen:** Nach der Übertragung `md5 -q` der Dateien auf beiden Rechnern, Studio neu laden, Einzelbild auf einem betonten Wort.
+**Check:** After the transfer, `md5 -q` of the files on both machines, reload the studio, a still on an emphasised word.

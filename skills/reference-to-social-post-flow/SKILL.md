@@ -1,91 +1,91 @@
 ---
 name: reference-to-social-post-flow
-description: "Ablauf, um ein Referenz-Video (Instagram/TikTok) mit eigenem Material in Remotion nachzubauen und danach auf TikTok und Instagram zu posten (mit edit-tools/post_social.py: Beschreibung freigeben lassen, Trockenlauf oder Entwurf, veröffentlichen, nachlesen). Nutzen, wenn jemand ein Vorbild-Video zeigt und es nachgebaut haben will, Clips aus der Fotomediathek für einen Edit sucht, einen Remotion-Edit zeigen, rendern oder veröffentlichen will."
+description: "Flow for rebuilding a reference video (Instagram/TikTok) with your own material in Remotion and then posting it to TikTok and Instagram (with edit-tools/post_social.py: get the caption approved, dry run or draft, publish, read back). Use when someone shows a model video and wants it rebuilt, looks for clips in the photo library for an edit, or wants to show, render or publish a Remotion edit."
 version: 1.1.0
 platforms: [macos]
 metadata:
   hermes:
-    tags: [Remotion, Edit, TikTok, Instagram, Fotos, Posten]
+    tags: [Remotion, Edit, TikTok, Instagram, Photos, Posting]
     related_skills: [clip-sound-post-flow]
 ---
 
-# Referenz → Remotion-Edit → Post
+# Reference → Remotion edit → post
 
-Den Ablauf von Skript und Voiceover bis zum fertigen Export beschreibt `clip-sound-post-flow` (und `AGENTS.md` im Wurzelordner dieses
-Repos). Dieser Skill ergänzt, wie man eine Referenz nachbaut und wie man am Ende postet.
+The flow from script and voiceover to the finished export is described by `clip-sound-post-flow` (and `AGENTS.md` in the root
+folder of this repo). This skill adds how to rebuild a reference and how to post at the end.
 
-## Ablauf in Kürze
+## The flow in brief
 
-1. **Referenz analysieren, frame-genau.** Einsatz-Frames und Rechtecke neuer Elemente mit Frame-Differenz bei 30 fps messen
-   (OpenCV: Differenz benachbarter Frames, Schwelle, Bounding-Box), nicht aus 4-fps-Kontaktbögen schätzen. Marken, Handles und
-   Wasserzeichen der Referenz weglassen, fremde Namen durch die eigenen ersetzen.
-2. **Material.** Clip-Liste aus der Fotos-Datenbank (sqlite, Tabelle `ZASSET`; `ZKIND=1` = Video). Originale über die Fotos-App
-   exportieren (`osascript … export … with using originals`). Ein Video zu einem Standbild findet man mit Vision-Feature-Prints
-   gegen die Vorschaubilder der Mediathek oder mit einem Kontaktbogen (`edit-tools/kontaktbogen.py`). iPhone-Clips sind oft gedreht
-   gespeichert und in HDR: für Proxys nach SDR wandeln und die Drehung beachten.
-3. **Remotion.** Jeder Clip ist ein Slot im Props-Panel (Datei, Startsekunde). Wort-DSL für Text. Hochformat in 16:9 mit
-   unscharfer Kopie als Hintergrund.
-4. **Prüfen.** Lint und Typprüfung, Frames neben die Referenz legen, erst dann „fertig“ sagen.
-5. **Zeigen.** Im Studio zeigen statt Render-Dateien zu schicken, außer ein Render ist ausdrücklich gewünscht.
-6. **Posten** nur mit ausdrücklicher Freigabe für Text, Hashtags und Konto, mit `edit-tools/post_social.py` (nächster Abschnitt).
+1. **Analyse the reference, frame-accurate.** Measure the onset frames and rectangles of new elements with frame differencing
+   at 30 fps (OpenCV: difference of adjacent frames, threshold, bounding box); do not estimate from 4 fps contact sheets.
+   Leave out the marks, handles and watermarks of the reference, and replace other people's names with your own.
+2. **Material.** Clip list from the Photos database (sqlite, table `ZASSET`; `ZKIND=1` = video). Export the originals through
+   the Photos app (`osascript … export … with using originals`). You can find the video for a still image with Vision
+   feature prints against the thumbnails of the library, or with a contact sheet (`edit-tools/contact_sheet.py`). iPhone
+   clips are often stored rotated and in HDR: convert to SDR for proxies and mind the rotation.
+3. **Remotion.** Every clip is a slot in the props panel (file, start second). Word DSL for text. Portrait in 16:9 with a
+   blurred copy as the background.
+4. **Check.** Lint and type check, put frames next to the reference, and only then say "done".
+5. **Show.** Show it in the studio instead of sending render files, unless a render is explicitly requested.
+6. **Post** only with explicit approval for text, hashtags and account, with `edit-tools/post_social.py` (next section).
 
-## Posten mit post_social.py
+## Posting with post_social.py
 
-Das Skript lädt die fertige MP4 hoch und legt sie über die Composio-CLI auf TikTok (über Zernio) und Instagram (Graph-API) an. Alle
-Befehle, die Konfiguration und die Fallen: `edit-tools/POSTEN.md`. Vorher einmalig `post.config.json` aus `post.config.example.json`
-anlegen (wird nie eingecheckt); `accounts` nennt die Werte, die hineingehören:
+The script uploads the finished MP4 and creates it on TikTok (through Zernio) and Instagram (Graph API) via the Composio CLI.
+All commands, the configuration and the traps: `edit-tools/POSTING.md`. Beforehand, create `post.config.json` once from
+`post.config.example.json` (never checked in); `accounts` names the values that belong in it:
 
 ```bash
 python3 edit-tools/post_social.py accounts
 ```
 
-Die sichere Reihenfolge, jede Stufe einzeln:
+The safe order, each stage on its own:
 
-1. **Beschreibung schreiben und von einem Menschen freigeben lassen.** Erst dann in eine Datei (UTF-8, echtes `#`, höchstens 5
-   Hashtags bei Instagram, 3 bis 4 passende bei TikTok).
-2. **Trockenlauf.** Lädt nichts hoch und legt nichts an, zeigt die Aufrufe:
-
-   ```bash
-   python3 edit-tools/post_social.py tiktok <video> --caption-file <datei> --dry-run
-   ```
-
-   Instagram ohne `--publish` zeigt ebenfalls nur die Aufrufe. Ein TikTok-Entwurf (Aufruf ohne `--publish` und ohne `--dry-run`) ist
-   schon eine echte Aktion im Konto: nur nach der Freigabe der Beschreibung.
-3. **Zweite Freigabe, dann veröffentlichen:**
+1. **Write the caption and have a human approve it.** Only then it goes into a file (UTF-8, real `#`, at most 5 hashtags on
+   Instagram, 3 to 4 relevant ones on TikTok).
+2. **Dry run.** Uploads nothing and creates nothing, shows the calls:
 
    ```bash
-   python3 edit-tools/post_social.py instagram <video> --caption-file <datei> --publish
+   python3 edit-tools/post_social.py tiktok <video> --caption-file <file> --dry-run
    ```
 
-4. **Nachlesen.** TikTok: Status und Post-ID. Instagram: Link, und die veröffentlichte Beschreibung wird Byte für Byte mit der Datei
-   verglichen (Exit-Code ungleich 0 bei Abweichung). Später jederzeit:
+   Instagram without `--publish` also only shows the calls. A TikTok draft (a call without `--publish` and without
+   `--dry-run`) is already a real action in the account: only after the caption has been approved.
+3. **Second approval, then publish:**
+
+   ```bash
+   python3 edit-tools/post_social.py instagram <video> --caption-file <file> --publish
+   ```
+
+4. **Read back.** TikTok: status and post ID. Instagram: link, and the published caption is compared byte for byte with the
+   file (non-zero exit code on a mismatch). Later, at any time:
 
    ```bash
    python3 edit-tools/post_social.py status --instagram-media <MEDIA-ID>
    ```
 
-Nie zum Ausprobieren veröffentlichen oder Entwürfe anlegen: dafür gibt es `--dry-run`.
+Never publish or create drafts to try things out: that is what `--dry-run` is for.
 
-## Allgemeine Fallen beim Posten über eine API (Scheduler, Graph-API)
+## General traps when posting through an API (scheduler, Graph API)
 
-- Immer zuerst als **Entwurf** anlegen, Freigabe abwarten, dann veröffentlichen. Manche Werkzeuge planen einen Post automatisch
-  ein, wenn weder „Entwurf“ noch „sofort“ gesetzt ist (Zernio: in 60 Minuten): die Parameter vorher lesen. `post_social.py` sendet
-  immer genau eines von beiden.
-- Große Dateien nicht über ein Browser-Upload-Feld schicken (oft auf wenige MB begrenzt), sondern über den Upload-Endpunkt des
-  Dienstes (vorab signierte Adresse anfordern, Datei per PUT hochladen, Upload abschließen). Das Skript macht das und prüft die
-  Dateigröße auf dem Server.
-- Instagram Reels über die Graph-API: Container anlegen (Typ REELS, öffentliche Video-URL) → Status abfragen, bis er fertig
-  ist → veröffentlichen → Beitrag zurücklesen und Text prüfen.
-- **Beschreibung als Rohtext übergeben**, mit echtem `#` und echten Zeilenumbrüchen. URL-kodierter Text wird nicht dekodiert
-  und steht dann wörtlich im Beitrag. Veröffentlichte Texte lassen sich über viele Werkzeuge nicht mehr ändern.
-- Nichts automatisch wiederholen: nach einer Zeitüberschreitung ist unklar, ob der Beitrag existiert. Erst im Konto nachsehen.
-- Sichtbarkeit, Duett und Stitch lassen sich über Dritt-Werkzeuge oft nicht setzen; in der App nachsehen. Ein eigenes Titelbild lässt
-  sich bei TikTok über diesen Weg nicht setzen.
-- Was die Plattformen zu Beschreibung, Hashtags, Cover, Musik und Test-Reels sagen: `docs/research-2026-10.md`.
+- Always create it as a **draft** first, wait for approval, then publish. Some tools schedule a post automatically if neither
+  "draft" nor "now" is set (Zernio: in 60 minutes): read the parameters beforehand. `post_social.py` always sends exactly one
+  of the two.
+- Do not send large files through a browser upload field (often limited to a few MB), but through the upload endpoint of the
+  service (request a presigned URL, upload the file by PUT, complete the upload). The script does this and checks the file
+  size on the server.
+- Instagram Reels through the Graph API: create the container (type REELS, public video URL) → poll the status until it is
+  ready → publish → read the post back and check the text.
+- **Pass the caption as raw text**, with a real `#` and real line breaks. URL-encoded text is not decoded and then appears
+  verbatim in the post. Published texts cannot be changed through many tools.
+- Do not retry anything automatically: after a timeout it is unclear whether the post exists. Check the account first.
+- Visibility, duet and stitch often cannot be set through third-party tools; check in the app. A custom cover image cannot be
+  set on TikTok this way.
+- What the platforms say about caption, hashtags, cover, music and trial reels: `docs/research-2026-10.md`.
 
-## Regeln
+## Rules
 
-- „Warte, mach nichts“ heißt wirklich nichts tun, bis Material kommt.
-- Nicht schneiden, bevor Skript und Beispielvideos da sind.
-- Immer Originale in höchster Qualität, keine Vorschauen.
-- Posten und jede Änderung an öffentlichem Inhalt nur nach ausdrücklicher Freigabe, auch wenn die Technik es kann.
+- "Wait, don't do anything" really means do nothing until material arrives.
+- Do not cut before the script and example videos are there.
+- Always originals in the highest quality, no previews.
+- Posting and any change to public content only after explicit approval, even if the technology can do it.

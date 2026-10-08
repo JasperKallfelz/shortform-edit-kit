@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Hörseite: liefert index.html und die Audiodateien dieses Ordners aus, listet alle Sounds und merkt sich die Urteile.
+"""Listening page: serves index.html and the audio files of this folder, lists all sounds and remembers the picks.
 
-Start:   python3 listen.py            → http://localhost:3700
-Urteile: auswahl.json neben dieser Datei, {"since": <erster Start>, "v": {"<pfad>": "keep" | "drop"}}.
-Neue Dateien in sfx-candidates/ erscheinen ohne Neustart (die Seite fragt alle paar Sekunden nach).
-Die Kategorie eines Kandidaten kommt aus dem Präfix des Dateinamens (CATS unten).
-Nur Standardbibliothek, läuft mit dem System-Python (3.9).
+Start:  python3 listen.py            → http://localhost:3700
+Picks:  selection.json next to this file, {"since": <first start>, "v": {"<path>": "keep" | "drop"}}.
+        Set LISTEN_STATE to use another file, LISTEN_PORT to use another port.
+New files in sfx-candidates/ appear without a restart (the page asks again every few seconds).
+The category of a candidate comes from the prefix of its file name (CATS below).
+Standard library only, runs with the system Python (3.9).
 """
 import csv
 import json
@@ -18,38 +19,38 @@ import time
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
-STATE = os.environ.get("HOERSEITE_STATE", os.path.join(ROOT, "auswahl.json"))
-PORT = int(os.environ.get("HOERSEITE_PORT", "3700"))
+STATE = os.environ.get("LISTEN_STATE", os.path.join(ROOT, "selection.json"))
+PORT = int(os.environ.get("LISTEN_PORT", "3700"))
 KIT = "sfx-kit/sounds"
 CAND = "sfx-candidates"
 AUDIO = (".wav", ".mp3", ".m4a", ".ogg", ".flac", ".aif", ".aiff")
-KIT_CAT = "Im Video (Sound-Kit)"
+KIT_CAT = "In the video (sound kit)"
 
-# Reihenfolge = Reihenfolge auf der Seite. Präfix = Dateiname bis zum ersten Unterstrich.
+# Order = order on the page. Prefix = file name up to the first underscore.
 CATS = [
-    ("Klapptafel", ["flap"]),
+    ("Split-flap", ["flap"]),
     ("Flutter", ["flutter"]),
     ("Riser", ["riser"]),
     ("UI", ["ui"]),
-    ("Klick", ["click"]),
-    ("Tick & Pop", ["tick", "pop"]),
-    ("Kamera", ["shutter", "film", "autofocus"]),
+    ("Click", ["click"]),
+    ("Tick & pop", ["tick", "pop"]),
+    ("Camera", ["shutter", "film", "autofocus"]),
     ("Whoosh", ["whoosh"]),
-    ("Papier & Karte", ["paper", "card"]),
-    ("Tastatur", ["type"]),
-    ("Stift", ["pen"]),
-    ("Funkeln", ["sparkle"]),
-    ("Schlag", ["impact"]),
-    ("Feuerzeug", ["lighter"]),
+    ("Paper & card", ["paper", "card"]),
+    ("Keyboard", ["type"]),
+    ("Pen", ["pen"]),
+    ("Sparkle", ["sparkle"]),
+    ("Impact", ["impact"]),
+    ("Lighter", ["lighter"]),
 ]
 PREFIX = {p: name for name, ps in CATS for p in ps}
-OTHER = "Sonstiges"
+OTHER = "Other"
 LOCK = threading.Lock()
 _secs = {}
 
 
 def wav_secs(path):
-    """Länge aus dem RIFF-Kopf (Datenlänge / Bytes pro Sekunde); None bei allem, was kein WAV ist."""
+    """Length from the RIFF header (data length / bytes per second); None for anything that is not a WAV."""
     try:
         key = (path, os.path.getmtime(path))
         if key in _secs:
@@ -100,10 +101,10 @@ def natural(name):
 
 def sounds():
     man = {r.get("file"): r for r in tsv(os.path.join(ROOT, CAND, "manifest.tsv"))}
-    # Rohdatei → Name im Kit, damit ein Kandidat zeigt, dass er schon im Video steckt
+    # raw file → name in the kit, so a candidate shows that it is already in the video
     used = {}
-    for r in tsv(os.path.join(ROOT, "sfx-kit", "quellen.tsv")):
-        raw = (r.get("rohdatei") or "").strip()
+    for r in tsv(os.path.join(ROOT, "sfx-kit", "sources.tsv")):
+        raw = (r.get("raw_file") or "").strip()
         if raw.endswith(AUDIO):
             used[raw] = (r.get("sound") or "").strip()
     out = []
@@ -186,7 +187,7 @@ class Handler(SimpleHTTPRequestHandler):
             pass
 
     def send_range(self):
-        """Teilabruf (Safari spielt Audio nur mit 206-Antworten)."""
+        """Range request (Safari plays audio only with 206 responses)."""
         m = re.match(r"bytes=(\d*)-(\d*)$", self.headers["Range"].strip())
         path = self.translate_path(self.path)
         if not m or not os.path.isfile(path) or not (m.group(1) or m.group(2)):
@@ -218,16 +219,16 @@ class Handler(SimpleHTTPRequestHandler):
         return True
 
     def do_POST(self):
-        # Nur JSON: ein fremdes Formular im Browser kann diesen Inhaltstyp nicht ohne Rückfrage schicken.
+        # JSON only: a foreign form in the browser cannot send this content type without a CORS preflight request.
         if self.path != "/api/state" or "application/json" not in (self.headers.get("Content-Type") or ""):
-            return self.json({"error": "unbekannt"}, 404)
+            return self.json({"error": "unknown"}, 404)
         try:
             body = json.loads(self.rfile.read(int(self.headers.get("Content-Length") or 0)))
             sid, v = body["id"], body.get("v")
         except (ValueError, KeyError, TypeError):
-            return self.json({"error": "ungültig"}, 400)
+            return self.json({"error": "invalid"}, 400)
         if v not in ("keep", "drop", None) or sid not in {s["id"] for s in sounds()["sounds"]}:
-            return self.json({"error": "ungültig"}, 400)
+            return self.json({"error": "invalid"}, 400)
         with LOCK:
             st = load_state()
             if v is None:
@@ -239,9 +240,9 @@ class Handler(SimpleHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1:  # keine Argumente vorgesehen; --help soll keinen Server starten
+    if len(sys.argv) > 1:  # no arguments expected; --help must not start a server
         sys.exit(__doc__)
     with LOCK:
         load_state()
-    print(f"Hörseite: http://localhost:{PORT}  (Ordner {ROOT})", flush=True)
+    print(f"Listening page: http://localhost:{PORT}  (folder {ROOT})", flush=True)
     ThreadingHTTPServer(("127.0.0.1", PORT), Handler).serve_forever()

@@ -1,4 +1,4 @@
-# Konfiguration mit Konto-IDs, Protokoll der echten Aktionen und gemerkte temporäre Upload-URLs: nie einchecken
+# Configuration with account IDs, log of the real actions and remembered temporary upload URLs: never check in
 post.config.json
 post-log.jsonl
 *.upload.json

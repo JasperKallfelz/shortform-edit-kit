@@ -1,19 +1,19 @@
-// Zeitpunkte des (gedachten) Voiceovers – die einzige Stelle, an der Zeiten stehen.
-// In einem echten Projekt wird diese Datei aus der Sprachaufnahme erzeugt und nicht von Hand gepflegt: `npm run vo -- recordings/<take>.wav`
-// (Tonstudio, siehe ../voice-studio/README.md). Ein neuer Take ergibt eine neue Datei, und Bild und Ton wandern von selbst mit.
-// Hier stehen Beispielwerte, damit die Demo auch ohne Aufnahme getaktet läuft. Die Schlüssel stehen in skript.json.
-// Jede Zahl = Beginn des Wortes in Millisekunden ab Start der Audiodatei.
+// Times of the (imaginary) voiceover – the only place where times are stored.
+// In a real project this file is generated from the voice recording and not maintained by hand: `npm run vo -- recordings/<take>.wav`
+// (Voice Studio, see ../voice-studio/README.md). A new take produces a new file, and picture and sound move along by themselves.
+// Example values are used here so that the demo runs timed even without a recording. The keys are defined in script.json.
+// Each number = start of the word in milliseconds from the start of the audio file.
 export const VO = {
-  /** Audiodatei unter public/ ("" = kein Voiceover; das Tonstudio trägt hier die aufbereitete Aufnahme ein) */
+  /** Audio file under public/ ("" = no voiceover; Voice Studio enters the mastered recording here) */
   file: "",
-  /** Länge des Videos in ms */
+  /** Length of the video in ms */
   endMs: 9000,
   w: {
-    // Szene 1: "this is your hook, hello"
+    // Scene 1: "this is your hook, hello"
     thisIs: 300, yourHook: 800, hello: 1450,
-    // Szene 2: "look at these numbers"
+    // Scene 2: "look at these numbers"
     look: 3000, numbers: 3400,
-    // Szene 3: "I'm Your Name, thanks for watching"
+    // Scene 3: "I'm Your Name, thanks for watching"
     im: 6000, yourName: 6300, thanks: 7400,
   },
 };

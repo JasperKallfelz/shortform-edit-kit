@@ -1,4 +1,4 @@
 __pycache__/
 *.pyc
-# gebautes Programm (siehe mikro/setinput.swift)
-mikro/setinput
+# built program (see mic/setinput.swift)
+mic/setinput

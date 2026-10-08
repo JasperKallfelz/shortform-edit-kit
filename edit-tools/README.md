@@ -1,195 +1,195 @@
-# Abläufe und Werkzeuge
+# Steps and tools
 
-Fünf Abläufe, die sich beim Bau kurzer Hochkant-Videos mit Remotion und einem KI-Agenten bewährt haben: das Voiceover aufnehmen und
-vermessen, Clips ins Projekt bringen, Sounds unterlegen, die Datei für den Post fertig machen und posten. Dazu: worauf man bei
-Skript und Schnitt achtet.
+Five steps that have proven themselves when building short vertical videos with Remotion and an AI agent: record and measure the
+voiceover, bring clips into the project, lay sounds under the picture, prepare the file for the post (final export) and post it.
+Plus: what to watch for in script and edit.
 
-Den Einstieg für einen Agenten (Ordnerkarte, Checkliste, Hausregeln) gibt [`../AGENTS.md`](../AGENTS.md). Das Voiceover-Werkzeug
-beschreibt [`../voice-studio/README.md`](../voice-studio/README.md), das Posten [`POSTEN.md`](POSTEN.md).
+For an agent, the starting point (folder map, checklist, house rules) is [`../AGENTS.md`](../AGENTS.md). The voiceover tool is
+described in [`../voice-studio/README.md`](../voice-studio/README.md), posting in [`POSTING.md`](POSTING.md).
 
-Annahme: ein Rechner, auf dem das Remotion-Projekt und das Studio laufen („Schnitt-Mac“), und optional ein zweiter, auf dem
-der Agent arbeitet. Wo beides derselbe Rechner ist, entfallen `ssh` und `rsync`.
+Assumption: one machine on which the Remotion project and the studio run (the "edit Mac"), and optionally a second one on which
+the agent works. Where both are the same machine, `ssh` and `rsync` are not needed.
 
-## Was schon automatisiert ist
+## What is already automated
 
-Die Skripte stehen ohne Pfad, sie liegen in `edit-tools/` (Hörseite und Sound-Kit mit `../`). `npm run …` läuft im Projektordner
-(im Repo `example/`).
+The scripts are written without a path; they live in `edit-tools/` (the listening page and the sound kit with `../`). `npm run …`
+runs in the project folder (in the repo: `example/`).
 
-| Aufgabe | Befehl |
+| Task | Command |
 |---|---|
-| Voiceover aufnehmen (Aufnahme-Seite mit Teleprompter unter http://localhost:3600) | `npm run tonstudio` |
-| Take aufbereiten, Wortzeiten messen, `src/timing.ts` neu schreiben | `npm run vo -- recordings/<take>.wav` |
-| Welche WhatsApp-Chats haben neue Videos? | `whatsapp_clips.py chats --days 7` |
-| Videos eines Chats in einen Ordner und in die Fotomediathek | `whatsapp_clips.py export "<Name>" --date JJJJ-MM-TT --fotos` |
-| Kontaktbogen eines Ordners (Clip zu einem Standbild finden) | `kontaktbogen.py <ordner>` |
-| Wortzeiten eines Clips | `whisper-cli -m ggml-medium.en.bin -f clip.wav -ml 1 -sow -oj` ([whisper.cpp](https://github.com/ggerganov/whisper.cpp)) |
-| Datei sicher ändern, wenn mehrere Agenten am selben Projekt schreiben | `patch_lines.py <datei> <md5> <swaps.json>` |
-| Sounds zum Aussortieren zeigen | `../listen.py` → http://localhost:3700, Urteile in `../auswahl.json` |
-| Behaltene Sounds aufbereiten | `../sfx-kit/tools/prepare_sfx.py` |
-| Kit ins Remotion-Projekt bringen (WAVs + Katalog) | `../sfx-kit/tools/sync_remotion.py <projekt> [md5]` |
-| Nur-Effekte-Spur und Mix nachmessen (Pegel je Abschnitt, Lücken, Effekte gegen Musik, Lautheit) | `ton_check.py <sfx.wav> [--musik <song> --musik-start <s> --musik-vol 0.15] [--mix <mix.wav>]` |
-| Musik-Einstieg finden, bei dem ein Schlag auf ein Wort fällt | `beat_align.py <song.wav> <src/timing.ts> <wort> [--auch wort,wort]` |
-| Fertiger Export für TikTok/Reels | `EDIT_HOST=<ssh-name> post_render.sh <projekt> <Komposition> <Name> [Frames]` |
-| Verbundene Konten lesen (nur lesend) | `post_social.py accounts` |
-| Beitrag als Entwurf anlegen (TikTok) bzw. prüfen (Instagram); mit `--publish` veröffentlichen | `post_social.py tiktok <video> --caption-file <datei> [--publish]`, `post_social.py instagram <video> --caption-file <datei> [--publish]` |
-| Stand eines Beitrags nachlesen | `post_social.py status --tiktok-post <ID>` bzw. `--instagram-media <ID>` |
-| Tests des Post-Skripts (ohne Netz; vom Wurzelordner des Repos aus) | `python3 -m unittest discover -s edit-tools/tests` |
+| Record the voiceover (recorder page with teleprompter at http://localhost:3600) | `npm run voice-studio` |
+| Process a take, measure word timings, rewrite `src/timing.ts` | `npm run vo -- recordings/<take>.wav` |
+| Which WhatsApp chats have new videos? | `whatsapp_clips.py chats --days 7` |
+| Videos of a chat into a folder and into the Photos library | `whatsapp_clips.py export "<name>" --date YYYY-MM-DD --photos` |
+| Contact sheet of a folder (find the clip for a still frame) | `contact_sheet.py <folder>` |
+| Word timings of a clip | `whisper-cli -m ggml-medium.en.bin -f clip.wav -ml 1 -sow -oj` ([whisper.cpp](https://github.com/ggerganov/whisper.cpp)) |
+| Change a file safely when several agents write to the same project | `patch_lines.py <file> <md5> <swaps.json>` |
+| Show sounds for picking (keep/drop) | `../listen.py` → http://localhost:3700, picks in `../selection.json` |
+| Prepare the kept sounds | `../sfx-kit/tools/prepare_sfx.py` |
+| Bring the kit into the Remotion project (WAVs + catalogue) | `../sfx-kit/tools/sync_remotion.py <project> [md5]` |
+| Re-measure the effects-only track and the mix (level per section, gaps, effects against music, loudness) | `sound_check.py <sfx.wav> [--music <song> --music-start <s> --music-vol 0.15] [--mix <mix.wav>]` |
+| Find a music entry point where a beat lands on a word | `beat_align.py <song.wav> <src/timing.ts> <word> [--also word,word]` |
+| Final export for TikTok/Reels | `EDIT_HOST=<ssh-name> post_render.sh <project> <composition> <name> [frames]` |
+| Read connected accounts (read only) | `post_social.py accounts` |
+| Create a post as a draft (TikTok) or check it (Instagram); publish with `--publish` | `post_social.py tiktok <video> --caption-file <file> [--publish]`, `post_social.py instagram <video> --caption-file <file> [--publish]` |
+| Read back the state of a post | `post_social.py status --tiktok-post <ID>` or `--instagram-media <ID>` |
+| Tests of the posting script (no network; from the repo root) | `python3 -m unittest discover -s edit-tools/tests` |
 
-Vorsicht beim Ausprobieren: `prepare_sfx.py`, `sync_remotion.py`, `listen.py`, `patch_lines.py` und `post_render.sh` kennen kein
-`--help`. Sie führen sofort aus (`prepare_sfx.py` schreibt alle Sounds neu, `listen.py` startet den Server) oder lesen das erste
-Argument als Pfad. Hilfe gibt es bei `whatsapp_clips.py`, `kontaktbogen.py`, `post_social.py`, `vo.py`, `ton_check.py` und `beat_align.py`.
+Be careful when trying things out: without `--help`, `prepare_sfx.py`, `sync_remotion.py`, `listen.py`, `patch_lines.py` and
+`post_render.sh` run at once (`prepare_sfx.py` rewrites all sounds, `listen.py` starts the server) or read the first argument as a
+path. With `--help`, these five print their usage and do nothing else (they exit with code 1 afterwards). `whatsapp_clips.py`,
+`contact_sheet.py`, `post_social.py`, `vo.py`, `sound_check.py` and `beat_align.py` have a regular `--help`.
 
-Warum die Regeln zu Lautstärke, Text-Vorlauf und Musik so sind und wie man sie nachmisst: [`../docs/sound-and-text-sync.md`](../docs/sound-and-text-sync.md).
+Why the rules for volume, text lead and music are the way they are, and how to measure them: [`../docs/sound-and-text-sync.md`](../docs/sound-and-text-sync.md).
 
-## Ablauf 1: Skript und Voiceover
+## Step 1: Script and voiceover
 
-Bild, Text und Sounds hängen an den Wortzeiten, darum kommt das Voiceover zuerst. Das Werkzeug dafür ist das Tonstudio
-([`../voice-studio/README.md`](../voice-studio/README.md), dort auch die Voraussetzungen: whisper.cpp, Modelle, `numpy`). Es läuft ganz
-lokal, ohne Konto.
+Picture, text and sounds hang on the word timings, so the voiceover comes first. The tool for it is the Voice Studio
+([`../voice-studio/README.md`](../voice-studio/README.md), which also lists the prerequisites: whisper.cpp, models, `numpy`). It runs
+entirely locally, without an account.
 
-1. **Skript festhalten.** `skript.json` im Projektordner enthält die gesprochenen Phrasen und je Phrase einen Schlüssel (`key`), unter
-   dem ihr Beginn in `src/timing.ts` landet. Der Code des Videos liest nur diese Schlüssel (`VO.w.<key>`). Steht ein Platzhalter im
-   Text (etwa ein Name), spricht man dort gleich viele Wörter. Beispiel: [`../example/skript.json`](../example/skript.json).
-2. **Aufnehmen.** `npm run tonstudio`, dann http://localhost:3600. Erst „Pegel testen“ (Spitzen im grünen Bereich), dann aufnehmen.
-   Jeder Take liegt sofort unverändert in `recordings/` und wird nie überschrieben.
-3. **Take wählen und vermessen.** `npm run vo -- recordings/<take>.wav` bereitet die Aufnahme auf (−14 LUFS) und schreibt sie als
-   `public/<datei aus skript.json>`, misst die Wortzeiten und schreibt `src/timing.ts`. Überschrieben wird erst, wenn die Ausrichtung
-   gelungen ist; stimmt die Wortzahl nicht, bricht `vo` ab. In der Tabelle am Ende die Zeilen „uneinig“ und „GESCHÄTZT“ ansehen,
-   einzelne Zeiten mit `--setze <key>=<ms>` korrigieren. Den Anfang aus einem und den Rest aus einem anderen Take nehmen:
+1. **Fix the script.** `script.json` in the project folder holds the spoken phrases and, for each phrase, a key (`key`) under which its
+   start lands in `src/timing.ts`. The code of the video reads only these keys (`VO.w.<key>`). If there is a placeholder in the text
+   (a name, say), you speak the same number of words there. Example: [`../example/script.json`](../example/script.json).
+2. **Record.** `npm run voice-studio`, then http://localhost:3600. First "Test level" (peaks in the green zone), then record.
+   Every take is stored unchanged in `recordings/` right away and is never overwritten.
+3. **Pick a take and measure it.** `npm run vo -- recordings/<take>.wav` processes the recording (-14 LUFS) and writes it as
+   `public/<file from script.json>`, measures the word timings and writes `src/timing.ts`. Nothing is overwritten until the alignment
+   has succeeded; if the word count is wrong, `vo` aborts. In the table at the end, look at the rows marked "disagree" and
+   "ESTIMATED", and correct single timings with `--set <key>=<ms>`. To take the start from one take and the rest from another:
    `npm run vo -- recordings/take-a.wav:0:3800 recordings/take-b.wav:1740:-1`.
-4. **Ansehen.** Studio neu laden: Das Voiceover spielt, die Länge folgt der Aufnahme, Text und Sounds sitzen an den neuen Zeiten.
-   Einzelbild auf einem betonten Wort rendern und ansehen (Frame = Millisekunden × 0,03).
+4. **Look.** Reload the studio: the voiceover plays, the length follows the recording, text and sounds sit on the new times.
+   Render a still frame on a stressed word and look at it (frame = milliseconds × 0.03).
 
-`vo` überschreibt `src/timing.ts` und die Audiodatei. Wer mehrere Varianten behalten will (siehe „Varianten“), sichert jede fertige
-Fassung vorher, etwa in einem eigenen Zweig oder Projektordner.
+`vo` overwrites `src/timing.ts` and the audio file. If you want to keep several variants (see "Variants"), back up each finished
+version first, for example in a branch or project folder of its own.
 
-## Ablauf 2: Clips reindroppen
+## Step 2: Drop in clips
 
-Material kommt meist als Standbild im Chat („nimm den“), als Hinweis („X hat mir Videos geschickt“) oder als Datei.
-Ein Standbild heißt „dieses Video“ – die Datei zu finden ist Aufgabe des Agenten.
+Material usually arrives as a still frame in the chat ("take this one"), as a hint ("X sent me videos") or as a file.
+A still frame means "this video" – finding the file is the agent's job.
 
-1. **Holen.** Aus WhatsApp mit `whatsapp_clips.py export … --fotos` (kopiert nach `~/Movies/WhatsApp-<Name>-<Datum>/` und legt ein
-   Album in der Fotomediathek an). Die Datenbank von WhatsApp Desktop wird nur gelesen.
-2. **Finden.** `kontaktbogen.py` über den Ordner, Bogen ansehen, Nummer mit dem Standbild vergleichen.
-3. **Stelle wählen.** Die Einstellung aus dem Standbild, oder den Ton mit whisper mitschreiben und eine Textstelle suchen, die
-   zum Voiceover passt. Ein paar Einzelbilder ziehen und ansehen, wo die Person im Bild steht.
-4. **Einbauen.** Datei nach `public/` des Projekts und einen Slot in den Props anlegen (Label, Datei, Startsekunde). So lässt
-   sich der Ausschnitt im Studio verschieben, ohne Code anzufassen. Bausteine aus `example/src/Demo.tsx`:
-   - `Inset` – abgerundeter 16:9-Clip auf weißer Karte; mit `zoom` wächst er langsam auf die Person zu.
-   - `AmbientInset` (`example/src/lib/ambient.tsx`) – dasselbe mit Ambient-Light-Schein: dahinter liegt der Clip noch einmal, weichgezeichnet und aufgehellt, und scheint auf das Weiß. Nur auf hellem Grund, Parameter und Erfahrungen in `example/README.md`.
-   - `SafeZoneGuide` und `SAFE` (`example/src/lib/safezone.tsx`) – Freihalte-Bereiche von Instagram und TikTok (oben 250 px, unten 480 px, rechts 160 px ab y = 860, links 60 px) und ein Prüf-Overlay dafür, per Prop `safeZone`. Werte, Quellen und Erfahrungen in `example/README.md`.
-   - `Squiggle` – handgezeichneter Kringel-Pfeil als SVG, der sich zeichnet (`pathLength` 1, `strokeDashoffset` läuft von 1 auf 0).
-   - Wort-DSL (`Words`) – jedes Wort mit Schrift, Größe, Position in Prozent und Einsatz aus der Wortzeit.
-5. **Ansehen, bevor „fertig“.** `npx remotion still <Komposition> bild.png --frame=N` und das Bild wirklich anschauen. Wo Text
-   sitzt, über die Farbe ausmessen (farbige Pixel → Rahmen), nicht schätzen. Jede Szene auch mit dem Overlay ansehen
-   (`--props='{"safeZone":true}'`): Text, Gesichter und Zeiger bleiben aus den Freihalte-Bereichen.
-6. **Qualität nennen.** WhatsApp verkleinert Videos (meist 1024 × 576). Für den fertigen Export das Original beim Absender anfragen.
+1. **Fetch.** From WhatsApp with `whatsapp_clips.py export … --photos` (copies to `~/Movies/WhatsApp-<name>-<date>/` and creates an
+   album in the Photos library). The WhatsApp Desktop database is only read.
+2. **Find.** Run `contact_sheet.py` over the folder, look at the sheet, compare the number with the still frame.
+3. **Choose the spot.** The shot from the still frame, or transcribe the audio with whisper and look for a passage that fits the
+   voiceover. Pull a few single frames and look at where the person stands in the picture.
+4. **Build in.** Put the file into `public/` of the project and create a slot in the props (label, file, start second). That way
+   the excerpt can be moved in the studio without touching code. Building blocks from `example/src/Demo.tsx`:
+   - `Inset` – rounded 16:9 clip on a white card; with `zoom` it slowly grows toward the person.
+   - `AmbientInset` (`example/src/lib/ambient.tsx`) – the same with an ambient-light glow: behind it lies the clip once more, blurred and brightened, and shines onto the white. Only on a light background; parameters and experience in `example/README.md`.
+   - `SafeZoneGuide` and `SAFE` (`example/src/lib/safezone.tsx`) – the safe zones of Instagram and TikTok (250 px at the top, 480 px at the bottom, 160 px on the right from y = 860, 60 px on the left) and a check overlay for them, via the prop `safeZone`. Values, sources and experience in `example/README.md`.
+   - `Squiggle` – hand-drawn squiggle arrow as SVG that draws itself (`pathLength` 1, `strokeDashoffset` runs from 1 to 0).
+   - Word DSL (`Words`) – every word with font, size, position in percent and onset taken from the word timing.
+5. **Look before "done".** `npx remotion still <composition> frame.png --frame=N` and really look at the image. Where text
+   sits, measure it by colour (coloured pixels → bounding box), do not guess. Look at every scene with the overlay too
+   (`--props='{"safeZone":true}'`): text, faces and pointers stay out of the safe zones.
+6. **State the quality.** WhatsApp shrinks videos (usually 1024 × 576). For the final export, ask the sender for the original.
 
-## Ablauf 3: Sound-Design
+## Step 3: Sound design
 
-Hausregel: jede Bewegung bekommt einen kleinen Sound, aber so leise und passend, dass er nicht eingefügt klingt.
-**Nur echte, aufgenommene Geräusche**, nichts Synthetisches. Auslöser, Mausklick, Klapptafel, Papier, Bleistift, Tasten;
-Whoosh nur ganz minimal. Effekte nie lauter als die Musik. Das Sound-Kit mit Katalog und Pegel-Regeln: [`../sfx-kit/README.md`](../sfx-kit/README.md).
+House rule: every movement gets a small sound, but so quiet and so fitting that it does not sound pasted in.
+**Only real, recorded noises**, nothing synthetic. Shutter, mouse click, split-flap board, paper, pencil, keys;
+whoosh only very minimally. Effects are never louder than the music. The sound kit with catalogue and level rules: [`../sfx-kit/README.md`](../sfx-kit/README.md).
 
-1. Neue Sounds nur aus echten Aufnahmen sammeln, mit Quelle und Lizenz in `../sfx-candidates/manifest.tsv`. Das Präfix im
-   Dateinamen (`flap_`, `flutter_`, `riser_`, `click_`, …) bestimmt die Kategorie auf der Hörseite.
-2. Auf der Hörseite sortieren (✓ / ✕, Tasten B / X). Die Urteile stehen in `auswahl.json`.
-3. Ein Agent wartet nicht auf das Sortieren von hunderten Dateien: nach Beschreibung auswählen, einsetzen, die Cue benennen,
-   dann nach Gehör korrigieren lassen.
-4. `prepare_sfx.py` (Stille weg, Spitze −1 dBFS, `lead`, `loud`) → `sync_remotion.py` → Cues in die Cue-Liste (`SFX_CUES`), jede an einer
-   Wortzeit oder Animations-Konstante, mit Namen für die Studio-Zeitleiste. Weil die Wortzeiten aus dem Voiceover kommen (Ablauf 1),
-   wandern die Sounds bei einem neuen Take mit.
-5. Pegel über die wirksame Lautheit setzen: `loud + 20·log10(vol)`. Richtwerte (jeweils mal `sfxVolume` 1.3, Musik auf 0.15):
-   Tasten auf Textzeilen −45 dB, Bleistift/Karte/Glas −40 bis −42 dB, Auslöser als Übergang −38 bis −40 dB, Riser −34 dB,
-   Schlag auf dem Höhepunkt −29 dB, Auslöser auf Fotos −28 bis −32 dB. Die lauteste Stelle der Effekte bleibt auf Musik-Pegel.
-6. Nur-Effekte-Render, je Abschnitt den Pegel mit dem Stand davor vergleichen und Lücken über 0,5 s ohne Effekt auflisten. Das sind
-   die Stellen, an denen noch etwas unterlegt werden kann. Im Projektordner:
+1. Collect new sounds only from real recordings, with source and licence in `../sfx-candidates/manifest.tsv`. The prefix in the
+   file name (`flap_`, `flutter_`, `riser_`, `click_`, …) decides the category on the listening page.
+2. Sort on the listening page (✓ / ✕, keys B / X). The picks are stored in `selection.json`.
+3. An agent does not wait for hundreds of files to be sorted: choose by description, put the sounds in, name the cue,
+   then have it corrected by ear.
+4. `prepare_sfx.py` (silence removed, peak -1 dBFS, `lead`, `loud`) → `sync_remotion.py` → cues into the cue list (`SFX_CUES`), each on a
+   word timing or an animation constant, with names for the studio timeline. Because the word timings come from the voiceover (step 1),
+   the sounds move along with a new take.
+5. Set the level via the effective loudness: `loud + 20·log10(vol)`. Reference values (each times `sfxVolume` 1.3, music at 0.15):
+   keys on text lines -45 dB, pencil/card/glass -40 to -42 dB, shutter as a transition -38 to -40 dB, riser -34 dB,
+   hit on the climax -29 dB, shutter on photos -28 to -32 dB. The loudest spot of the effects stays at music level.
+6. Render the effects only, compare the level per section with the previous state and list gaps over 0.5 s without an effect. Those are
+   the places where something can still be laid underneath. In the project folder:
 
    ```bash
    npx remotion render Demo sfx.wav --codec=wav --props='{"voVolume":0,"music":""}'
    ```
 
-   Wichtig ist `voVolume: 0`: Ist ein Voiceover vorhanden (`VO.file` in `src/timing.ts`), fällt die Komposition bei leerem `voiceover`
-   auf diese Datei zurück, und die Stimme bliebe in der Spur. Die Prop-Namen sind die der Demo; in einem anderen Projekt die dortigen nehmen.
+   `voVolume: 0` matters: if a voiceover exists (`VO.file` in `src/timing.ts`), the composition falls back to this file when `voiceover`
+   is empty, and the voice would stay in the track. The prop names are those of the demo; in another project, use the ones there.
 
-Was wofür funktioniert: Tastenanschlag je Textzeile, Bleistift auf Schreibschrift-Wörtern und gezeichneten Linien, Auslöser
-wenn ein Foto oder Clip erscheint, Filmtransport nach einem Foto, Auslöser-Serie auf einer Fotowand, Klapptafel-Klappe für
-Kacheln und laufende Zahlen, Seite blättert auf einen Schnitt, rückwärts gespieltes Becken in ein Musik-Loch vor dem
-Höhepunkt, echte Trommel auf dem Höhepunkt. Einschränkung nach späteren Hörrunden: Auslöser als Übergang auf Schnitten und schnelle
-Klappen-Folgen sind durchgefallen, siehe [`../docs/shortform-learnings-2026-10.md`](../docs/shortform-learnings-2026-10.md#5-geräusche-was-nach-gehör-durchfiel-und-was-blieb).
+What works for what: a key press per text line, pencil on cursive words and drawn lines, shutter when a photo or clip appears, film
+winder after a photo, a shutter series on a photo wall, a split-flap click for tiles and running numbers, a page turning on a cut, a
+reversed cymbal into a music hole before the climax, a real drum on the climax. A restriction after later listening rounds: shutter
+as a transition on cuts and fast flap sequences failed, see [`../docs/shortform-learnings-2026-10.md`](../docs/shortform-learnings-2026-10.md#5-sounds-what-failed-by-ear-and-what-stayed).
 
-## Ablauf 4: Fertig machen für den Post
+## Step 4: Final export for the post
 
-1. `post_render.sh` liefert zwei Dateien (mit und ohne Musik) und Cover-Bilder:
-
-   ```bash
-   EDIT_HOST=<ssh-name> post_render.sh <projektordner> <Komposition> <Name> 60,150,240
-   ```
-
-   `<projektordner>` liegt im Home-Ordner von `EDIT_HOST`, die Zahlen sind die Frames der Cover-Bilder. Das Skript prüft zuerst die
-   Typen (`tsc`), rendert Bild und beide Tonspuren, senkt jede Fassung auf höchstens −14 LUFS und −1,2 dBTP ab (lauter macht es
-   nicht) und druckt je Fassung die gemessene Lautheit vor und nach dem Absenken.
-2. Ergebnis in `<projekt>/out/post-<Datum>/`: `<Name>_1080x1920_mit-Musik.mp4`, `<Name>_1080x1920_ohne-Musik.mp4`,
-   `cover-bild-<frame>.png`, dazu das Rohbild und beide Tonspuren als WAV.
-3. Ziel: 1080 × 1920, 30 fps, H.264 High, bt709, AAC 320 kbit/s. Die Cover-Bilder ansehen, die gedruckten Lautheitswerte lesen.
-4. „Mit Musik“ ist die Fassung mit den Standardwerten der Komposition (in der Demo `demoDefaults` in `src/Demo.tsx`, dort ist `music`
-   leer). Steht die Musik nur im Props-Feld des Studios und nicht in den Standardwerten, sind beide Dateien gleich: dann die Musik
-   in den Standardwerten eintragen, bevor man `post_render.sh` startet.
-5. Musikrechte klären, bevor etwas öffentlich wird (siehe `../docs/research-2026-10.md`): im Zweifel die Fassung „ohne Musik“ nehmen
-   und den Song in der App aus der Bibliothek der Plattform dazulegen.
-
-## Ablauf 5: Posten
-
-Das Skript `post_social.py` lädt die fertige MP4 hoch und legt sie über die Composio-CLI als Entwurf oder Beitrag an. Voraussetzungen,
-Konfiguration, alle Befehle und die Fallen stehen in [`POSTEN.md`](POSTEN.md). Die sichere Reihenfolge:
-
-1. **Beschreibung schreiben (lassen) und von einem Menschen freigeben lassen.** Erst danach in die Datei. Hashtags: höchstens 5 bei
-   Instagram, 3 bis 4 passende bei TikTok (`../docs/research-2026-10.md`).
-2. **Trockenlauf.** Nichts wird hochgeladen oder angelegt:
+1. `post_render.sh` delivers two files (with and without music) and cover images:
 
    ```bash
-   python3 post_social.py tiktok <video> --caption-file <datei> --dry-run
+   EDIT_HOST=<ssh-name> post_render.sh <project-folder> <composition> <name> 60,150,240
    ```
 
-   Bei Instagram zeigt schon der Aufruf ohne `--publish` nur die Aufrufe. Ein TikTok-Entwurf (ohne `--publish`) ist dagegen eine echte
-   Aktion im Konto: nur nach der Freigabe der Beschreibung anlegen.
-3. **Zweite Freigabe, dann veröffentlichen:**
+   `<project-folder>` lies in the home folder of `EDIT_HOST`, the numbers are the frames of the cover images. The script first checks the
+   types (`tsc`), renders the picture and both audio tracks, lowers each version to at most -14 LUFS and -1.2 dBTP (it does not
+   make anything louder) and prints the measured loudness of each version before and after lowering.
+2. Result in `<project>/out/post-<date>/`: `<name>_1080x1920_with-music.mp4`, `<name>_1080x1920_without-music.mp4`,
+   `cover-frame-<frame>.png`, plus the raw picture and both audio tracks as WAV.
+3. Target: 1080 × 1920, 30 fps, H.264 High, bt709, AAC 320 kbit/s. Look at the cover images, read the printed loudness values.
+4. "With music" is the version with the default values of the composition (in the demo `demoDefaults` in `src/Demo.tsx`, where `music`
+   is empty). If the music is only in the props field of the studio and not in the default values, both files are the same: in that case
+   enter the music in the default values before you start `post_render.sh`.
+5. Clear the music rights before anything becomes public (see `../docs/research-2026-10.md`): when in doubt, take the "without music"
+   version and add the song from the platform's library in the app.
+
+## Step 5: Posting
+
+The script `post_social.py` uploads the finished MP4 and creates it as a draft or a post through the Composio CLI. Prerequisites,
+configuration, all commands and the traps are in [`POSTING.md`](POSTING.md). The safe order:
+
+1. **Have the caption written and approved by a human.** Only then put it in the file. Hashtags: at most 5 on Instagram, 3 to 4 fitting
+   ones on TikTok (`../docs/research-2026-10.md`).
+2. **Dry run.** Nothing is uploaded or created:
 
    ```bash
-   python3 post_social.py tiktok <video> --caption-file <datei> --publish
+   python3 post_social.py tiktok <video> --caption-file <file> --dry-run
    ```
 
-4. **Nachlesen.** Das Skript liest den Beitrag zurück (TikTok: Status und Post-ID, Instagram: Link und die Beschreibung Byte für Byte).
-   Bei Zeitüberschreitung oder unklarem Ausgang nicht blind wiederholen, sondern erst im Konto oder mit `status` nachsehen.
+   For Instagram, running without `--publish` already only shows the calls. A TikTok draft (without `--publish`), on the other hand, is a
+   real action in the account: create it only after the caption has been approved.
+3. **Second approval, then publish:**
 
-Was über diesen Weg nicht geht (TikTok-Titelbild, Instagram-Beitrag ändern oder löschen, Plattform-Musik wählen), steht ebenfalls in `POSTEN.md`.
+   ```bash
+   python3 post_social.py tiktok <video> --caption-file <file> --publish
+   ```
 
-## Varianten
+4. **Read back.** The script reads the post back (TikTok: status and post ID, Instagram: link and the caption byte for byte).
+   On a timeout or an unclear outcome, do not repeat blindly; look in the account or with `status` first.
 
-Ein Video ist eine Vorlage, kein Einzelstück. Wer drei bis vier Varianten testen will (zum Beispiel als Test-Reels), spricht
-mehrere ähnliche Skripte ein (Ablauf 1). Jede Variante braucht ihren eigenen Voiceover-Take mit eigenen Wortzeiten; Bild, Sounds und
-Schnitte hängen an den Wortzeiten und wandern mit. Was die Plattformen zu fast gleichen Videos und zum erneuten Posten sagen,
-steht in `../docs/research-2026-10.md`.
+What does not work this way (TikTok cover image, editing or deleting an Instagram post, choosing platform music) is also described in `POSTING.md`.
 
-## Worauf es bei Skript und Schnitt ankommt
+## Variants
 
-Kurzfassung der Recherche in `../docs/research-2026-10.md`:
+A video is a template, not a one-off. If you want to test three to four variants (for example as test Reels), you record several
+similar scripts (step 1). Each variant needs its own voiceover take with its own word timings; picture, sounds and
+cuts hang on the word timings and move along. What the platforms say about nearly identical videos and about reposting
+is in `../docs/research-2026-10.md`.
 
-1. Die ersten 1,5 bis 3 Sekunden entscheiden: mit dem stärksten Bild anfangen, nicht mit einem ruhigen Aufbau.
-2. Ein klarer emotionaler Höhepunkt, verbunden mit dem Inhalt. Die Musik kurz davor wegnehmen und auf dem Wort zurückholen.
-3. Gesicht groß und früh.
-4. Text im Bild, Wort für Wort zum Voiceover.
-5. Kein Gesang unter der Stimme.
-6. Zügig und engagiert sprechen; Schnitte alle zwei bis drei Sekunden reichen.
-7. Sättigung hochdrehen bringt nach Beleglage nichts. Clips in Belichtung, Kontrast und Wärme angleichen.
+## What matters in script and edit
 
-Ein Skript-Muster für eine Vorstellung in 15 Sekunden und rund 40 Wörtern: Aufbruch → Ort und Schritt → Menschen → was wir
-bauen (Höhepunkt auf dem Namen) → Anspruch → Absender und offenes Ende. Jede Zeile bekommt ein eigenes Bild, betonte Wörter
-stehen groß oder in Schreibschrift, Bewegungen sind vor dem betonten Wort fertig.
+Short version of the research in `../docs/research-2026-10.md`:
 
-## Zusammenarbeit mehrerer Agenten
+1. The first 1.5 to 3 seconds decide: start with the strongest picture, not with a calm build-up.
+2. One clear emotional climax, tied to the content. Take the music away shortly before it and bring it back on the word.
+3. Face big and early.
+4. Text in the picture, word by word with the voiceover.
+5. No singing under the voice.
+6. Speak briskly and with engagement; cuts every two to three seconds are enough.
+7. Turning the saturation up brings nothing according to the evidence. Match clips in exposure, contrast and warmth.
 
-- Ein Schreiber pro Datei. Vor jedem Schreiben die Prüfsumme vergleichen (`patch_lines.py`, bei `sync_remotion.py` der optionale
-  md5-Parameter), vorher eine Sicherung anlegen (Endung `.bak`, sonst prüft TypeScript die Kopie mit).
-- Zwischenstände in einem Satz melden. Am Ende: was gemacht wurde, was geprüft wurde, was offen ist.
-- Nichts posten und nichts Öffentliches ändern ohne ausdrückliche Freigabe.
+A script pattern for an introduction in 15 seconds and about 40 words: departure → place and step → people → what we are
+building (climax on the name) → ambition → sender and open end. Every line gets a picture of its own, stressed words are big
+or in cursive, movements are finished before the stressed word.
+
+## Several agents working together
+
+- One writer per file. Before every write, compare the checksum (`patch_lines.py`; for `sync_remotion.py` the optional
+  md5 parameter) and make a backup beforehand (extension `.bak`, otherwise TypeScript checks the copy too).
+- Report interim states in one sentence. At the end: what was done, what was checked, what is open.
+- Post nothing and change nothing public without explicit approval.

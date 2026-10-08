@@ -1,5 +1,5 @@
-// Ein selbst gezeichnetes Terminal: Befehle werden Zeichen für Zeichen getippt, die Ausgabe erscheint Zeile für Zeile.
-// Es ist keine echte Terminal-Aufnahme: Text und Zeiten stehen in scripts.ts.
+// A hand-drawn terminal: commands are typed character by character, the output appears line by line.
+// It is not a real terminal capture: text and timings are in scripts.ts.
 import React from "react";
 import { Audio, Sequence, staticFile, useCurrentFrame } from "remotion";
 import { FPS, MONO } from "./lib";
@@ -36,7 +36,7 @@ export function build(items: Item[], startFrame = 10, pace = 1): { rows: Row[]; 
         }
         t += ln.length * per + 2;
       });
-      cues.push({ frame: Math.round(t + 4), s: "key3", vol: 0.14 }); // Eingabetaste
+      cues.push({ frame: Math.round(t + 4), s: "key3", vol: 0.14 }); // Enter key
       t += 12;
     }
   }
@@ -45,7 +45,7 @@ export function build(items: Item[], startFrame = 10, pace = 1): { rows: Row[]; 
 
 const COL: Record<Cls, string> = { plain: "#dfe3ee", dim: "#7f879d", ok: "#7fe3a9", head: "#8db6ff", key: "#ffd37a", warn: "#ffb26b" };
 
-// sehr einfache Einfärbung für TypeScript-Zeilen
+// very simple coloring for TypeScript lines
 function tsSpans(line: string): React.ReactNode {
   const m = line.match(/^(\s*)(\/\/.*|\/\*\*.*\*\/)$/);
   if (m) return <><span>{m[1]}</span><span style={{ color: "#6f7790" }}>{m[2]}</span></>;

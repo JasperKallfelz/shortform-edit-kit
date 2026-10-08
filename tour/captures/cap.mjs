@@ -1,7 +1,7 @@
-// Aufnahme-Bibliothek: nimmt eine Browserseite mit Playwright (headless Chromium) als Video auf.
-// Statt Playwrights eingebautem recordVideo (1 MBit/s, matschiger Text) werden die Einzelbilder des Chrome-Screencasts
-// in voller Auflösung (Seitenpixel x deviceScaleFactor) gespeichert und danach mit ffmpeg zu einem 30-fps-Video zusammengesetzt.
-// Eingeblendet werden nur zwei Hilfen, die der Seite selbst nichts ändern: ein Mauszeiger mit Klick-Ring und eine Tastenanzeige.
+// Capture library: records a browser page as video with Playwright (headless Chromium).
+// Instead of Playwright's built-in recordVideo (1 Mbit/s, muddy text), the individual frames of the Chrome screencast are saved
+// at full resolution (page pixels x deviceScaleFactor) and then assembled into a 30 fps video with ffmpeg.
+// Only two aids are overlaid, and neither changes the page itself: a mouse pointer with a click ring and a key display.
 import { chromium } from "playwright";
 import fs from "node:fs";
 import path from "node:path";
@@ -12,7 +12,7 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 export const OUT = here;
 export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-// Zeiger und Tastenanzeige werden per Init-Skript in die Seite gelegt (nur in der Aufnahme, nicht im Repo).
+// Pointer and key display are added to the page by an init script (only in the capture, not in the repo).
 const OVERLAY = `
 (() => {
   const start = () => {
@@ -40,7 +40,7 @@ const OVERLAY = `
       r.className = "__ring"; r.style.left = e.clientX + "px"; r.style.top = e.clientY + "px";
       document.documentElement.appendChild(r); setTimeout(() => r.remove(), 600);
     }, true);
-    const label = { ArrowLeft: "←", ArrowRight: "→", ArrowUp: "↑", ArrowDown: "↓", " ": "Leertaste", Enter: "↵" };
+    const label = { ArrowLeft: "←", ArrowRight: "→", ArrowUp: "↑", ArrowDown: "↓", " ": "Space", Enter: "↵" };
     addEventListener("keydown", (e) => {
       if (e.repeat || e.metaKey || e.ctrlKey || e.altKey) return;
       const k = document.createElement("div");
@@ -53,22 +53,22 @@ const OVERLAY = `
 `;
 
 /**
- * Nimmt eine Szene auf.
- *  name        Dateiname der Aufnahme (aufnahmen/<name>.mp4)
- *  url         Startseite
- *  fakeMic     Pfad zu einer WAV, die als Mikrofon dient (optional)
- *  width,height  Seitengröße in CSS-Pixeln (Standard 1600 x 1000), scale = deviceScaleFactor (Standard 2)
- *  run(ctx)    die Handlung; ctx = { page, mark, move, click, key, sleep }
+ * Records a scene.
+ *  name        file name of the capture (captures/<name>.mp4)
+ *  url         start page
+ *  fakeMic     path to a WAV that serves as the microphone (optional)
+ *  width,height  page size in CSS pixels (default 1600 x 1000), scale = deviceScaleFactor (default 2)
+ *  run(ctx)    the action; ctx = { page, mark, move, click, key, sleep }
  */
-export async function aufnehmen({ name, url, fakeMic, width = 1600, height = 1000, scale = 2, quality = 88, run, warm = 700, colorScheme = "light" }) {
+export async function record({ name, url, fakeMic, width = 1600, height = 1000, scale = 2, quality = 88, run, warm = 700, colorScheme = "light" }) {
   const dir = path.join(OUT, "frames", name);
   fs.rmSync(dir, { recursive: true, force: true });
   fs.mkdirSync(dir, { recursive: true });
-  // Echte Bildschirmdichte statt Emulation: nur so liefert der Screencast Bilder in voller Auflösung (width*scale), nicht in CSS-Pixeln
+  // Real screen density instead of emulation: only then does the screencast deliver frames at full resolution (width*scale), not in CSS pixels
   const args = ["--autoplay-policy=no-user-gesture-required", `--force-device-scale-factor=${scale}`, `--window-size=${width},${height}`];
   if (fakeMic) args.push("--use-fake-ui-for-media-stream", "--use-fake-device-for-media-stream", `--use-file-for-fake-audio-capture=${fakeMic}`);
   const browser = await chromium.launch({ args });
-  const context = await browser.newContext({ viewport: null, locale: "de-DE", colorScheme, permissions: fakeMic ? ["microphone"] : [] });
+  const context = await browser.newContext({ viewport: null, locale: "en-US", colorScheme, permissions: fakeMic ? ["microphone"] : [] });
   await context.addInitScript(OVERLAY);
   const page = await context.newPage();
   await page.goto(url, { waitUntil: "load" });
@@ -91,7 +91,7 @@ export async function aufnehmen({ name, url, fakeMic, width = 1600, height = 100
   let mx = width / 2, my = height / 2;
   const move = async (x, y, ms = 700) => {
     const steps = Math.max(8, Math.round(ms / 16));
-    // sanfte Kurve (ease in/out), damit der Zeiger nicht mechanisch wirkt
+    // gentle curve (ease in/out) so the pointer does not look mechanical
     const sx = mx, sy = my;
     for (let i = 1; i <= steps; i++) {
       const t = i / steps, e = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
@@ -117,8 +117,8 @@ export async function aufnehmen({ name, url, fakeMic, width = 1600, height = 100
     await busy;
     await browser.close();
     const n = stamps.length;
-    if (!n) throw new Error("Keine Bilder aufgenommen");
-    // Dauer jedes Bildes = Abstand zum nächsten (das letzte reicht bis zum Ende der Handlung)
+    if (!n) throw new Error("No frames captured");
+    // duration of each frame = distance to the next one (the last one lasts until the end of the action)
     let list = "";
     for (let i = 0; i < n; i++) {
       const next = i + 1 < n ? stamps[i + 1] : Math.max(tEnd, stamps[i] + 0.05);
@@ -128,9 +128,9 @@ export async function aufnehmen({ name, url, fakeMic, width = 1600, height = 100
     fs.writeFileSync(path.join(dir, "list.txt"), list);
     const outFile = path.join(OUT, name + ".mp4");
     const r = spawnSync("ffmpeg", ["-v", "error", "-y", "-f", "concat", "-safe", "0", "-i", path.join(dir, "list.txt"), "-vf", "fps=30,format=yuv420p", "-c:v", "libx264", "-preset", "veryfast", "-crf", "15", "-movflags", "+faststart", outFile], { stdio: "inherit" });
-    if (r.status !== 0) throw new Error("ffmpeg fehlgeschlagen");
+    if (r.status !== 0) throw new Error("ffmpeg failed");
     fs.writeFileSync(path.join(OUT, name + ".json"), JSON.stringify({ name, seconds: +(tEnd - stamps[0]).toFixed(2), frames: n, marks }, null, 1));
     fs.rmSync(dir, { recursive: true, force: true });
-    console.log(`${name}: ${n} Bilder, ${(tEnd - stamps[0]).toFixed(1)} s -> ${outFile}`);
+    console.log(`${name}: ${n} frames, ${(tEnd - stamps[0]).toFixed(1)} s -> ${outFile}`);
   }
 }

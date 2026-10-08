@@ -1,20 +1,20 @@
-// Freihalte-Bereiche für Instagram Reels und TikTok: Streifen am Bildrand, in denen die App ihre eigenen Elemente einblendet (Kopfzeile,
-// Beschreibung, Like/Kommentar/Teilen). Dort liegt nie etwas Wichtiges. Gedacht für 1080 × 1920 (9:16); die Werte sind Richtwerte.
+// Safe zones for Instagram Reels and TikTok: strips at the edge of the frame where the app overlays its own elements (header,
+// description, like/comment/share). Nothing important goes there. Meant for 1080 × 1920 (9:16); the values are rules of thumb.
 import React from "react";
 import { AbsoluteFill } from "remotion";
 
-/** Breite und Höhe der Fläche in Bildpunkten, auf die `SAFE` abgestimmt ist. */
+/** Width and height of the canvas in pixels that `SAFE` is tuned for. */
 const W = 1080;
 const H = 1920;
 
-/** Freihalte-Bereiche für Instagram Reels und TikTok auf 1080×1920 (Richtwerte, Stand 10/2026): oben 250 px (Kopfzeile, Tabs, Suche),
- *  unten 480 px (Name, Beschreibung, Ton, Navigation), rechts 160 px ab `railFrom` abwärts (Profilbild, Like, Kommentar, Teilen),
- *  links 60 px. Dort nie Text, Gesichter oder Zeiger; Hintergrund, Kartenränder und Vollbild-Video dürfen hinein.
- *  Daraus folgt: Wichtiges endet unten bei y = 1440 und rechts (ab y = 860) bei x = 920.
- *  Keine der beiden Apps veröffentlicht feste Maße für normale Beiträge; nach einem Redesign der App am echten Handy neu prüfen. */
+/** Safe zones for Instagram Reels and TikTok at 1080×1920 (rules of thumb, as of 10/2026): top 250 px (header, tabs, search),
+ *  bottom 480 px (name, description, sound, navigation), right 160 px from `railFrom` downward (profile picture, like, comment, share),
+ *  left 60 px. Never put text, faces or pointers there; background, card edges and full-frame video may extend into them.
+ *  It follows that important things end at y = 1440 at the bottom and at x = 920 on the right (from y = 860).
+ *  Neither app publishes fixed dimensions for regular posts; after a redesign of the app, check again on a real phone. */
 export const SAFE = { top: 250, bottom: 480, right: 160, railFrom: 860, left: 60 };
 
-/** Prüf-Overlay: färbt die Freihalte-Bereiche ein. Nur zum Prüfen einschalten (Prop `safeZone`), vor dem Rendern wieder aus. */
+/** Check overlay: tints the safe zones. Switch it on only for checking (prop `safeZone`), and off again before rendering. */
 export const SafeZoneGuide: React.FC = () => (
   <AbsoluteFill style={{ pointerEvents: "none" }}>
     {[

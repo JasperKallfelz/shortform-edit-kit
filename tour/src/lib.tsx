@@ -1,4 +1,4 @@
-// Gemeinsame Bausteine: Farben, Maße, Hintergrund, Fenster mit abgerundeten Ecken, sanfter Zoom, Kapitel- und Bildunterzeile.
+// Shared building blocks: colors, sizes, background, window with rounded corners, gentle zoom, chapter label and caption.
 import React from "react";
 import { AbsoluteFill, Easing, interpolate, useCurrentFrame } from "remotion";
 import { loadFont as loadInter } from "@remotion/google-fonts/Inter";
@@ -11,7 +11,7 @@ export const W = 1920;
 export const H = 1080;
 export const FPS = 30;
 
-/** Fenster: Außenmaße samt Titelleiste; der Inhalt hat das Seitenverhältnis der Aufnahme (16:10). */
+/** Window: outer size including the title bar; the content has the aspect ratio of the capture (16:10). */
 export const WIN = { x: 280, y: 84, w: 1360, h: 888 };
 export const BAR = 38;
 export const CONTENT = { x: WIN.x, y: WIN.y + BAR, w: WIN.w, h: WIN.h - BAR };
@@ -23,7 +23,7 @@ export const COLORS = {
   captionBg: "rgba(24, 26, 42, 0.86)",
 };
 
-/** Ruhiger Verlauf mit zwei weichen Lichtflecken, die sich sehr langsam bewegen. */
+/** Calm gradient with two soft spots of light that move very slowly. */
 export const Stage: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
   const frame = useCurrentFrame();
   const t = frame / FPS;
@@ -42,7 +42,7 @@ export const Stage: React.FC<{ children?: React.ReactNode }> = ({ children }) =>
 export type ZoomKey = { t: number; s: number; u: number; v: number };
 const ease = Easing.bezier(0.45, 0, 0.2, 1);
 
-/** Zoom-Verlauf aus Schlüsselpunkten (Sekunden, Maßstab, Zielpunkt als Anteil des Fensterinhalts). Gibt translate/scale zurück. */
+/** Zoom curve from keyframes (seconds, scale, target point as a fraction of the window content). Returns translate/scale. */
 export function zoomAt(sec: number, keys: ZoomKey[]) {
   let s = 1, u = 0.5, v = 0.5;
   if (keys.length) {
@@ -63,19 +63,19 @@ export function zoomAt(sec: number, keys: ZoomKey[]) {
   const cx = WIN.x + WIN.w / 2, cy = WIN.y + WIN.h / 2;
   const m = Math.min(1, Math.max(0, (s - 1) * 2));
   let tx = fx * (1 - s) + (cx - fx) * m, ty = fy * (1 - s) + (cy - fy) * m;
-  // Das Fenster soll nie so verrutschen, dass daneben ein unnatürlicher Streifen Hintergrund entsteht
+  // The window must never shift so far that an unnatural strip of background appears next to it
   const clamp = (val: number, a: number, b: number) => Math.min(Math.max(val, Math.min(a, b)), Math.max(a, b));
   tx = clamp(tx, -s * WIN.x, W - s * (WIN.x + WIN.w));
   ty = clamp(ty, -s * WIN.y, H - s * (WIN.y + WIN.h));
   return { tx, ty, s };
 }
 
-/** Das Fenster auf der Bühne: Schatten, Titelleiste, Ein- und Ausblenden, Zoom. */
+/** The window on the stage: shadow, title bar, fade in and out, zoom. */
 export const Frame: React.FC<{
   title: string;
   tone: "dark" | "light";
   zoom: ZoomKey[];
-  total: number; // Länge der Szene in Frames
+  total: number; // length of the scene in frames
   fadeIn?: number;
   fadeOut?: number;
   children: React.ReactNode;
@@ -110,7 +110,7 @@ export const Frame: React.FC<{
   );
 };
 
-/** Kapitelmarke oben über dem Fenster. */
+/** Chapter label at the top, above the window. */
 export const Chapter: React.FC<{ n: number; title: string; total: number }> = ({ n, title, total }) => {
   const frame = useCurrentFrame();
   const a = interpolate(frame, [0, 12, total - 12, total], [0, 1, 1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
@@ -124,7 +124,7 @@ export const Chapter: React.FC<{ n: number; title: string; total: number }> = ({
   );
 };
 
-/** Eine Bildunterzeile unter dem Fenster. */
+/** A caption under the window. */
 export const Caption: React.FC<{ text: string; total: number; delay?: number }> = ({ text, total, delay = 8 }) => {
   const frame = useCurrentFrame();
   const a = interpolate(frame, [delay, delay + 12, total - 14, total - 2], [0, 1, 1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });

@@ -1,42 +1,42 @@
-# Handbuch: alle Befehle Schritt für Schritt
+# Manual: all commands step by step
 
-Die Befehle des Kits in der Reihenfolge, in der ein Video entsteht. Den Überblick gibt die [`README.md`](../README.md), die Einrichtung
-und alle Stellschrauben stehen in [`setup.md`](setup.md).
+The commands of the kit in the order in which a video is made. The overview is in the [`README.md`](../README.md); setup and
+all configuration settings are in [`setup.md`](setup.md).
 
-## Der Ablauf in fünf Schritten
+## The flow in five steps
 
-Ein Video entsteht in dieser Reihenfolge. Zu jedem Schritt gehört ein Merkmal, an dem man sieht, dass er fertig ist; die
-ausführliche Fassung steht in [`edit-tools/README.md`](../edit-tools/README.md). Schritt 1 läuft im Ordner `example/`
-(dem Projektordner), die Befehle der Schritte 2 bis 5 vom Wurzelordner des Repos aus, wenn nicht anders vermerkt.
+A video is made in this order. Every step has a sign that shows it is done; the long version is in
+[`edit-tools/README.md`](../edit-tools/README.md). Step 1 runs in the `example/` folder (the project folder), the commands of
+steps 2 to 5 from the repo's root folder, unless noted otherwise.
 
-**1. Skript und Voiceover** – [`voice-studio/`](../voice-studio/README.md).
-Die gesprochenen Sätze stehen in `skript.json`. Man nimmt im Browser mit Teleprompter auf; danach misst `npm run vo` die Wortzeiten
-und schreibt `src/timing.ts` neu. Bild, Text und Sounds hängen an diesen Zeiten und wandern mit. Eine Variante des Videos ist ein
-weiterer Take eines ähnlichen Skripts. Fertig, wenn die Ausrichtung ohne Abbruch durchläuft und das Studio die neue Länge zeigt.
+**1. Script and voiceover** – [`voice-studio/`](../voice-studio/README.md).
+The spoken sentences are in `script.json`. You record in the browser with a teleprompter; then `npm run vo` measures the word timings
+and rewrites `src/timing.ts`. Picture, text and sounds hang on these timings and move with them. A variant of the video is
+another take of a similar script. Done when the alignment runs without aborting and the studio shows the new length.
 
 ```bash
-npm run tonstudio
+npm run voice-studio
 ```
 
 ```bash
 npm run vo -- recordings/<take>.wav
 ```
 
-**2. Clips reindroppen** – [`edit-tools/README.md`](../edit-tools/README.md#ablauf-2-clips-reindroppen).
-Videos aus WhatsApp holen, per Kontaktbogen den Clip zum Standbild finden, die Datei nach `public/` legen und im Studio einen Slot
-(`slots` in den Props: Label, Datei, Startsekunde) setzen. Fertig, wenn ein gerenderter Einzelframe angesehen wurde.
+**2. Drop in clips** – [`edit-tools/README.md`](../edit-tools/README.md#step-2-drop-in-clips).
+Fetch videos from WhatsApp, find the clip that belongs to a still frame with a contact sheet, put the file in `public/` and set a slot
+in the studio (`slots` in the props: label, file, start second). Done when a rendered still frame has been looked at.
 
 ```bash
-python3 edit-tools/whatsapp_clips.py export "<Name>" --date JJJJ-MM-TT --fotos
+python3 edit-tools/whatsapp_clips.py export "<name>" --date YYYY-MM-DD --photos
 ```
 
 ```bash
-python3 edit-tools/kontaktbogen.py <ordner>
+python3 edit-tools/contact_sheet.py <folder>
 ```
 
-**3. Sound-Design** – [`sfx-kit/README.md`](../sfx-kit/README.md).
-Sounds auf der Hörseite aussortieren, in die Cue-Liste `SFX_CUES` eintragen, jede Cue an eine Wortzeit oder Animations-Konstante
-gehängt. Fertig, wenn die Nur-Effekte-Spur gerendert und gegen die Musik gemessen ist (Befehl im Ordner `example/`).
+**3. Sound design** – [`sfx-kit/README.md`](../sfx-kit/README.md).
+Pick sounds on the listening page and enter them in the cue list `SFX_CUES`, every cue tied to a word timing or an animation constant.
+Done when the effects-only track has been rendered and measured against the music (command in the `example/` folder).
 
 ```bash
 python3 listen.py
@@ -46,29 +46,29 @@ python3 listen.py
 npx remotion render Demo sfx.wav --codec=wav --props='{"voVolume":0,"music":""}'
 ```
 
-**4. Fertig machen** – [`edit-tools/post_render.sh`](../edit-tools/post_render.sh).
-Bild in hoher Qualität (H.264, CRF 14), Ton auf höchstens −14 LUFS, einmal mit und einmal ohne Musik, dazu Cover-Bilder der
-genannten Frames (hier 60, 150 und 240). Das Ergebnis liegt in `<projekt>/out/post-<Datum>/`; das Skript druckt die gemessene Lautheit je Fassung.
+**4. Final export** – [`edit-tools/post_render.sh`](../edit-tools/post_render.sh).
+High-quality picture (H.264, CRF 14), sound at no more than −14 LUFS, once with and once without music, plus cover images of the
+named frames (here 60, 150 and 240). The result is in `<project>/out/post-<date>/`; the script prints the measured loudness of each version.
 
 ```bash
-EDIT_HOST=<ssh-name> edit-tools/post_render.sh <projektordner> <Komposition> <Name> 60,150,240
+EDIT_HOST=<ssh-name> edit-tools/post_render.sh <project-folder> <composition> <name> 60,150,240
 ```
 
-**5. Posten** – [`edit-tools/POSTEN.md`](../edit-tools/POSTEN.md).
-Ein Mensch gibt die Beschreibung frei. Dann erst Trockenlauf oder Entwurf, nach einer zweiten Freigabe `--publish`, danach liest das
-Skript den Beitrag zurück (Post-ID, Link, bei Instagram die Beschreibung Byte für Byte). Ohne `--publish` wird nichts veröffentlicht.
+**5. Posting** – [`edit-tools/POSTING.md`](../edit-tools/POSTING.md).
+A human approves the caption. Only then a dry run or draft, and after a second approval `--publish`; afterwards the script reads
+the post back (post ID, link, for Instagram the caption byte for byte). Without `--publish` nothing is published.
 
 ```bash
-python3 edit-tools/post_social.py tiktok <video> --caption-file <beschreibung.txt> --dry-run
+python3 edit-tools/post_social.py tiktok <video> --caption-file <caption.txt> --dry-run
 ```
 
 ```bash
-python3 edit-tools/post_social.py tiktok <video> --caption-file <beschreibung.txt> --publish
+python3 edit-tools/post_social.py tiktok <video> --caption-file <caption.txt> --publish
 ```
 
-## Schnellstart
+## Quick start
 
-Beispielprojekt starten (Remotion Studio, Composition `Demo`), im Ordner `example/`:
+Start the example project (Remotion Studio, composition `Demo`), in the `example/` folder:
 
 ```bash
 npm install
@@ -78,13 +78,13 @@ npm install
 npm run dev
 ```
 
-Hörseite starten (läuft unter http://localhost:3700, Urteile landen in `auswahl.json`, die nicht eingecheckt wird):
+Start the listening page (runs at http://localhost:3700, picks end up in `selection.json`, which is not committed):
 
 ```bash
 python3 listen.py
 ```
 
-Neue Sounds ins Kit und ins Projekt:
+New sounds into the kit and into the project:
 
 ```bash
 python3 sfx-kit/tools/prepare_sfx.py
@@ -94,8 +94,8 @@ python3 sfx-kit/tools/prepare_sfx.py
 python3 sfx-kit/tools/sync_remotion.py example
 ```
 
-Prüfen, ob alles noch zusammenpasst: Lint und Typen des Beispielprojekts (im Ordner `example/`) und die Tests des Post-Skripts
-(ohne Netz):
+Check that everything still fits together: lint and types of the example project (in the `example/` folder) and the tests of the post
+script (no network):
 
 ```bash
 npm run lint
@@ -105,11 +105,11 @@ npm run lint
 python3 -m unittest discover -s edit-tools/tests
 ```
 
-Voraussetzungen: Node 20+, Python 3.9+, ffmpeg. Je nach Schritt zusätzlich:
+Prerequisites: Node 20+, Python 3.9+, ffmpeg. Depending on the step, also:
 
-- Tonstudio: `numpy` und [whisper.cpp](https://github.com/ggerganov/whisper.cpp) mit mindestens einem Modell (Details in [`voice-studio/README.md`](../voice-studio/README.md))
+- Voice Studio: `numpy` and [whisper.cpp](https://github.com/ggerganov/whisper.cpp) with at least one model (details in [`voice-studio/README.md`](../voice-studio/README.md))
 - `prepare_sfx.py`: `numpy`, `soundfile`, `librosa`
-- `ton_check.py`, `beat_align.py`: `numpy`, `soundfile`, `librosa`
-- Kontaktbogen: `Pillow`; `whatsapp_clips.py`: macOS mit WhatsApp Desktop
-- `post_render.sh`: `zsh`, `ssh`, `rsync` (läuft auch auf einem einzigen Rechner, wenn dort die Fernanmeldung an ist)
-- Posten: Composio-CLI (angemeldet) und `curl`, siehe [`edit-tools/POSTEN.md`](../edit-tools/POSTEN.md)
+- `sound_check.py`, `beat_align.py`: `numpy`, `soundfile`, `librosa`
+- contact sheet: `Pillow`; `whatsapp_clips.py`: macOS with WhatsApp Desktop
+- `post_render.sh`: `zsh`, `ssh`, `rsync` (also works on a single machine if remote login is on there)
+- posting: Composio CLI (signed in) and `curl`, see [`edit-tools/POSTING.md`](../edit-tools/POSTING.md)

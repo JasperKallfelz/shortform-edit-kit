@@ -1,21 +1,21 @@
 #!/usr/bin/env python3
-"""Musik-Einstieg finden, bei dem ein Schlag des Songs genau auf ein Wort des Voiceovers fällt.
+"""Find a music entry point where a beat of the song lands exactly on a word of the voiceover.
 
-  beat_align.py <song.wav> <src/timing.ts> <wort> [--auch wort,wort,…] [--max-start 120] [--fps 30] [--top 6]
+  beat_align.py <song.wav> <src/timing.ts> <word> [--also word,word,…] [--max-start 120] [--fps 30] [--top 6]
 
-<wort> ist ein Schlüssel aus `VO.w` in timing.ts (das Wort, auf dem der Schlag sitzen soll). Mit --auch nennt man weitere
-Wörter (zum Beispiel die, auf denen Schnitte liegen); für sie wird nur gezeigt, wie weit der nächste Schlag entfernt ist.
+<word> is a key from `VO.w` in timing.ts (the word the beat should sit on). With --also you name more words
+(for example the ones that carry cuts); for them it only shows how far away the nearest beat is.
 
-Ausgabe je Kandidat: Einstieg in den Song (s), die Songstelle, die auf dem Wort landet, wie kräftig der Schlag dort ist
-(Vielfaches des mittleren Einsatzes) und der Abstand zum nächsten Schlag je Wort in ms. Der Einstieg rastet auf ganze Frames.
+Output per candidate: entry into the song (s), the song position that lands on the word, how strong the beat is there
+(multiple of the median onset strength) and the distance to the nearest beat per word in ms. The entry snaps to whole frames.
 
-So benutzt man das Ergebnis: Die Songstelle als Konstante ins Projekt schreiben und den Einstieg daraus berechnen
-(Songstelle minus Wortzeit). Dann bleibt der Schlag bei einem neuen Take von selbst auf dem Wort.
+How to use the result: write the song position into the project as a constant and compute the entry from it
+(song position minus word time). Then the beat stays on the word by itself when you record a new take.
 
-Ein Schlagabstand von 350 ms heißt: ein beliebiger Zeitpunkt liegt im Mittel knapp 90 ms neben dem nächsten Schlag. Schnitte,
-die am Voiceover hängen, treffen den Beat also nur zufällig. Im Bericht nennen, welche Wörter sitzen und welche nicht.
+A beat interval of 350 ms means: an arbitrary point in time lies on average just under 90 ms from the nearest beat. Cuts
+that hang on the voiceover therefore hit the beat only by chance. In the report, say which words sit on a beat and which do not.
 
-Braucht numpy und librosa.
+Needs numpy and librosa.
 """
 import argparse
 import re
@@ -26,8 +26,8 @@ import numpy as np
 p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
 p.add_argument("song")
 p.add_argument("timing")
-p.add_argument("wort")
-p.add_argument("--auch", default="")
+p.add_argument("word")
+p.add_argument("--also", default="")
 p.add_argument("--max-start", type=float, default=120.0)
 p.add_argument("--fps", type=int, default=30)
 p.add_argument("--top", type=int, default=6)
@@ -35,10 +35,10 @@ a = p.parse_args()
 
 src = open(a.timing, encoding="utf-8").read()
 w = {k: int(v) for k, v in re.findall(r"(\w+):\s*(\d+)", src[src.index("w: {"):])}
-others = [k for k in a.auch.split(",") if k]
-for k in [a.wort, *others]:
+others = [k for k in a.also.split(",") if k]
+for k in [a.word, *others]:
     if k not in w:
-        raise SystemExit(f"„{k}“ steht nicht in VO.w von {a.timing}. Vorhanden: {', '.join(w)}")
+        raise SystemExit(f"'{k}' is not in VO.w of {a.timing}. Available: {', '.join(w)}")
 
 y, sr = librosa.load(a.song, sr=22050, mono=True)
 hop = 256
@@ -46,9 +46,9 @@ oenv = librosa.onset.onset_strength(y=y, sr=sr, hop_length=hop)
 tempo, beats = librosa.beat.beat_track(onset_envelope=oenv, sr=sr, hop_length=hop, units="time")
 tempo = float(np.atleast_1d(tempo)[0])
 ot = librosa.frames_to_time(np.arange(len(oenv)), sr=sr, hop_length=hop)
-print(f"Song: {len(y) / sr:.1f} s, {tempo:.1f} BPM, Schlagabstand {60000 / tempo:.0f} ms, {len(beats)} Schläge")
+print(f"Song: {len(y) / sr:.1f} s, {tempo:.1f} BPM, beat interval {60000 / tempo:.0f} ms, {len(beats)} beats")
 
-key = w[a.wort] / 1000
+key = w[a.word] / 1000
 last = max(0.0, min(a.max_start, len(y) / sr - key - 1))
 res = []
 for start in np.arange(0, last, 1 / a.fps):
@@ -61,14 +61,14 @@ for start in np.arange(0, last, 1 / a.fps):
     res.append((d_key + sum(d.values()) / (len(d) or 1) - 0.01 * hit, float(start), d_key, hit, d))
 res.sort(key=lambda r: r[0])
 seen = []
-print(f"Schlag auf „{a.wort}“ ({w[a.wort]} ms):")
+print(f"Beat on '{a.word}' ({w[a.word]} ms):")
 for _, start, d_key, hit, d in res:
     if any(abs(start - s) < 1.0 for s in seen):
         continue
     seen.append(start)
     rest = "  ".join(f"{k} {v * 1000:.0f}" for k, v in d.items())
-    print(f"  Einstieg {start:7.3f} s | Songstelle {start + key:7.3f} s | Schlag {hit:4.1f}× | {a.wort} {d_key * 1000:.0f} ms" + (f" | {rest}" if rest else ""))
+    print(f"  entry {start:7.3f} s | song position {start + key:7.3f} s | beat {hit:4.1f}× | {a.word} {d_key * 1000:.0f} ms" + (f" | {rest}" if rest else ""))
     if len(seen) >= a.top:
         break
 if not seen:
-    print("  kein Einstieg gefunden, bei dem ein Schlag näher als 20 ms am Wort liegt")
+    print("  no entry found where a beat is closer than 20 ms to the word")

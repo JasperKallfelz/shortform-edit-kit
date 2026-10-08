@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="de">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Voiceover aufnehmen</title>
+<title>Record voiceover</title>
 <style>
   :root { color-scheme: dark; --bg:#0e1014; --panel:#171a21; --line:#272b35; --fg:#eceef2; --muted:#8b919d; --acc:#ff4d4d; --ok:#4fd39a; --warn:#ffb454; --stress:#6ea8ff; }
   * { box-sizing: border-box; }
@@ -48,37 +48,37 @@
 <body>
 <div class="wrap">
   <header>
-    <h1>Voiceover aufnehmen</h1>
+    <h1>Record voiceover</h1>
     <div class="row">
-      <select id="dev" aria-label="Mikrofon"></select>
-      <span class="chip" id="state">Mikrofon aus</span>
+      <select id="dev" aria-label="Microphone"></select>
+      <span class="chip" id="state">Microphone off</span>
     </div>
   </header>
 
   <div class="grid">
     <div class="card">
       <div>
-        <div class="hint">Pegel (Ziel: Spitzen im grünen Bereich)</div>
+        <div class="hint">Level (target: peaks in the green zone)</div>
         <div class="num" id="db">–</div>
         <div class="meter" id="meter"><div class="zone" id="zone"></div><div class="bar" id="bar"></div><div class="hold" id="hold"></div></div>
         <div class="scale"><span>−60</span><span>−48</span><span>−36</span><span>−24</span><span>−12</span><span>0 dBFS</span></div>
       </div>
-      <button id="mon">Pegel testen (sprich einen Satz)</button>
+      <button id="mon">Test level (say a sentence)</button>
       <div class="count" id="count"></div>
-      <button class="rec" id="rec">● Aufnahme starten</button>
-      <div class="hint" id="tip">Der Browser fragt dich beim ersten Mal nach dem Mikrofon. Erlaube es.</div>
+      <button class="rec" id="rec">● Start recording</button>
+      <div class="hint" id="tip">The browser asks you for the microphone the first time. Allow it.</div>
       <div id="takes" style="display:grid;gap:10px"></div>
     </div>
 
     <div class="card">
       <div class="row" style="justify-content:space-between">
-        <strong>Skript</strong>
+        <strong>Script</strong>
         <div class="tools">
-          <button id="sm">A−</button><button id="bg">A+</button><button id="mk">Marken</button>
+          <button id="sm">A−</button><button id="bg">A+</button><button id="mk">Marks</button>
         </div>
       </div>
       <div class="tele" id="tele"></div>
-      <div class="hint">Tippe eine Zeile an, um deinen Platz zu markieren. Das Skript kommt aus der Datei skript.json des Projekts. Betonte Wörter sind blau, | ist ein kurzer Atemzug, ↗ Stimme oben, ↘ Stimme fällt.</div>
+      <div class="hint">Tap a line to mark your place. The script comes from the project's script.json file. Stressed words are blue, | is a short breath, ↗ voice up, ↘ voice falls.</div>
     </div>
   </div>
 </div>
@@ -87,8 +87,8 @@
 var $ = function (id) { return document.getElementById(id); };
 function esc(x) { return x.replace(/&/g, "&amp;").replace(/</g, "&lt;"); }
 
-// ---- Teleprompter: Zeilen aus skript.json (Phrasen mit "anzeige", sonst "text")
-// Zeichen in "anzeige": *betont*, | kurzer Atemzug, || längere Pause, ^ Stimme geht hoch, ~ Stimme fällt (~~ stärker)
+// ---- Teleprompter: lines from script.json (phrases with "display", otherwise "text")
+// Characters in "display": *stressed*, | short breath, || longer pause, ^ voice goes up, ~ voice falls (~~ stronger)
 function render(s) {
   var o = "", i = 0;
   while (i < s.length) {
@@ -106,17 +106,17 @@ function setNow(n) {
   lines.forEach(function (e, i) { e.classList.toggle("now", i === n); e.classList.toggle("past", i < n); });
   if (lines[n]) lines[n].scrollIntoView({ block: "center" });
 }
-function zeigeSkript(sk) {
-  (sk.zeilen || []).forEach(function (z) {
+function showScript(sk) {
+  (sk.lines || []).forEach(function (z) {
     var el = document.createElement("div"); el.className = "line";
-    var txt = (z.phrasen || []).map(function (p) { return p.anzeige || p.text; }).join(" ");
-    el.innerHTML = '<span class="t">' + esc(z.hinweis || "") + '</span><span class="txt">' + render(txt) + "</span>";
+    var txt = (z.phrases || []).map(function (p) { return p.display || p.text; }).join(" ");
+    el.innerHTML = '<span class="t">' + esc(z.note || "") + '</span><span class="txt">' + render(txt) + "</span>";
     el.onclick = function () { setNow(lines.indexOf(el)); };
     tele.appendChild(el); lines.push(el);
   });
 }
-fetch("/skript").then(function (r) { return r.ok ? r.json() : r.json().then(function (j) { throw new Error(j.error || "kein Skript"); }); })
-  .then(zeigeSkript)
+fetch("/script").then(function (r) { return r.ok ? r.json() : r.json().then(function (j) { throw new Error(j.error || "no script"); }); })
+  .then(showScript)
   .catch(function (e) { tele.innerHTML = '<div class="hint" style="padding:12px">' + esc(String(e.message || e)) + "</div>"; });
 var size = 34;
 function setSize(d) { size = Math.max(22, Math.min(60, size + d)); tele.querySelectorAll(".txt").forEach(function (x) { x.style.fontSize = size + "px"; }); }
@@ -124,37 +124,37 @@ $("bg").onclick = function () { setSize(4); };
 $("sm").onclick = function () { setSize(-4); };
 $("mk").onclick = function () { tele.classList.toggle("clean"); };
 
-// ---- Audio: der AudioWorklet reicht die Rohdaten des Mikrofons in 128er-Blöcken an die Seite; es wird nichts verarbeitet oder codiert
+// ---- Audio: the AudioWorklet passes the raw microphone data to the page in blocks of 128 samples; nothing is processed or encoded
 var ctx = null, stream = null, node = null, src = null, recording = false, chunks = [], peakHold = -120, holdT = 0, levelDb = -120, monitoring = false, takes = 0;
 function dbOf(v) { return v <= 1e-6 ? -120 : 20 * Math.log10(v); }
 function setState(t, cls) { var s = $("state"); s.textContent = t; s.className = "chip " + (cls || ""); }
 var minDb = -60; function pos(db) { return Math.max(0, Math.min(100, (db - minDb) / (0 - minDb) * 100)); }
 $("zone").style.left = pos(-12) + "%"; $("zone").style.width = (pos(-6) - pos(-12)) + "%";
 
-// zuletzt benutztes Mikrofon merken (nur im Browser dieses Rechners)
-function gemerkt() { try { return localStorage.getItem("tonstudio.mikro") || ""; } catch (e) { return ""; } }
-function merke(label) { try { localStorage.setItem("tonstudio.mikro", label); } catch (e) {} }
+// remember the microphone used last (only in the browser on this computer)
+function remembered() { try { return localStorage.getItem("voice-studio.mic") || ""; } catch (e) { return ""; } }
+function remember(label) { try { localStorage.setItem("voice-studio.mic", label); } catch (e) {} }
 
 async function listDevices() {
   var d = await navigator.mediaDevices.enumerateDevices(); var sel = $("dev"); var cur = sel.value; sel.innerHTML = "";
-  d.filter(function (x) { return x.kind === "audioinput"; }).forEach(function (x) { var o = document.createElement("option"); o.value = x.deviceId; o.textContent = x.label || "Mikrofon"; sel.appendChild(o); });
-  var alt = [].find.call(sel.options, function (o) { return o.textContent === gemerkt(); });
-  if (cur) sel.value = cur; else if (alt) sel.value = alt.value;
+  d.filter(function (x) { return x.kind === "audioinput"; }).forEach(function (x) { var o = document.createElement("option"); o.value = x.deviceId; o.textContent = x.label || "Microphone"; sel.appendChild(o); });
+  var saved = [].find.call(sel.options, function (o) { return o.textContent === remembered(); });
+  if (cur) sel.value = cur; else if (saved) sel.value = saved.value;
 }
 async function openMic() {
   closeMic();
   var id = $("dev").value;
-  // ohne Echo-Unterdrückung, Rauschfilter und automatische Pegelregelung: roh aufnehmen, die Aufbereitung kommt danach
+  // without echo cancellation, noise filter and automatic gain control: record raw, the mastering comes afterwards
   var c = { audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false, channelCount: 1 } };
   if (id) c.audio.deviceId = { exact: id };
   try { stream = await navigator.mediaDevices.getUserMedia(c); }
-  catch (e) { setState("Freigabe fehlt", "bad"); $("tip").textContent = "Mikrofon nicht erlaubt oder nicht gefunden. Klicke in der Adressleiste auf das Schloss, erlaube das Mikrofon und lade die Seite neu. (" + e.name + ")"; throw e; }
+  catch (e) { setState("Permission missing", "bad"); $("tip").textContent = "Microphone not allowed or not found. Click the lock in the address bar, allow the microphone and reload the page. (" + e.name + ")"; throw e; }
   await listDevices();
-  var tr = stream.getAudioTracks()[0]; setState(tr.label || "Mikrofon bereit", "ok");
-  var gewaehlt = tr.getSettings().deviceId;
-  var alt = [].find.call($("dev").options, function (o) { return o.textContent === gemerkt(); });
-  if (!id && alt && alt.value !== gewaehlt) { $("dev").value = alt.value; return openMic(); } // beim ersten Öffnen das zuletzt gewählte Mikrofon nehmen
-  if (gewaehlt) $("dev").value = gewaehlt;
+  var tr = stream.getAudioTracks()[0]; setState(tr.label || "Microphone ready", "ok");
+  var chosen = tr.getSettings().deviceId;
+  var saved = [].find.call($("dev").options, function (o) { return o.textContent === remembered(); });
+  if (!id && saved && saved.value !== chosen) { $("dev").value = saved.value; return openMic(); } // on first open, use the microphone chosen last time
+  if (chosen) $("dev").value = chosen;
   ctx = new AudioContext({ sampleRate: 48000 });
   var code = "class R extends AudioWorkletProcessor{process(i){var c=i[0][0];if(c)this.port.postMessage(c.slice());return true;}}registerProcessor('r',R);";
   await ctx.audioWorklet.addModule(URL.createObjectURL(new Blob([code], { type: "application/javascript" })));
@@ -171,12 +171,12 @@ function loop() {
   var d = Math.max(minDb, levelDb); $("bar").style.width = pos(d) + "%"; $("hold").style.left = "calc(" + pos(Math.max(minDb, peakHold)) + "% - 1px)";
   $("db").textContent = peakHold <= -119 ? "–" : (peakHold.toFixed(1) + " dBFS"); requestAnimationFrame(loop);
 } loop();
-$("dev").onchange = function () { var o = $("dev").selectedOptions[0]; if (o) merke(o.textContent); if (stream) openMic(); };
+$("dev").onchange = function () { var o = $("dev").selectedOptions[0]; if (o) remember(o.textContent); if (stream) openMic(); };
 
 $("mon").onclick = async function () {
-  if (monitoring) { closeMic(); monitoring = false; $("mon").textContent = "Pegel testen (sprich einen Satz)"; setState("Mikrofon aus"); levelDb = -120; peakHold = -120; return; }
-  await openMic(); monitoring = true; $("mon").textContent = "Pegel-Test beenden";
-  $("tip").textContent = "Sprich in normaler Lautstärke. Die Spitzen sollen im grünen Bereich (−12 bis −6) liegen. Sonst am Mikrofon oder Audio-Interface den Gain anpassen.";
+  if (monitoring) { closeMic(); monitoring = false; $("mon").textContent = "Test level (say a sentence)"; setState("Microphone off"); levelDb = -120; peakHold = -120; return; }
+  await openMic(); monitoring = true; $("mon").textContent = "Stop level test";
+  $("tip").textContent = "Speak at a normal volume. The peaks should be in the green zone (−12 to −6). Otherwise adjust the gain on the microphone or audio interface.";
 };
 
 $("rec").onclick = async function () {
@@ -185,16 +185,16 @@ $("rec").onclick = async function () {
   var n = 3; $("rec").disabled = true;
   for (; n > 0; n--) { $("count").textContent = n; await new Promise(function (r) { setTimeout(r, 1000); }); }
   $("count").textContent = ""; chunks = []; peakHold = -120; recording = true; $("rec").disabled = false;
-  $("rec").textContent = "■ Stopp"; $("rec").classList.add("stop"); setState("● Aufnahme", "bad");
-  $("tip").textContent = "Lies jetzt das Skript. Nach dem letzten Wort einen Moment ausklingen lassen, dann Stopp.";
+  $("rec").textContent = "■ Stop"; $("rec").classList.add("stop"); setState("● Recording", "bad");
+  $("tip").textContent = "Read the script now. After the last word, let the sound fade out for a moment, then press Stop.";
   setNow(0);
 };
 function stopRec() {
-  recording = false; $("rec").textContent = "● Aufnahme starten"; $("rec").classList.remove("stop"); setState(monitoring || stream ? "Mikrofon bereit" : "Mikrofon aus", "ok");
+  recording = false; $("rec").textContent = "● Start recording"; $("rec").classList.remove("stop"); setState(monitoring || stream ? "Microphone ready" : "Microphone off", "ok");
   var total = chunks.reduce(function (a, c) { return a + c.length; }, 0); var all = new Float32Array(total), o = 0; chunks.forEach(function (c) { all.set(c, o); o += c.length; }); chunks = [];
   addTake(all, ctx ? ctx.sampleRate : 48000);
 }
-// 24-Bit-WAV (Mono) aus Gleitkommawerten
+// 24-bit WAV (mono) from floating-point values
 function wav24(f32, sr) {
   var n = f32.length, buf = new ArrayBuffer(44 + n * 3), v = new DataView(buf);
   function w(o, s) { for (var i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); }
@@ -205,23 +205,23 @@ function wav24(f32, sr) {
 function addTake(f32, sr) {
   var peak = 0, sum = 0, cnt = 0; for (var i = 0; i < f32.length; i++) { var a = Math.abs(f32[i]); if (a > peak) peak = a; if (a > 0.003) { sum += a * a; cnt++; } }
   var pk = dbOf(peak), rms = cnt ? dbOf(Math.sqrt(sum / cnt)) : -120, dur = f32.length / sr;
-  var verdict = "Pegel passt", cls = "ok";
-  if (pk <= -100) { verdict = "KEIN SIGNAL: Mikro-Freigabe, Stummschaltung oder Gain 0"; cls = "bad"; }
-  else if (pk > -3) { verdict = "Zu laut (übersteuert): Gain runter"; cls = "bad"; }
-  else if (pk < -24) { verdict = "Zu leise: Gain hoch"; cls = "bad"; }
+  var verdict = "Level OK", cls = "ok";
+  if (pk <= -100) { verdict = "NO SIGNAL: mic permission, mute or gain at 0"; cls = "bad"; }
+  else if (pk > -3) { verdict = "Too loud (clipping): lower the gain"; cls = "bad"; }
+  else if (pk < -24) { verdict = "Too quiet: raise the gain"; cls = "bad"; }
   var blob = wav24(f32, sr), id = ++takes, url = URL.createObjectURL(blob);
   var el = document.createElement("div"); el.className = "take";
-  el.innerHTML = '<div class="row"><strong>Take ' + id + '</strong><span class="hint">' + dur.toFixed(1) + ' s · Spitze ' + pk.toFixed(1) + ' dBFS · Sprache ' + rms.toFixed(0) + ' dB</span></div><div class="v ' + cls + '">' + verdict + '</div><audio controls src="' + url + '"></audio>';
+  el.innerHTML = '<div class="row"><strong>Take ' + id + '</strong><span class="hint">' + dur.toFixed(1) + ' s · peak ' + pk.toFixed(1) + ' dBFS · speech ' + rms.toFixed(0) + ' dB</span></div><div class="v ' + cls + '">' + verdict + '</div><audio controls src="' + url + '"></audio>';
   $("takes").prepend(el);
-  // Jeder Take wird sofort gesichert (nie überschrieben), auch wenn er nicht gut war – so geht nichts verloren
+  // Every take is saved immediately (never overwritten), even if it was not good – so nothing is lost
   var d = new Date(), z = function (x) { return String(x).padStart(2, "0"); };
   var stamp = d.getFullYear() + z(d.getMonth() + 1) + z(d.getDate()) + "-" + z(d.getHours()) + z(d.getMinutes()) + z(d.getSeconds());
-  var status = document.createElement("div"); status.className = "hint"; status.textContent = "Sichere …"; el.appendChild(status);
+  var status = document.createElement("div"); status.className = "hint"; status.textContent = "Saving …"; el.appendChild(status);
   fetch("/save?name=take-" + stamp + "-" + id, { method: "POST", body: blob }).then(function (r) { return r.json(); }).then(function (j) {
-    if (!j.ok) { status.textContent = "Sicherung fehlgeschlagen: " + (j.error || "unbekannt"); return; }
-    status.textContent = "Gesichert: " + j.datei + " · nächster Schritt im Projektordner:";
-    var c = document.createElement("code"); c.textContent = j.befehl; el.appendChild(c);
-  }).catch(function (e) { status.textContent = "Sicherung fehlgeschlagen (läuft der Server noch?): " + e; });
+    if (!j.ok) { status.textContent = "Saving failed: " + (j.error || "unknown"); return; }
+    status.textContent = "Saved: " + j.file + " · next step in the project folder:";
+    var c = document.createElement("code"); c.textContent = j.command; el.appendChild(c);
+  }).catch(function (e) { status.textContent = "Saving failed (is the server still running?): " + e; });
 }
 </script>
 </body>

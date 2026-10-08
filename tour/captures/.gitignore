@@ -1,0 +1,10 @@
+# Raw captures and everything made from them: large, and can be re-created at any time
+node_modules/
+.browsers/
+frames/
+*.mp4
+*.webm
+*.wav
+*.aiff
+raw/
+logs/

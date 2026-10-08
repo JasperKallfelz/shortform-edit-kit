@@ -1,6 +1,6 @@
 node_modules
 out
 .DS_Store
-# Tonstudio: Aufnahmen und das daraus erzeugte Voiceover gehören nicht ins Repo
+# Voice Studio: recordings and the voiceover generated from them do not belong in the repo
 recordings/
 public/vo.wav

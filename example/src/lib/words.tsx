@@ -1,5 +1,5 @@
-// Wort-DSL: jedes Wort hat Schrift, Größe, Position (% der Fläche) und einen Einsatz-Frame.
-// Wörter poppen ein (Spring 0.7 → 1, Opacity in 3 Frames) und bleiben stehen.
+// Word DSL: every word has a font, size, position (% of the canvas) and an onset frame.
+// Words pop in (spring 0.7 → 1, opacity over 3 frames) and stay.
 import React from "react";
 import { AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
 import { z } from "zod";
@@ -57,7 +57,7 @@ const WordItem: React.FC<{ w: Word; color: string; shadow?: string }> = ({ w, co
   );
 };
 
-/** Absolut platzierte Wörter. `shadow` z. B. für weiße Wörter über Video. */
+/** Absolutely positioned words. `shadow` e.g. for white words over video. */
 export const Words: React.FC<{ words: Word[]; color?: string; shadow?: string }> = ({ words, color = "#000", shadow }) => (
   <AbsoluteFill style={{ pointerEvents: "none" }}>
     {words.map((w, i) => (
@@ -68,5 +68,5 @@ export const Words: React.FC<{ words: Word[]; color?: string; shadow?: string }>
 
 export const WHITE_SHADOW = "0 2px 18px rgba(0,0,0,0.45), 0 0 2px rgba(0,0,0,0.6)";
 
-/** Hilfe: Frames aus Sekunden bei 30 fps. */
+/** Helper: frames from seconds at 30 fps. */
 export const s = (sec: number) => Math.round(sec * 30);

@@ -1,19 +1,19 @@
-# Lizenzen der Sound-Effekte
+# Licences of the sound effects
 
-Alle Audiodateien in `sfx-candidates/` und `sfx-kit/sounds/` stammen aus Quellen, die Weitergabe und kommerzielle Nutzung ohne
-Namensnennung erlauben. Die Quelle jeder einzelnen Datei steht in `sfx-candidates/manifest.tsv` (Spalten `source_page_url`,
-`licence_name`, `licence_url`) und für die aufbereiteten Sounds in `sfx-kit/quellen.tsv`.
+All audio files in `sfx-candidates/` and `sfx-kit/sounds/` come from sources that allow redistribution and commercial use without
+attribution. The source of every single file is in `sfx-candidates/manifest.tsv` (columns `source_page_url`,
+`licence_name`, `licence_url`) and, for the processed sounds, in `sfx-kit/sources.tsv`.
 
-| Quelle | Lizenz | Dateien | Hinweis |
+| Source | Licence | Files | Note |
 |---|---|---|---|
-| [BigSoundBank.com](https://BigSoundBank.com) (Joseph Sardin) | CC0 1.0 / WTFPL / Public Domain, siehe https://bigsoundbank.com/licenses.html (geprüft am 08.10.2026) | 151 Kandidaten | Original-WAVs. Namensnennung ist nicht Pflicht, wird aber erbeten: „Additional sounds: Joseph SARDIN - BigSoundBank.com“ |
-| [Freesound.org](https://freesound.org), nur Dateien mit CC0 | CC0 1.0 Universal | 65 Kandidaten | Aus den frei abrufbaren Vorschau-Dateien (verlustbehaftet, in WAV gewandelt). Die Originale gibt es mit Freesound-Konto auf der jeweiligen Seite |
-| [Kenney.nl](https://kenney.nl/assets/interface-sounds) Interface Sounds | CC0 1.0 Universal | 10 Kandidaten | Überwiegend synthetische UI-Sounds, liegen als Kandidaten bei; im Kit ist davon nur der Mausklick `mouse4` |
-| [Remotion SFX](https://www.remotion.dev/docs/sfx) | CC0 1.0 Universal | 7 Kandidaten | |
+| [BigSoundBank.com](https://BigSoundBank.com) (Joseph Sardin) | CC0 1.0 / WTFPL / Public Domain, see https://bigsoundbank.com/licenses.html (checked on 8 Oct 2026) | 151 candidates | Original WAVs. Attribution is not required but is requested: "Additional sounds: Joseph SARDIN - BigSoundBank.com" |
+| [Freesound.org](https://freesound.org), only files with CC0 | CC0 1.0 Universal | 65 candidates | From the freely available preview files (lossy, converted to WAV). The originals are available on the respective page with a Freesound account |
+| [Kenney.nl](https://kenney.nl/assets/interface-sounds) Interface Sounds | CC0 1.0 Universal | 10 candidates | Mostly synthetic UI sounds, included as candidates; of these only the mouse click `mouse4` is in the kit |
+| [Remotion SFX](https://www.remotion.dev/docs/sfx) | CC0 1.0 Universal | 7 candidates | |
 
-Die aufbereiteten Dateien in `sfx-kit/sounds/` sind Bearbeitungen dieser Quellen (Stille abgeschnitten, normalisiert, teils
-gekürzt oder leicht in der Tonhöhe verändert) und stehen ebenfalls unter CC0.
+The processed files in `sfx-kit/sounds/` are edits of these sources (silence trimmed, normalised, some shortened or slightly changed
+in pitch) and are also under CC0.
 
-Nicht enthalten sind Sounds, deren Herkunft sich nicht belegen ließ, und jede Art von Musik.
+Not included are sounds whose origin could not be verified, and any kind of music.
 
-Wer hier neue Sounds ergänzt: nur CC0, gemeinfrei oder ausdrücklich zur Weitergabe freigegeben, und immer mit Zeile im Manifest.
+If you add new sounds here: only CC0, public domain or explicitly cleared for redistribution, and always with a row in the manifest.

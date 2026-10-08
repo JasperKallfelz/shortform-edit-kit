@@ -1,4 +1,4 @@
-sound	rohdatei	quelle	lizenz	lizenz_url
+sound	raw_file	source_page_url	licence_name	licence_url
 shutter2	shutter_slr_trigger_01.wav	https://bigsoundbank.com/trigger-of-camera-1-s2394.html	CC0 1.0 / WTFPL (BigSoundBank 'Free and Royalty Free', CC0-like)	https://bigsoundbank.com/licenses.html
 shutter3	shutter_old_film_01.wav	https://www.remotion.dev/docs/sfx/shutter-old	CC0 1.0 Universal	https://creativecommons.org/publicdomain/zero/1.0/
 shutterSlr2	shutter_slr_trigger_02.wav	https://bigsoundbank.com/trigger-of-camera-2-s2395.html	CC0 1.0 / WTFPL (BigSoundBank 'Free and Royalty Free', CC0-like)	https://bigsoundbank.com/licenses.html
@@ -48,5 +48,5 @@ swishSmall	whoosh_swish_small_01.wav	https://freesound.org/people/ihitokage/soun
 typeBurst1	type_burst_macbook_01.wav	https://bigsoundbank.com/slow-macbook-keyboard-1-s1726.html	CC0 1.0 / WTFPL (BigSoundBank 'Free and Royalty Free', CC0-like)	https://bigsoundbank.com/licenses.html
 coinCup1	sparkle_coin_cup_01.wav	https://bigsoundbank.com/coin-in-cup-1-s0339.html	CC0 1.0 / WTFPL (BigSoundBank 'Free and Royalty Free', CC0-like)	https://bigsoundbank.com/licenses.html
 pen1–pen3	click_pen_longtake_01.wav	https://bigsoundbank.com/pen-click-s0613.html	CC0 1.0 / WTFPL (BigSoundBank 'Free and Royalty Free', CC0-like)	https://bigsoundbank.com/licenses.html
-flapLo	wie flap, 0,94× Tonhöhe		wie flap	
-flapHi	wie flap, 1,06× Tonhöhe		wie flap	
+flapLo	like flap, 0.94× pitch		like flap	
+flapHi	like flap, 1.06× pitch		like flap	
