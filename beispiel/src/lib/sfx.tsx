@@ -53,7 +53,7 @@ export const SOUNDS = {
   // Whooshes (sparsam einsetzen)
   swish: { file: "sfx/swish.wav", len: 355, lead: 121, loud: -13.7 },
   whooshShort: { file: "sfx/whooshShort.wav", len: 135, lead: 60, loud: -11.7 },
-  // Riser (rückwärts gespieltes Becken), Trommel, Karten, Tasten, Bleistift, Glas
+  // Riser (rückwärts gespieltes Becken), Trommel, Karten, Tasten, Bleistift, Glas, kleiner Swish, Tippen, Münze
   riser1: { file: "sfx/riser1.wav", len: 1500, lead: 858, loud: -9.5 },
   tom1: { file: "sfx/tom1.wav", len: 931, lead: 0, loud: -11.7 },
   riffle1: { file: "sfx/riffle1.wav", len: 596, lead: 0, loud: -21.4 },
@@ -65,6 +65,8 @@ export const SOUNDS = {
   cardPlace1: { file: "sfx/cardPlace1.wav", len: 767, lead: 170, loud: -21.7 },
   clink1: { file: "sfx/clink1.wav", len: 384, lead: 0, loud: -11.9 },
   swishSmall: { file: "sfx/swishSmall.wav", len: 298, lead: 74, loud: -11.9 },
+  typeBurst1: { file: "sfx/typeBurst1.wav", len: 2143, lead: 0, loud: -21.0 },
+  coinCup1: { file: "sfx/coinCup1.wav", len: 671, lead: 0, loud: -13.5 },
 } as const;
 export type SoundName = keyof typeof SOUNDS;
 

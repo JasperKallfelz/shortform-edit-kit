@@ -16,8 +16,8 @@ gibt es ein Werkzeug, und jeder Schritt hat ein Merkmal, an dem man sieht, dass 
 | `beispiel/` | das Remotion-Projekt (Composition `Demo`): `skript.json`, `src/timing.ts`, `src/Demo.tsx` (Szenen, Props, `SFX_CUES`), `src/lib/` (Wort-DSL, Sound-Spur), `public/` (Sounds, Clips, Voiceover) |
 | `tonstudio/` | Voiceover: `recorder/` (Aufnahme-Seite), `vo/` (aufbereiten, ausrichten, `timing.ts` schreiben), `mikro/` (Eingabegerät umschalten) |
 | `edit-tools/` | `whatsapp_clips.py`, `kontaktbogen.py`, `patch_lines.py`, `ton_check.py`, `beat_align.py`, `post_render.sh`, `post_social.py`, dazu `POSTEN.md` und `tests/` |
-| `sfx-kit/`, `sfx-kandidaten/`, `hoerseite.py` | 51 fertige Sounds mit Katalog und Werkzeugen; 233 rohe Kandidaten mit Lizenz je Datei; die Hörseite zum Aussortieren |
-| `skills/`, `docs/` | zwei Skills (Hermes-Format); die Recherche mit Quellen (`recherche-2026-10.md`), Erfahrungen zu Ton und Text-Sync (`ton-und-text-sync.md`) und der Rundgang (`rundgang.mp4`) |
+| `sfx-kit/`, `sfx-kandidaten/`, `hoerseite.py` | 53 fertige Sounds mit Katalog und Werkzeugen; 233 rohe Kandidaten mit Lizenz je Datei; die Hörseite zum Aussortieren |
+| `skills/`, `docs/` | zwei Skills (Hermes-Format); die Recherche mit Quellen (`recherche-2026-10.md`), Erfahrungen zu Ton und Text-Sync (`ton-und-text-sync.md`), zu Skript, Stimme, Raumklängen, Bildbausteinen und Formaten kleiner Konten (`kurzvideo-erfahrungen-2026-10.md`) und der Rundgang (`rundgang.mp4`) |
 
 ## Die fünf Schritte
 

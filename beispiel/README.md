@@ -18,7 +18,7 @@ Alle Zeiten stehen an einer Stelle: `src/timing.ts` (Wortzeiten in ms, so wie ei
 | `src/lib/words.tsx` | Wort-DSL: Schrift, Größe, Position und Einsatz-Frame je Wort |
 | `src/lib/fonts.ts` | Schriften über `@remotion/google-fonts` |
 | `src/lib/sfx.tsx` | Katalog `SOUNDS` und die Spur `SfxTrack`, die eine Cue-Liste abspielt |
-| `public/sfx/` | 51 aufbereitete Sounds (48 kHz, normalisiert) |
+| `public/sfx/` | 53 aufbereitete Sounds (48 kHz, normalisiert) |
 
 ## Starten
 
