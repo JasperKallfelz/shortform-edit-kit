@@ -1,5 +1,8 @@
 # AGENTS.md
 
+> **Zuerst einrichten?** Voraussetzungen prüfen, Schritte mit „fertig, wenn …“, alle Stellschrauben und der Selbsttest stehen in
+> [`docs/einrichtung.md`](docs/einrichtung.md). Alle Befehle Schritt für Schritt: [`docs/handbuch.md`](docs/handbuch.md).
+
 Einstieg für einen KI-Agenten, der mit diesem Kit ein Kurzvideo bauen oder ändern soll. Menschen finden den Überblick in der
 [`README.md`](README.md).
 
@@ -17,7 +20,7 @@ gibt es ein Werkzeug, und jeder Schritt hat ein Merkmal, an dem man sieht, dass 
 | `tonstudio/` | Voiceover: `recorder/` (Aufnahme-Seite), `vo/` (aufbereiten, ausrichten, `timing.ts` schreiben), `mikro/` (Eingabegerät umschalten) |
 | `edit-tools/` | `whatsapp_clips.py`, `kontaktbogen.py`, `patch_lines.py`, `ton_check.py`, `beat_align.py`, `post_render.sh`, `post_social.py`, dazu `POSTEN.md` und `tests/` |
 | `sfx-kit/`, `sfx-kandidaten/`, `hoerseite.py` | 51 fertige Sounds mit Katalog und Werkzeugen; 233 rohe Kandidaten mit Lizenz je Datei; die Hörseite zum Aussortieren |
-| `skills/`, `docs/` | zwei Skills (Hermes-Format); die Recherche mit Quellen (`recherche-2026-10.md`), Erfahrungen zu Ton und Text-Sync (`ton-und-text-sync.md`) und der Rundgang (`rundgang.mp4`) |
+| `skills/`, `docs/` | zwei Skills (Hermes-Format); die Einrichtung mit Konfigurations-Referenz (`einrichtung.md`), alle Befehle (`handbuch.md`), die Recherche mit Quellen (`recherche-2026-10.md`), Erfahrungen zu Ton und Text-Sync (`ton-und-text-sync.md`) und der Rundgang (`rundgang.mp4`) |
 
 ## Die fünf Schritte
 

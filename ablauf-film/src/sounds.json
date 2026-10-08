@@ -1,0 +1,127 @@
+{
+ "cardPlace1": {
+  "len": 767,
+  "lead": 170,
+  "loud": -21.7
+ },
+ "flap": {
+  "len": 112,
+  "lead": 0,
+  "loud": -14.4
+ },
+ "flapHi": {
+  "len": 106,
+  "lead": 0,
+  "loud": -14.6
+ },
+ "flapLo": {
+  "len": 119,
+  "lead": 0,
+  "loud": -14.1
+ },
+ "key1": {
+  "len": 340,
+  "lead": 0,
+  "loud": -21.9
+ },
+ "key2": {
+  "len": 315,
+  "lead": 0,
+  "loud": -22.7
+ },
+ "key3": {
+  "len": 172,
+  "lead": 0,
+  "loud": -22.2
+ },
+ "mouse1": {
+  "len": 156,
+  "lead": 0,
+  "loud": -22.8
+ },
+ "mouse2": {
+  "len": 225,
+  "lead": 0,
+  "loud": -24.5
+ },
+ "mouse3": {
+  "len": 192,
+  "lead": 0,
+  "loud": -23
+ },
+ "mouse4": {
+  "len": 56,
+  "lead": 0,
+  "loud": -20.8
+ },
+ "page1": {
+  "len": 512,
+  "lead": 183,
+  "loud": -19.5
+ },
+ "page3": {
+  "len": 882,
+  "lead": 396,
+  "loud": -19.4
+ },
+ "pen1": {
+  "len": 353,
+  "lead": 0,
+  "loud": -26.6
+ },
+ "pen2": {
+  "len": 216,
+  "lead": 0,
+  "loud": -25.3
+ },
+ "pencil1": {
+  "len": 630,
+  "lead": 0,
+  "loud": -11.5
+ },
+ "pencil2": {
+  "len": 530,
+  "lead": 0,
+  "loud": -12.5
+ },
+ "riffle1": {
+  "len": 596,
+  "lead": 0,
+  "loud": -21.4
+ },
+ "riser1": {
+  "len": 1500,
+  "lead": 858,
+  "loud": -9.5
+ },
+ "swishSmall": {
+  "len": 298,
+  "lead": 74,
+  "loud": -11.9
+ },
+ "switch": {
+  "len": 384,
+  "lead": 0,
+  "loud": -14.5
+ },
+ "switch2": {
+  "len": 235,
+  "lead": 0,
+  "loud": -19
+ },
+ "tom1": {
+  "len": 931,
+  "lead": 0,
+  "loud": -11.7
+ },
+ "trackpad1": {
+  "len": 199,
+  "lead": 0,
+  "loud": -19.1
+ },
+ "trackpad2": {
+  "len": 207,
+  "lead": 0,
+  "loud": -24.2
+ }
+}
