@@ -77,10 +77,12 @@ Ein Standbild heißt „dieses Video“ – die Datei zu finden ist Aufgabe des 
    sich der Ausschnitt im Studio verschieben, ohne Code anzufassen. Bausteine aus `beispiel/src/Demo.tsx`:
    - `Inset` – abgerundeter 16:9-Clip auf weißer Karte; mit `zoom` wächst er langsam auf die Person zu.
    - `AmbientInset` (`beispiel/src/lib/ambient.tsx`) – dasselbe mit Ambient-Light-Schein: dahinter liegt der Clip noch einmal, weichgezeichnet und aufgehellt, und scheint auf das Weiß. Nur auf hellem Grund, Parameter und Erfahrungen in `beispiel/README.md`.
+   - `SafeZoneGuide` und `SAFE` (`beispiel/src/lib/safezone.tsx`) – Freihalte-Bereiche von Instagram und TikTok (oben 250 px, unten 480 px, rechts 160 px ab y = 860, links 60 px) und ein Prüf-Overlay dafür, per Prop `safeZone`. Werte, Quellen und Erfahrungen in `beispiel/README.md`.
    - `Squiggle` – handgezeichneter Kringel-Pfeil als SVG, der sich zeichnet (`pathLength` 1, `strokeDashoffset` läuft von 1 auf 0).
    - Wort-DSL (`Words`) – jedes Wort mit Schrift, Größe, Position in Prozent und Einsatz aus der Wortzeit.
 5. **Ansehen, bevor „fertig“.** `npx remotion still <Komposition> bild.png --frame=N` und das Bild wirklich anschauen. Wo Text
-   sitzt, über die Farbe ausmessen (farbige Pixel → Rahmen), nicht schätzen.
+   sitzt, über die Farbe ausmessen (farbige Pixel → Rahmen), nicht schätzen. Jede Szene auch mit dem Overlay ansehen
+   (`--props='{"safeZone":true}'`): Text, Gesichter und Zeiger bleiben aus den Freihalte-Bereichen.
 6. **Qualität nennen.** WhatsApp verkleinert Videos (meist 1024 × 576). Für den fertigen Export das Original beim Absender anfragen.
 
 ## Ablauf 3: Sound-Design

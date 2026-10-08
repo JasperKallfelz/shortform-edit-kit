@@ -59,9 +59,12 @@ Aufnahmen und das erzeugte Voiceover gehören nicht ins Repo.
 1. Holen (WhatsApp-Skript oder Fotomediathek). Ein Standbild im Chat heißt „dieses Video“: Datei selbst suchen, per Kontaktbogen.
 2. Stelle wählen: die Einstellung aus dem Standbild, oder per whisper eine Textstelle, die zum Voiceover passt.
 3. Datei nach `public/`, Slot in den Props (Label, Datei, Startsekunde), damit sich der Ausschnitt im Studio verschieben lässt.
-   Bausteine: `Inset` (Clip auf weißer Karte, optional langsamer Zoom auf die Person), `AmbientInset` (`lib/ambient.tsx`: dasselbe mit Ambient-Light-Schein, nur auf hellem Grund), `Squiggle` (handgezeichneter
+   Bausteine: `Inset` (Clip auf weißer Karte, optional langsamer Zoom auf die Person), `AmbientInset` (`lib/ambient.tsx`: dasselbe mit Ambient-Light-Schein, nur auf hellem Grund), `SAFE` und `SafeZoneGuide` (`lib/safezone.tsx`: Freihalte-Bereiche für Instagram und TikTok mit Prüf-Overlay), `Squiggle` (handgezeichneter
    Kringel-Pfeil), Wort-DSL `Words`.
-4. Einzelbild rendern (`npx remotion still`) und wirklich ansehen, bevor „fertig“ gesagt wird.
+4. Einzelbild rendern (`npx remotion still`) und wirklich ansehen, bevor „fertig“ gesagt wird. Das Layout von Anfang an in den
+   Freihalte-Rahmen bauen (1080 × 1920: oben 250 px, unten 480 px, rechts 160 px ab y = 860, links 60 px; Wichtiges endet bei y = 1440
+   und rechts bei x = 920) und **jede Szene** mit `--props='{"safeZone":true}'` ansehen, bevor das Video gezeigt wird. Richtwerte,
+   Stand Oktober 2026: `beispiel/README.md`.
 5. WhatsApp-Clips sind verkleinert (meist 1024 × 576): im Bericht sagen, Original beim Absender anfragen.
 
 ## Sound-Design

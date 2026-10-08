@@ -55,7 +55,7 @@ Alle Stellschrauben mit Fundstelle im Code: [`docs/einrichtung.md`](docs/einrich
 |---|---|
 | `AGENTS.md` | Einstieg für einen KI-Agenten, der mit dem Kit ein Video baut oder ändert: Ordnerkarte, fünf Schritte als Checkliste, Hausregeln |
 | `tonstudio/` | Voiceover: im Browser aufnehmen (Teleprompter), aufbereiten, Wortzeiten messen und die Zeit-Tabelle `src/timing.ts` erzeugen. Läuft ganz lokal |
-| `beispiel/` | Remotion-Demo ohne eigenes Material: Text, der zum Sprechtakt aufpoppt, Clip-Karte mit Zoom (auch mit Ambient-Light-Schein), gezeichneter Pfeil, laufende Zahl, Sound-Spur, dazu `skript.json` für das Tonstudio. `demo.mp4` zeigt das Ergebnis |
+| `beispiel/` | Remotion-Demo ohne eigenes Material: Text, der zum Sprechtakt aufpoppt, Clip-Karte mit Zoom (auch mit Ambient-Light-Schein), gezeichneter Pfeil, laufende Zahl, Sound-Spur, Prüf-Overlay für die Freihalte-Bereiche von Instagram und TikTok, dazu `skript.json` für das Tonstudio. `demo.mp4` zeigt das Ergebnis |
 | `sfx-kit/` | 53 aufbereitete Sound-Effekte (echte Aufnahmen), Katalog mit Länge, Einsatzpunkt und Lautheit, Skripte zum Aufbereiten und zum Einspielen in ein Remotion-Projekt |
 | `sfx-kandidaten/` | 233 rohe Kandidaten mit Quelle und Lizenz je Datei (`manifest.tsv`) |
 | `hoerseite.py`, `index.html` | Hörseite im Browser: alle Sounds durchhören, behalten oder aussortieren, auch nur mit der Tastatur |
