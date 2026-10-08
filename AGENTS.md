@@ -16,7 +16,7 @@ gibt es ein Werkzeug, und jeder Schritt hat ein Merkmal, an dem man sieht, dass 
 
 | Pfad | Wofür |
 |---|---|
-| `beispiel/` | das Remotion-Projekt (Composition `Demo`): `skript.json`, `src/timing.ts`, `src/Demo.tsx` (Szenen, Props, `SFX_CUES`), `src/lib/` (Wort-DSL, Sound-Spur, `ambient.tsx`: Clip-Karte mit Ambient-Light-Schein), `public/` (Sounds, Clips, Voiceover) |
+| `beispiel/` | das Remotion-Projekt (Composition `Demo`): `skript.json`, `src/timing.ts`, `src/Demo.tsx` (Szenen, Props, `SFX_CUES`), `src/lib/` (Wort-DSL, Sound-Spur, `ambient.tsx`: Clip-Karte mit Ambient-Light-Schein, `safezone.tsx`: Freihalte-Bereiche und Prüf-Overlay), `public/` (Sounds, Clips, Voiceover) |
 | `tonstudio/` | Voiceover: `recorder/` (Aufnahme-Seite), `vo/` (aufbereiten, ausrichten, `timing.ts` schreiben), `mikro/` (Eingabegerät umschalten) |
 | `edit-tools/` | `whatsapp_clips.py`, `kontaktbogen.py`, `patch_lines.py`, `ton_check.py`, `beat_align.py`, `post_render.sh`, `post_social.py`, dazu `POSTEN.md` und `tests/` |
 | `sfx-kit/`, `sfx-kandidaten/`, `hoerseite.py` | 53 fertige Sounds mit Katalog und Werkzeugen; 233 rohe Kandidaten mit Lizenz je Datei; die Hörseite zum Aussortieren |
@@ -110,6 +110,10 @@ Zeitüberschreitung oder unklarem Ausgang nicht wiederholen, erst im Konto nachs
 - **Jede Cue hängt an einer Wortzeit oder Animations-Konstante**, nie an einer festen Zahl, und hat einen Namen für die Zeitleiste.
 - **Ein Mensch gibt Beschreibungen und das Posten frei.** Nie veröffentlichen oder Entwürfe anlegen, um etwas auszuprobieren: dafür
   gibt es `--dry-run`. Ein TikTok-Entwurf ist schon eine echte Aktion im Konto.
+- **Freihalte-Bereiche einhalten.** Auf 1080 × 1920 bleiben oben 250 px, unten 480 px (Wichtiges endet bei y = 1440), rechts 160 px ab
+  y = 860 (dort x ≤ 920) und links 60 px frei von Text, Gesichtern und Zeigern, weil Instagram und TikTok dort ihre Elemente einblenden
+  ([`beispiel/README.md`](beispiel/README.md#freihalte-bereiche-wohin-die-app-ihre-bedienelemente-legt), Stand Oktober 2026, Richtwerte).
+  Das Layout von Anfang an im Rahmen bauen und jede Szene mit `--props='{"safeZone":true}'` ansehen, bevor das Video gezeigt wird.
 - **Originale statt Vorschauen** bei Fotos und Videos. Gibt es nur eine Vorschau, sagen.
 - **Erst ansehen und messen, dann „fertig“.** Im Bericht stehen die echte Ausgabe der Prüfungen (Einzelbild, Nur-Effekte-Spur,
   Lautheit, Rücklesen) und was nicht geprüft wurde.

@@ -10,6 +10,7 @@ import { z } from "zod";
 import { FONTS } from "./lib/fonts";
 import { Word, Words } from "./lib/words";
 import { Cue, SfxTrack, SOUNDS } from "./lib/sfx";
+import { SafeZoneGuide } from "./lib/safezone";
 import { VO } from "./timing";
 
 /** Millisekunden im Voiceover → Frames (30 fps). */
@@ -39,6 +40,8 @@ export const demoSchema = z.object({
   counterTo: z.number().min(0),
   /** Die zwei Insets (Szene 1 und 3). clip = Dateiname unter public/ (z. B. "clip.mp4"); leer = grauer Platzhalter. */
   slots: z.array(slotSchema),
+  /** true = färbt die Freihalte-Bereiche für Instagram/TikTok ein (lib/safezone.tsx). Nur zum Prüfen, vor dem Rendern aus. */
+  safeZone: z.boolean(),
 });
 export type DemoProps = z.infer<typeof demoSchema>;
 type Slot = z.infer<typeof slotSchema>;
@@ -54,6 +57,7 @@ export const demoDefaults: DemoProps = {
     { label: "your clip", clip: "", startSec: 0 },
     { label: "your clip", clip: "", startSec: 0 },
   ],
+  safeZone: false,
 };
 
 // ------------------------------------------------------------ Bausteine
@@ -272,7 +276,7 @@ const SFX_CUES: Cue[] = [
 /** Musik-Pegel je Frame: in den letzten 18 Frames blendet sie aus. */
 const musicGain = (frame: number) => interpolate(frame, [DEMO_FRAMES - 18, DEMO_FRAMES], [1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
 
-export const Demo: React.FC<DemoProps> = ({ slots, voiceover, voVolume, music, musicVolume, sfxVolume, counterTo }) => {
+export const Demo: React.FC<DemoProps> = ({ slots, voiceover, voVolume, music, musicVolume, sfxVolume, counterTo, safeZone }) => {
   const S = (i: number) => slots[i] ?? NONE;
   const voFile = voiceover || VO.file;
   const scene = (i: number, name: string, node: React.ReactNode) => (
@@ -288,6 +292,7 @@ export const Demo: React.FC<DemoProps> = ({ slots, voiceover, voVolume, music, m
       {scene(0, "1 · Hook", <S1 slot={S(0)} />)}
       {scene(1, "2 · Zahl", <S2 counterTo={counterTo} />)}
       {scene(2, "3 · Schluss", <S3 slot={S(1)} />)}
+      {safeZone ? <SafeZoneGuide /> : null}
     </AbsoluteFill>
   );
 };

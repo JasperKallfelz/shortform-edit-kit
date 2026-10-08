@@ -4,6 +4,7 @@ import React from "react";
 import { AbsoluteFill } from "remotion";
 import { z } from "zod";
 import { AmbientInset } from "./lib/ambient";
+import { SafeZoneGuide } from "./lib/safezone";
 
 export const AMBIENT_KARTE_FRAMES = 90;
 
@@ -13,13 +14,16 @@ export const ambientKarteSchema = z.object({
   startSec: z.number().min(0),
   /** false = dieselbe Karte ohne Schein, zum Vergleichen. */
   glow: z.boolean(),
+  /** true = färbt die Freihalte-Bereiche für Instagram/TikTok ein (lib/safezone.tsx). Nur zum Prüfen, vor dem Rendern aus. */
+  safeZone: z.boolean(),
 });
 export type AmbientKarteProps = z.infer<typeof ambientKarteSchema>;
 
-export const ambientKarteDefaults: AmbientKarteProps = { clip: "", startSec: 0, glow: true };
+export const ambientKarteDefaults: AmbientKarteProps = { clip: "", startSec: 0, glow: true, safeZone: false };
 
-export const AmbientKarte: React.FC<AmbientKarteProps> = ({ clip, startSec, glow }) => (
+export const AmbientKarte: React.FC<AmbientKarteProps> = ({ clip, startSec, glow, safeZone }) => (
   <AbsoluteFill style={{ background: "#fff" }}>
     <AmbientInset clip={clip} startSec={startSec} frames={AMBIENT_KARTE_FRAMES} glow={glow} />
+    {safeZone ? <SafeZoneGuide /> : null}
   </AbsoluteFill>
 );
