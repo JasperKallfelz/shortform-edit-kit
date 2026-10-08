@@ -1,0 +1,5 @@
+# erzeugt oder groß: jederzeit neu herstellbar (siehe README.md)
+node_modules/
+out/
+public/
+.DS_Store

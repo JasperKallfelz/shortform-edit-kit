@@ -1,19 +1,55 @@
 # shortform-edit-kit
 
-Werkzeuge, Sound-Effekte und Abläufe für kurze Hochkant-Videos (TikTok, Reels), gebaut mit [Remotion](https://www.remotion.dev)
-und KI-Agenten (Claude Code, Hermes). Der Ordner ist so aufgebaut, dass ein Agent damit ein Video von „hier ist das Skript“
-bis „veröffentlicht und nachgelesen“ begleiten kann, und dass man die Handgriffe nicht jedes Mal neu erfindet.
+Du sagst einem KI-Agenten (Claude Code, Codex, Hermes), was für ein Kurzvideo du willst, und sprichst dein Skript ein. Der Agent baut daraus das Video mit [Remotion](https://www.remotion.dev): Text im Sprechtakt, deine Clips, Sound-Effekte aus echten Aufnahmen, den Export mit geprüfter Lautheit und, nach deiner Freigabe, den Post.
 
-*English in one line: a voiceover studio, tools, 233 CC0 sound-effect candidates (53 of them prepared), agent skills, a posting
-script and a Remotion demo for building short vertical videos with natural-sounding sound design. Docs are in German.*
+*English in one line: a voiceover studio, tools, 233 CC0 sound-effect candidates (53 prepared), agent skills, a posting script and a Remotion demo for short vertical videos. Docs are in German.*
 
-[![Rundgang durch das Kit](docs/rundgang.jpg)](docs/rundgang.mp4)
+[![Der Ablauf in 30 Sekunden](docs/ablauf.gif)](docs/ablauf.mp4)
 
-Der Rundgang zeigt, wo im Kit was liegt und wie aus einem Skript ein fertiges Video wird; ein Klick aufs Bild spielt ihn ab.
+▶ Klick aufs Bild spielt den Film mit Ton (32 Sekunden).
 
-**Für KI-Agenten:** Einstieg, Regeln und die Checkliste stehen in [`AGENTS.md`](AGENTS.md).
+## So funktioniert es
 
-## Was drin ist
+1. Du sprichst dein Skript im Browser-Tonstudio ein, mit Teleprompter; alles bleibt auf deinem Rechner.
+2. Der Agent misst, wann jedes Wort fällt, und schreibt die Zeit-Tabelle `src/timing.ts`; Bild, Text und Sounds hängen an diesen Zeiten.
+3. Deine Clips kommen in Slots, die sich im Remotion Studio verschieben lassen, ohne Code anzufassen.
+4. Sound-Effekte aus echten Aufnahmen hängen an Wörtern und Bewegungen im Bild, nie lauter als die Musik.
+5. Der Export prüft die Lautheit; gepostet wird erst, wenn du Beschreibung und Veröffentlichung freigibst.
+
+## Installieren
+
+Gib deinem Agenten das hier:
+
+```text
+Klone https://github.com/JasperKallfelz/shortform-edit-kit, lies AGENTS.md und docs/einrichtung.md und richte das Kit ein. Prüfe die Voraussetzungen, installiere das Beispielprojekt, starte das Remotion Studio und sag mir, was noch fehlt (Mikrofon, whisper-Modell, Konten zum Posten).
+```
+
+Wer es lieber selbst einrichtet, findet dieselben Schritte in [`docs/einrichtung.md`](docs/einrichtung.md).
+
+## Mehr Videos
+
+| Rundgang durch die Werkzeuge (80 s) | Das Ergebnis (9 s) |
+|:---:|:---:|
+| [<img src="docs/rundgang.jpg" width="520" alt="Rundgang durch die Werkzeuge">](docs/rundgang.mp4) | [<img src="docs/demo.gif" width="165" alt="Das Beispielvideo">](beispiel/demo.mp4) |
+| Tonstudio, Remotion Studio, Hörseite und Terminal in echt | Das Beispielvideo, das im Repo liegt |
+
+## Konfiguration
+
+| Was | Wo | Wofür | Pflicht? |
+|---|---|---|---|
+| `TONSTUDIO_MODELLE` | Umgebungsvariable | Pfade der Whisper-Modelle (`ggml-*.bin`), durch Komma getrennt | für `npm run vo` |
+| `WHISPER_CLI` | Umgebungsvariable | Pfad zu `whisper-cli`, falls es nicht im `PATH` liegt | nein |
+| `skript.json` | `beispiel/` | gesprochener Text, Sprache und Schlüssel der Wortzeiten | für ein neues Video |
+| Props: `slots`, `music`, `voiceover`, `sfxVolume` | Remotion Studio, `beispiel/src/Demo.tsx` | Clips, Musik, Voiceover, Lautstärke der Effekte | nein |
+| `edit-tools/post.config.json` | Datei, Vorlage `post.config.example.json` | Konto-IDs zum Posten; wird nie eingecheckt | nur zum Posten |
+| `EDIT_HOST` | Umgebungsvariable | SSH-Name des Rechners, auf dem `post_render.sh` rendert | für den Export |
+| `TONSTUDIO_PORT`, `HOERSEITE_PORT` | Umgebungsvariable | Ports der Aufnahme-Seite (3600) und der Hörseite (3700) | nein |
+| `HOERSEITE_STATE` | Umgebungsvariable | Datei, in der die Hörseite die Urteile ablegt (`auswahl.json`) | nein |
+
+Alle Stellschrauben mit Fundstelle im Code: [`docs/einrichtung.md`](docs/einrichtung.md#3-konfigurations-referenz).
+
+<details>
+<summary>Was drin ist</summary>
 
 | Pfad | Inhalt |
 |---|---|
@@ -25,132 +61,14 @@ Der Rundgang zeigt, wo im Kit was liegt und wie aus einem Skript ein fertiges Vi
 | `hoerseite.py`, `index.html` | Hörseite im Browser: alle Sounds durchhören, behalten oder aussortieren, auch nur mit der Tastatur |
 | `edit-tools/` | Skripte: Videos aus WhatsApp holen, Kontaktbogen, Dateien sicher ändern, fertiger Export mit Lautheitsprüfung, Posten auf TikTok und Instagram (`post_social.py`). Das README dort beschreibt die Abläufe, `POSTEN.md` das Posten |
 | `skills/` | Zwei Skills für Agenten (Hermes-Format, als Anleitung auch für Claude Code brauchbar) |
-| `docs/` | Was die Forschung zu Zuschauerbindung, Beschreibung, Hashtags und Musikrechten sagt, mit Quellen; dazu der Rundgang (`rundgang.mp4`) und die Erfahrungen aus dem Bauen: Skript vor Schnitt, Stimme, Raumklänge, Bildbausteine, Formate kleiner Konten ([`kurzvideo-erfahrungen-2026-10.md`](docs/kurzvideo-erfahrungen-2026-10.md)) |
+| `ablauf-film/` | Remotion-Projekt, das den Film oben baut (`docs/ablauf.mp4` und die stumme Vorschau `docs/ablauf.gif`): gezeichnete Animation, Ton nur aus dem Sound-Kit |
+| `rundgang/` | Remotion-Projekt, das `docs/rundgang.mp4` baut (echte Aufnahmen der Werkzeuge, nachgebautes Terminal) |
+| `docs/` | Handbuch (`handbuch.md`), Einrichtung und Konfiguration (`einrichtung.md`), was die Forschung zu Zuschauerbindung, Beschreibung, Hashtags und Musikrechten sagt, mit Quellen; die Erfahrungen aus dem Bauen: Skript vor Schnitt, Stimme, Raumklänge, Bildbausteine, Formate kleiner Konten ([`kurzvideo-erfahrungen-2026-10.md`](docs/kurzvideo-erfahrungen-2026-10.md)); dazu die Filme |
 
-## Der Ablauf in fünf Schritten
+</details>
 
-Ein Video entsteht in dieser Reihenfolge. Zu jedem Schritt gehört ein Merkmal, an dem man sieht, dass er fertig ist; die
-ausführliche Fassung steht in [`edit-tools/README.md`](edit-tools/README.md). Schritt 1 läuft im Ordner `beispiel/`
-(dem Projektordner), die Befehle der Schritte 2 bis 5 vom Wurzelordner des Repos aus, wenn nicht anders vermerkt.
-
-**1. Skript und Voiceover** – [`tonstudio/`](tonstudio/README.md).
-Die gesprochenen Sätze stehen in `skript.json`. Man nimmt im Browser mit Teleprompter auf; danach misst `npm run vo` die Wortzeiten
-und schreibt `src/timing.ts` neu. Bild, Text und Sounds hängen an diesen Zeiten und wandern mit. Eine Variante des Videos ist ein
-weiterer Take eines ähnlichen Skripts. Fertig, wenn die Ausrichtung ohne Abbruch durchläuft und das Studio die neue Länge zeigt.
-
-```bash
-npm run tonstudio
-```
-
-```bash
-npm run vo -- recordings/<take>.wav
-```
-
-**2. Clips reindroppen** – [`edit-tools/README.md`](edit-tools/README.md#ablauf-2-clips-reindroppen).
-Videos aus WhatsApp holen, per Kontaktbogen den Clip zum Standbild finden, die Datei nach `public/` legen und im Studio einen Slot
-(`slots` in den Props: Label, Datei, Startsekunde) setzen. Fertig, wenn ein gerenderter Einzelframe angesehen wurde.
-
-```bash
-python3 edit-tools/whatsapp_clips.py export "<Name>" --date JJJJ-MM-TT --fotos
-```
-
-```bash
-python3 edit-tools/kontaktbogen.py <ordner>
-```
-
-**3. Sound-Design** – [`sfx-kit/README.md`](sfx-kit/README.md).
-Sounds auf der Hörseite aussortieren, in die Cue-Liste `SFX_CUES` eintragen, jede Cue an eine Wortzeit oder Animations-Konstante
-gehängt. Fertig, wenn die Nur-Effekte-Spur gerendert und gegen die Musik gemessen ist (Befehl im Ordner `beispiel/`).
-
-```bash
-python3 hoerseite.py
-```
-
-```bash
-npx remotion render Demo sfx.wav --codec=wav --props='{"voVolume":0,"music":""}'
-```
-
-**4. Fertig machen** – [`edit-tools/post_render.sh`](edit-tools/post_render.sh).
-Bild in hoher Qualität (H.264, CRF 14), Ton auf höchstens −14 LUFS, einmal mit und einmal ohne Musik, dazu Cover-Bilder der
-genannten Frames (hier 60, 150 und 240). Das Ergebnis liegt in `<projekt>/out/post-<Datum>/`; das Skript druckt die gemessene Lautheit je Fassung.
-
-```bash
-EDIT_HOST=<ssh-name> edit-tools/post_render.sh <projektordner> <Komposition> <Name> 60,150,240
-```
-
-**5. Posten** – [`edit-tools/POSTEN.md`](edit-tools/POSTEN.md).
-Ein Mensch gibt die Beschreibung frei. Dann erst Trockenlauf oder Entwurf, nach einer zweiten Freigabe `--publish`, danach liest das
-Skript den Beitrag zurück (Post-ID, Link, bei Instagram die Beschreibung Byte für Byte). Ohne `--publish` wird nichts veröffentlicht.
-
-```bash
-python3 edit-tools/post_social.py tiktok <video> --caption-file <beschreibung.txt> --dry-run
-```
-
-```bash
-python3 edit-tools/post_social.py tiktok <video> --caption-file <beschreibung.txt> --publish
-```
-
-## Schnellstart
-
-Beispielprojekt starten (Remotion Studio, Composition `Demo`), im Ordner `beispiel/`:
-
-```bash
-npm install
-```
-
-```bash
-npm run dev
-```
-
-Hörseite starten (läuft unter http://localhost:3700, Urteile landen in `auswahl.json`, die nicht eingecheckt wird):
-
-```bash
-python3 hoerseite.py
-```
-
-Neue Sounds ins Kit und ins Projekt:
-
-```bash
-python3 sfx-kit/tools/prepare_sfx.py
-```
-
-```bash
-python3 sfx-kit/tools/sync_remotion.py beispiel
-```
-
-Prüfen, ob alles noch zusammenpasst: Lint und Typen des Beispielprojekts (im Ordner `beispiel/`) und die Tests des Post-Skripts
-(ohne Netz):
-
-```bash
-npm run lint
-```
-
-```bash
-python3 -m unittest discover -s edit-tools/tests
-```
-
-Voraussetzungen: Node 20+, Python 3.9+, ffmpeg. Je nach Schritt zusätzlich:
-
-- Tonstudio: `numpy` und [whisper.cpp](https://github.com/ggerganov/whisper.cpp) mit mindestens einem Modell (Details in [`tonstudio/README.md`](tonstudio/README.md))
-- `prepare_sfx.py`: `numpy`, `soundfile`, `librosa`
-- `ton_check.py`, `beat_align.py`: `numpy`, `soundfile`, `librosa`
-- Kontaktbogen: `Pillow`; `whatsapp_clips.py`: macOS mit WhatsApp Desktop
-- `post_render.sh`: `zsh`, `ssh`, `rsync` (läuft auch auf einem einzigen Rechner, wenn dort die Fernanmeldung an ist)
-- Posten: Composio-CLI (angemeldet) und `curl`, siehe [`edit-tools/POSTEN.md`](edit-tools/POSTEN.md)
-
-## Was die Forschung dazu sagt
-
-Zusammenfassung von [`docs/recherche-2026-10.md`](docs/recherche-2026-10.md) (Stand 08.10.2026, mit Beleglage je Aussage; vor dem
-Zitieren einer Zahl die Quelle selbst prüfen):
-
-- Die ersten 1,5 bis 3 Sekunden entscheiden: mit dem stärksten Bild beginnen, einen klaren Höhepunkt setzen, das Gesicht früh zeigen,
-  Text im Bild. Sättigung hochdrehen bringt nach Beleglage nichts.
-- Beschreibung und Hashtags sind Nebensache gegenüber Sehdauer und Weiterleitungen. Instagram erlaubt seit Dezember 2025 höchstens 5
-  Hashtags, für TikTok reichen 3 bis 4 passende.
-- Musik: Die Fassung ohne Musik hochladen und den Song in der App aus der Bibliothek der Plattform dazulegen.
-- Varianten und Test-Reels: je Runde nur eine Sache ändern, zuerst die ersten 1,5 Sekunden, und mindestens 72 Stunden warten.
-
-## Die Grundsätze dahinter
+<details>
+<summary>Die Grundsätze dahinter</summary>
 
 - **Alles hängt an Wortzeiten.** Bild, Text und Sounds beziehen ihre Einsätze aus einer Tabelle mit den Wortzeiten des
   Voiceovers (`src/timing.ts`, vom Tonstudio erzeugt). Ein neuer Take verschiebt alles gemeinsam. So werden Varianten eines
@@ -164,14 +82,38 @@ Zitieren einer Zahl die Quelle selbst prüfen):
 - **Der Mensch gibt frei.** Agenten schlagen vor und bauen; gepostet wird erst nach ausdrücklicher Freigabe der Beschreibung und
   der Veröffentlichung.
 
+</details>
+
+<details>
+<summary>Was die Forschung dazu sagt</summary>
+
+Zusammenfassung von [`docs/recherche-2026-10.md`](docs/recherche-2026-10.md) (Stand 08.10.2026, mit Beleglage je Aussage; vor dem
+Zitieren einer Zahl die Quelle selbst prüfen):
+
+- Die ersten 1,5 bis 3 Sekunden entscheiden: mit dem stärksten Bild beginnen, einen klaren Höhepunkt setzen, das Gesicht früh zeigen,
+  Text im Bild. Sättigung hochdrehen bringt nach Beleglage nichts.
+- Beschreibung und Hashtags sind Nebensache gegenüber Sehdauer und Weiterleitungen. Instagram erlaubt seit Dezember 2025 höchstens 5
+  Hashtags, für TikTok reichen 3 bis 4 passende.
+- Musik: Die Fassung ohne Musik hochladen und den Song in der App aus der Bibliothek der Plattform dazulegen.
+- Varianten und Test-Reels: je Runde nur eine Sache ändern, zuerst die ersten 1,5 Sekunden, und mindestens 72 Stunden warten.
+
+</details>
+
+<details>
+<summary>Was bewusst fehlt</summary>
+
+Eigenes Videomaterial, Aufnahmen und Voiceover, Musik und alles Kontospezifische (Konten-IDs, Konfiguration, Protokolle). Musik
+gehört nicht ins Repo; siehe [`docs/recherche-2026-10.md`](docs/recherche-2026-10.md) zu Musikrechten beim Posten. Welche Dateien nie
+eingecheckt werden, steht in [`AGENTS.md`](AGENTS.md).
+
+</details>
+
+**Alle Befehle Schritt für Schritt:** [`docs/handbuch.md`](docs/handbuch.md)
+
+**Für KI-Agenten:** Einstieg, Regeln und die Checkliste stehen in [`AGENTS.md`](AGENTS.md).
+
 ## Lizenzen und Dank
 
 Die Sounds sind CC0 bzw. gemeinfrei, Details und Quellen in [`SOUNDS-LIZENZEN.md`](SOUNDS-LIZENZEN.md).
 Additional sounds: Joseph SARDIN – [BigSoundBank.com](https://BigSoundBank.com).
 Für Code und Texte ist noch keine Lizenz festgelegt.
-
-## Was bewusst fehlt
-
-Eigenes Videomaterial, Aufnahmen und Voiceover, Musik und alles Kontospezifische (Konten-IDs, Konfiguration, Protokolle). Musik
-gehört nicht ins Repo; siehe [`docs/recherche-2026-10.md`](docs/recherche-2026-10.md) zu Musikrechten beim Posten. Welche Dateien nie
-eingecheckt werden, steht in [`AGENTS.md`](AGENTS.md).
